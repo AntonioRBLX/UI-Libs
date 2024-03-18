@@ -1,3 +1,4 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Rayfield/main/source"))()
 RayfieldLibrary:Notify({
 	Title = "This is a notification";
 	Actions = true;
