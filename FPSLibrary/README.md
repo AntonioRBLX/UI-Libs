@@ -16,7 +16,7 @@ local Library = loadstring(game:HttpGet("https://pastebin.com/raw/W6vhHP0G", tru
 ### Protect Library Gui
 ```lua
 -- WARNING: IF THE GAME YOU ARE RUNNING FPSLIBRARY ON IS CRASHING OR DETECTING
-getgenv().FPSLibraryProtectGui = true -- Put this above the loadstring
+getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
 ```
 ## Create Window
 ```lua
