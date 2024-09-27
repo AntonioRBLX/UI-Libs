@@ -68,7 +68,7 @@ local Button = Tab:CreateButton({
 	ButtonColor = Color3.fromRGB(97,97,97); -- Color of the element
 	SectionParent = nil; -- The SectionTab the element is parented to
 	Callback = function() -- The function that is called after button is pressed
-		print(ROBLOX.callbackerror)
+		print("Button Clicked!")
 	end
 })
 ```
@@ -83,8 +83,8 @@ local Toggle = Tab:CreateToggle({
 	TipDuration = 5;
 	ToggleColor = Color3.fromRGB(97,97,97); -- Color of the button
 	SectionParent = nil; -- The SectionTab the button is parented to
-	Callback = function() -- The function that is called after element is changed
-		print(ROBLOX.callbackerror)
+	Callback = function(value) -- The function that is called after button is pressed
+		print("Toggle set to "..tostring(value))
 	end
 })
 ```
