@@ -24,7 +24,7 @@ local Window = Library:BootWindow({
 		PlaceId = false -- Only saves configs for a certain PlaceId
 	};
 	Discord = {
-		Enabled = false;
+        Enabled = false;
 		InviteLink = ""; -- discord invite link (eg. discord.gg/ABCD)
 		RememberJoins = true
 	};
@@ -87,6 +87,10 @@ local Toggle = Tab:CreateToggle({
 		print(ROBLOX.callbackerror)
 	end
 })
+```
+### Prompt Discord Invite
+```lua
+Window:PromptDiscordInvite() -- If you want to prompt invite on boot, put it right under the BootWindow
 ```
 ### Getting Element Values
 ```lua
