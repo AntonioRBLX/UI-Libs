@@ -34,7 +34,7 @@ local Window = Library:BootWindow({
 		RememberJoins = true
 	};
 	KeySystem = {
-		Enabled = true; -- The thread will yield until key is submitted
+		Enabled = true; -- The thread will yield until key is validated
 		Keys = {"key1","key2","key3"}; -- An array of valid keys. Recommended to set this to nil if GrabKeyFromSite is true
 		FileName = "Key"; -- Must keep it unique, otherwise other scripts using FPSLibrary may overwrite your file
 		RememberKey = true; -- Will not ask for the key unless key has expired
