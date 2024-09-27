@@ -13,6 +13,11 @@ ROBLOX User Interface Library Created By CITY512.
 ```lua
 local Library = loadstring(game:HttpGet("https://pastebin.com/raw/W6vhHP0G", true))()
 ```
+### Protect Library Gui
+```lua
+-- WARNING: IF THE GAME YOU ARE RUNNING FPSLIBRARY ON IS CRASHING OR DETECTING
+getgenv().FPSLibraryProtectGui = true -- Put this above the loadstring
+```
 ## Create Window
 ```lua
 local Window = Library:BootWindow({
