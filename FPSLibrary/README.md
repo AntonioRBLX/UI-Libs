@@ -1,4 +1,13 @@
-# FPSLibrary Documentation
+# FPSLibrary v1.0
+ROBLOX User Interface Library Created By CITY512.
+## Features
+- Every Working Element (eg. dropdown (multi-selectable), toggle, buttons etc)
+- Configuration Saving
+- Key System (including website)
+- Auto Discord Invite
+## Interface Preview
+[Imgur](https://i.imgur.com/9mDoQR8.png)
+# How To Use FPSLibrary
 ## Boot Library
 ```lua
 local Library = loadstring(game:HttpGet("https://pastebin.com/raw/W6vhHP0G", true))()
