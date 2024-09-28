@@ -68,7 +68,7 @@ local Button = Tab:CreateButton({
 	RichText = false; -- Enables RichText for the Name
 	Visible = true; -- If the element is displayed
 	Active = false; -- If the element is clickable
-	Tip = "This is a button"; -- Displays a tip that hovers under the cursor
+	Tip = "This is a button"; -- Displays a tip that hovers under the cursor, set to nil to remove tip
 	TipDuration = 5;
 	ButtonColor = Color3.fromRGB(97,97,97); -- Color of the element
 	SectionParent = nil; -- The SectionTab the element is parented to
@@ -84,7 +84,7 @@ local Toggle = Tab:CreateToggle({
 	RichText = false; -- Enables RichText for the Name
 	Visible = true; -- If the element is displayed
 	Active = true; -- If the element is clickable
-	Tip = "This is a toggle"; -- Displays a tip that hovers under the cursor
+	Tip = "This is a toggle"; -- Displays a tip that hovers under the cursor, set to nil to remove tip
 	TipDuration = 5;
 	ToggleColor = Color3.fromRGB(97,97,97); -- Color of the button
 	SectionParent = nil; -- The SectionTab the button is parented to
@@ -99,12 +99,17 @@ Window:PromptDiscordInvite() -- If you want to prompt invite on boot, put it rig
 ```
 ### Getting Element Values
 ```lua
--- Indexing the properties of elements (if property does not exist, it errors.)
-print(Toggle.CurrentValue)
+-- Indexing the properties of elements (if property does not exist, it errors)
+print(ElementName.CurrentValue)
 ```
 ### Changing Elements
 ```lua
--- Altering the properties of elements will take effect on its function & appearance (if property does not exist, it errors.)
+-- Altering the properties of elements will take effect on its function & appearance (if property does not exist, it errors)
 -- Properties will not take effect if changed through the 'Flag'
 Tab.Title = "NewTitle"
+```
+### Removing Elements
+```lua
+-- Note: This only works for elements, if you want to remove a tab, you must hide it (Tab.Visible = false)
+ElementName:Destroy()
 ```
