@@ -40,8 +40,8 @@ local Window = Library:BootWindow({
 		RememberKey = true; -- Will not ask for the key unless key has expired
 		KeyTimeLimit = 86400; -- in seconds
 		GrabKeyFromSite = false; -- Gets key from a website
-		WebsiteURL = "https://pastebin.com/LrbPFf3z"; -- (eg. https://linkvertise.com/<link>)
-		KeyRAWURL = "https://pastebin.com/raw/xkxbJi08"; -- (eg. https://raw.githubusercontent.com/<username>/<directory> or https://pastebin.com/raw/<paste>)
+		WebsiteURL = ""; -- (eg. https://linkvertise.com/<link>)
+		KeyRAWURL = ""; -- (eg. https://raw.githubusercontent.com/<username>/<directory> or https://pastebin.com/raw/<paste>)
 		JSONDecode = true; -- If RAW website is in json format (must be written in an array eg. ["key1","key2","key3"])
 	}
 })
