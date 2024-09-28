@@ -84,9 +84,10 @@ local Toggle = Tab:CreateToggle({
 	RichText = false; -- Enables RichText for the Name
 	Visible = true; -- If the element is displayed
 	Active = true; -- If the element is clickable
+	CurrentValue = false; -- If the toggle is on/off
 	Tip = "This is a toggle"; -- Displays a tip that hovers under the cursor, set to nil to remove tip
 	TipDuration = 5;
-	ToggleColor = Color3.fromRGB(97,97,97); -- Color of the button
+	ToggleColor = Color3.fromRGB(97,97,97); -- Color of the element
 	SectionParent = nil; -- The SectionTab the button is parented to
 	Callback = function(value) -- The function that is called after button is pressed
 		print("Toggle set to "..tostring(value))
