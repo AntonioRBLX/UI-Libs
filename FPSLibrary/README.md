@@ -99,13 +99,13 @@ Window:PromptDiscordInvite() -- If you want to prompt invite on boot, put it rig
 ```
 ### Getting Element Values
 ```lua
--- Indexing the properties of elements from identifier or via FPSLibrary.Flags (if property does not exist, it errors)
+-- Indexing the properties of elements from identifier or via FPSLibrary.Flags[FlagName] (if property does not exist, it errors)
 print(ElementName.CurrentValue)
 ```
 ### Changing Elements
 ```lua
 -- Altering the properties of elements will take effect on its function & appearance (if property does not exist or is read-only, it errors)
--- Properties will not take effect if changed through the Flag
+-- Properties will not take immediate effect if changed through the Flag
 Tab.Title = "NewTitle"
 ```
 ### Removing Elements
