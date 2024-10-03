@@ -13,11 +13,6 @@ ROBLOX User Interface Library Created By CITY512.
 ```lua
 local Library = loadstring(game:HttpGet("https://pastebin.com/raw/W6vhHP0G", true))()
 ```
-### Protect Library Gui
-```lua
--- WARNING: IF THE GAME YOU ARE RUNNING FPSLIBRARY ON IS CRASHING OR DETECTING
-getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
-```
 ## Create Window
 ```lua
 local Window = Library:BootWindow({
@@ -45,6 +40,15 @@ local Window = Library:BootWindow({
 		JSONDecode = false; -- If RAW website is in json format (must be written in an array eg. ["key1","key2","key3"])
 	}
 })
+```
+### Protect Library Gui
+```lua
+-- WARNING: IF THE GAME YOU ARE RUNNING FPSLIBRARY ON IS CRASHING OR DETECTING
+getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
+```
+### Prompt Discord Invite
+```lua
+Window:PromptDiscordInvite() -- If you want to prompt invite on boot, put it right under the BootWindow
 ```
 ### Create Tab
 ```lua
@@ -136,8 +140,4 @@ Tab.Title = "NewTitle"
 ```lua
 -- Note: This only works for elements, if you want to remove a tab, you must hide it (Tab.Visible = false)
 ElementName:Destroy()
-```
-### Prompt Discord Invite
-```lua
-Window:PromptDiscordInvite() -- If you want to prompt invite on boot, put it right under the BootWindow
 ```
