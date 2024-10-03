@@ -24,7 +24,7 @@ local Window = Library:BootWindow({
 	Name = "FPSLibrary Example";
 	LoadingTitle = "FPSLibrary Interface Suite";
 	ConfigurationSaving = {
-		Enabled = true;
+		Enabled = false;
 		FolderName = "configs"; -- Must keep it unique, otherwise other scripts using FPSLibrary may overwrite your file
 		PlaceId = false -- Only saves configs for a certain PlaceId
 	};
@@ -34,15 +34,15 @@ local Window = Library:BootWindow({
 		RememberJoins = true
 	};
 	KeySystem = {
-		Enabled = true; -- The thread will yield until key is validated
+		Enabled = false; -- The thread will yield until key is validated
 		Keys = {"key1","key2","key3"}; -- An array of valid keys. Recommended to set this to nil if GrabKeyFromSite is true
 		FileName = "Key"; -- Must keep it unique, otherwise other scripts using FPSLibrary may overwrite your file
-		RememberKey = true; -- Will not ask for the key unless key has expired
+		RememberKey = false; -- Will not ask for the key unless key has expired
 		KeyTimeLimit = 86400; -- in seconds
 		GrabKeyFromSite = false; -- Gets key from a website
 		WebsiteURL = ""; -- (eg. https://linkvertise.com/<link>)
 		KeyRAWURL = ""; -- (eg. https://raw.githubusercontent.com/<username>/<directory> or https://pastebin.com/raw/<paste>)
-		JSONDecode = true; -- If RAW website is in json format (must be written in an array eg. ["key1","key2","key3"])
+		JSONDecode = false; -- If RAW website is in json format (must be written in an array eg. ["key1","key2","key3"])
 	}
 })
 ```
@@ -72,7 +72,7 @@ local Button = Tab:CreateButton({
 	TipDuration = 5;
 	ButtonColor = Color3.fromRGB(97,97,97); -- Color of the element
 	SectionParent = nil; -- The SectionTab the element is parented to
-	Callback = function() -- The function that is called after button is pressed
+	Callback = function() -- The function that is called after button is activated
 		print("Button Clicked!")
 	end
 })
@@ -84,19 +84,42 @@ local Toggle = Tab:CreateToggle({
 	RichText = false; -- Enables RichText for the Name
 	Visible = true; -- If the element is displayed
 	Active = true; -- If the element is clickable
-	CurrentValue = false; -- If the toggle is on/off
 	Tip = "This is a toggle"; -- Displays a tip that hovers under the cursor, set to nil to remove tip
 	TipDuration = 5;
 	ToggleColor = Color3.fromRGB(97,97,97); -- Color of the element
 	SectionParent = nil; -- The SectionTab the button is parented to
-	Callback = function(value) -- The function that is called after button is pressed
+	CurrentValue = false; -- If the toggle is on/off
+	Flag = "" -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
+	Callback = function(value) -- The function that is called after toggle is pressed
 		print("Toggle set to "..tostring(value))
 	end
 })
 ```
-### Prompt Discord Invite
+### Create Slider
 ```lua
-Window:PromptDiscordInvite() -- If you want to prompt invite on boot, put it right under the BootWindow
+local Slider = Tab:CreateSlider({
+	Name = "Slider";
+	RichText = false; -- Enables RichText for the Name
+	ScrollBarRichText = false; -- Enables RichText for the Scroll Bar Section
+	Visible = true; -- If the element is displayed
+	Active = true; -- If the element is clickable
+	Tip = "This is a slider"; -- Displays a tip that hovers under the cursor, set to nil to remove tip
+	TipDuration = 5;
+	SliderElementColor = Color3.fromRGB(97,97,97); -- Color of the element
+	SliderBackgroundColor = Color3.fromRGB(58, 58, 58); -- Color of the scroll bar's background
+	SliderColor = Color3.fromRGB(255, 206, 92); -- Color of the scroll bar
+	SectionParent = nil; -- The SectionTab the button is parented to
+	MinValue = 0; -- Minimum value of the slider
+	MaxValue = 100; -- Maximum value of the slider
+	CurrentValue = 50; -- The starting value of the slider
+	Increment = 1; -- The amount the value increases by when scrolling.
+	Suffix = "%"; -- The string that appears at the end of the value
+	CallbackOnRelease = false; -- Callback only when mouse is released
+	Flag = "" -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
+	Callback = function(value) -- The function that is called after slider is changed
+		print("Slider set to "..tostring(value))
+	end
+})
 ```
 ### Getting Element Values
 ```lua
@@ -106,11 +129,15 @@ print(ElementName.CurrentValue)
 ### Changing Elements
 ```lua
 -- Altering the properties of elements will take effect on its function & appearance (if property does not exist or is read-only, it errors)
--- Properties will not take immediate effect if changed through the Flag
+-- If you wish to alter the properties through Flags you must write 'Library.Flags[<flagname>].Module[<property>]
 Tab.Title = "NewTitle"
 ```
 ### Removing Elements
 ```lua
 -- Note: This only works for elements, if you want to remove a tab, you must hide it (Tab.Visible = false)
 ElementName:Destroy()
+```
+### Prompt Discord Invite
+```lua
+Window:PromptDiscordInvite() -- If you want to prompt invite on boot, put it right under the BootWindow
 ```
