@@ -1,7 +1,7 @@
 # FPSLibrary v1.0
 ROBLOX User Interface Library Created By CITY512.
 ## Features
-- Every Working Element (eg. dropdown (multi-selectable), toggle, buttons etc)
+- Every Working Element
 - Configuration Saving
 - Key System (including website)
 - Auto Discord Invite
