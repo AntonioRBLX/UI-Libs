@@ -9,14 +9,14 @@ ROBLOX User Interface Library Created By CITY512.
 <img src="https://i.imgur.com/9mDoQR8.png" />
 
 # How To Use FPSLibrary
+## Boot Library
+```lua
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY512/UI-Libs/refs/heads/main/FPSLibrary/FPSLibrary.lua", true))()
+```
 ### Protect Library Gui
 ```lua
 -- WARNING: IF THE GAME YOU ARE RUNNING FPSLIBRARY ON IS CRASHING OR DETECTING
 getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
-```
-## Boot Library
-```lua
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY512/UI-Libs/refs/heads/main/FPSLibrary/FPSLibrary.lua", true))()
 ```
 ## Create Window
 ```lua
