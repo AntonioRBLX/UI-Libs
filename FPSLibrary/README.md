@@ -11,7 +11,7 @@ ROBLOX User Interface Library Created By CITY512.
 # How To Use FPSLibrary
 ## Boot Library
 ```lua
-local Library = loadstring(game:HttpGet("https://pastebin.com/raw/W6vhHP0G", true))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY512/UI-Libs/refs/heads/main/FPSLibrary/FPSLibrary.lua", true))()
 ```
 ### Protect Library Gui
 ```lua
