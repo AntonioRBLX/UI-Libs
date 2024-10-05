@@ -9,14 +9,14 @@ ROBLOX User Interface Library Created By CITY512.
 <img src="https://i.imgur.com/9mDoQR8.png" />
 
 # How To Use FPSLibrary
-## Boot Library
-```lua
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY512/UI-Libs/refs/heads/main/FPSLibrary/FPSLibrary.lua", true))()
-```
 ### Protect Library Gui
 ```lua
 -- WARNING: IF THE GAME YOU ARE RUNNING FPSLIBRARY ON IS CRASHING OR DETECTING
 getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
+```
+## Boot Library
+```lua
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY512/UI-Libs/refs/heads/main/FPSLibrary/FPSLibrary.lua", true))()
 ```
 ## Create Window
 ```lua
@@ -35,14 +35,16 @@ local Window = Library:BootWindow({
 	};
 	KeySystem = {
 		Enabled = false; -- The thread will yield until key is validated
-		Keys = {"key1","key2","key3"}; -- An array of valid keys. Recommended to set this to nil if GrabKeyFromSite is true
+		Keys = {"key1","key2","key3"}; -- An array of valid keys. Will not apply if GrabKeyFromSite is true
+		EncryptKey = true; -- Applies AES-256 encryption to key array
+		CypherKey = "" -- cypher key length must be 16 or more. https://catonmat.net/tools/generate-random-ascii
 		FileName = "Key"; -- Must keep it unique, otherwise other scripts using FPSLibrary may overwrite your file
-		RememberKey = false; -- Will not ask for the key unless key has expired
+		RememberKey = false; -- Will not ask for the key unless key has changed or expired
 		KeyTimeLimit = 86400; -- in seconds
 		GrabKeyFromSite = false; -- Gets key from a website
-		WebsiteURL = ""; -- (eg. https://linkvertise.com/<link>)
-		KeyRAWURL = ""; -- (eg. https://raw.githubusercontent.com/<username>/<directory> or https://pastebin.com/raw/<paste>)
-		JSONDecode = false; -- If RAW website is in json format (must be written in an array eg. ["key1","key2","key3"])
+		WebsiteURL = ""; -- website you will be directed to for the key (eg. https://linkvertise.com/<link>)
+		KeyRAWURL = ""; -- website where the RAW key is checked for (eg. https://raw.githubusercontent.com/<username>/<directory> or https://pastebin.com/raw/<paste>)
+		JSONDecode = false; -- If RAW key is in json format (key must be written as eg. ["key1","key2","key3"])
 	}
 })
 ```
@@ -69,6 +71,7 @@ local Tab = Window:CreateTab({
 ```lua
 local Button = Tab:CreateButton({
 	Name = "Button";
+	FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json",Enum.FontWeight.Bold,Enum.FontStyle.Normal);
 	RichText = false; -- Enables RichText for the Name
 	Visible = true; -- If the element is displayed
 	Active = true; -- If the element is clickable
@@ -85,6 +88,7 @@ local Button = Tab:CreateButton({
 ```lua
 local Toggle = Tab:CreateToggle({
 	Name = "Toggle";
+	FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json",Enum.FontWeight.Bold,Enum.FontStyle.Normal);
 	RichText = false; -- Enables RichText for the Name
 	Visible = true; -- If the element is displayed
 	Active = true; -- If the element is clickable
@@ -93,7 +97,7 @@ local Toggle = Tab:CreateToggle({
 	ToggleColor = Color3.fromRGB(97,97,97); -- Color of the element
 	SectionParent = nil; -- The SectionTab the button is parented to
 	CurrentValue = false; -- If the toggle is on/off
-	Flag = "" -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
+	Flag = ""; -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
 	Callback = function(value) -- The function that is called after toggle is pressed
 		print("Toggle set to "..tostring(value))
 	end
@@ -103,6 +107,7 @@ local Toggle = Tab:CreateToggle({
 ```lua
 local Slider = Tab:CreateSlider({
 	Name = "Slider";
+	FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json",Enum.FontWeight.Bold,Enum.FontStyle.Normal);
 	RichText = false; -- Enables RichText for the Name
 	ScrollBarRichText = false; -- Enables RichText for the Scroll Bar Section
 	Visible = true; -- If the element is displayed
@@ -119,7 +124,7 @@ local Slider = Tab:CreateSlider({
 	Increment = 1; -- The amount the value increases by when scrolling.
 	Suffix = "%"; -- The string that appears at the end of the value
 	CallbackOnRelease = false; -- Callback only when mouse is released
-	Flag = "" -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
+	Flag = ""; -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
 	Callback = function(value) -- The function that is called after slider is changed
 		print("Slider set to "..tostring(value))
 	end
