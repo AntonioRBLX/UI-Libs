@@ -247,10 +247,3 @@ print(Library.Flags[FlagName].CurrentValue)
 Tab.Title = "NewTitle"
 -- Altering properties in the 'FPSLibrary.Flags' will not take effect.
 ```
-
-### Removing Elements
-
-```lua
-ElementName:Destroy()
--- Does not work on tabs
-```
