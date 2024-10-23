@@ -21,7 +21,7 @@ ROBLOX User Interface Library Created By CITY512.
 
 ## Interface Preview
 
-<img src="https://i.imgur.com/9mDoQR8.png" />
+<img src="https://i.imgur.com/zfIKrwp.jpg" />
 
 # How To Use FPSLibrary
 
