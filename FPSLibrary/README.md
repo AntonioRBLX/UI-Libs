@@ -226,6 +226,18 @@ local ColorPicker = Tab:CreateColorPicker({
 local Section = Tab:CreateSection("Section",120,false) -- Name, DropdownSizeY, Opened
 ```
 
+### Create Separator
+
+```lua
+local Separator = Tab:CreateSeparator("Separator",nil) -- Text, SectionParent
+```
+
+### Create Paragraph
+
+```lua
+local Paragraph = Tab:CreateParagraph("This is a title","This is content",nil) -- Title, Content, SectionParent
+```
+
 ### Element Modifiers
 
 ```lua
