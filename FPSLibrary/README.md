@@ -119,7 +119,7 @@ local Button = Tab:CreateButton({
 local Toggle = Tab:CreateToggle({
 	Name = "Toggle";
 	RichText = false; -- Enables RichText for the Name
-	ActivatedColor = Color3.fromRGB(255, 206, 92); -- Color of the slider bar
+	ActivatedColor = Color3.fromRGB(255, 206, 92); -- Color of the toggle when activated
 	SectionParent = nil; -- The SectionTab the button is parented to
 	CurrentValue = false; -- If the toggle is on/off
 	Flag = ""; -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
@@ -192,7 +192,7 @@ local Input = Tab:CreateInput({
 	Flag = ""; -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
 	IgnoreList = {}; -- The properties the flag will blacklist/not saved
 	Callback = function(value) -- The function that is called after toggle is pressed
-		print("Toggle set to "..tostring(value))
+		print("Input: "..tostring(value))
 	end
 })
 ```
@@ -214,10 +214,16 @@ local ColorPicker = Tab:CreateColorPicker({
 	SectionParent = nil; -- The SectionTab the element is parented to
 	Flag = ""; -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
 	IgnoreList = {}; -- The properties the flag will blacklist/not saved
-	Callback = function() -- The function that is called after button is activated
-		print("Button Clicked!")
+	Callback = function(color) -- The function that is called after button is activated
+		print("Color Picked:",tostring(color))
 	end
 })
+```
+
+### Create Section
+
+```lua
+local Section = Tab:CreateSection("Section",120,false) -- Name, DropdownSizeY, Opened
 ```
 
 ### Element Modifiers
