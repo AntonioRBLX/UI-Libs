@@ -1977,6 +1977,8 @@ function FPSLibrary:BootWindow(windowsettings)
                     return ColorPickerElement
                 elseif idx == "ClassName" then
                     return "ColorPickerElement"
+                elseif idx == "Flag" then
+                    return colorpickersettings.Flag
                 else
                     return
                 end
@@ -2296,6 +2298,7 @@ function FPSLibrary:BootWindow(windowsettings)
                     KeybindText.Text = value and value.Name or ""
                 elseif idx == "HoldToInteract" then
                     if typeof(value) ~= "boolean" then return end
+                    keybindsettings.HoldToInteract = value
                 elseif idx == "SectionParent" then
                     if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
                     keybindsettings.SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
