@@ -2193,6 +2193,9 @@ function FPSLibrary:BootWindow(windowsettings)
             end)
             layoutorder += 2
             ColorPickerElement.LayoutOrder = layoutorder
+            if colorpickersettings.Flag then
+                FPSLibrary.Flags[colorpickersettings.Flag] = {}
+            end
             -- Set Metatable
             setmetatable(ColorPickerModule,mt)
             -- Elements Table
