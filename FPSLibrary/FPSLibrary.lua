@@ -2391,8 +2391,8 @@ function FPSLibrary:BootWindow(windowsettings)
                 end)
             end)
             UserInputService.InputBegan:Connect(function(input, processed)
-                if not processed and input.KeyCode == windowsettings.ToggleGUIKeybind then
-                    task.spawn(Callback,keybindsettings.Callback,keybindsettings.CurrentKeybind)
+                if not processed and not CheckingForKey and input.KeyCode == windowsettings.ToggleGUIKeybind then
+                    task.spawn(Callback,keybindsettings.Callback)
                 end
             end)
             layoutorder += 2
