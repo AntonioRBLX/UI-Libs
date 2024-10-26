@@ -2395,6 +2395,9 @@ function FPSLibrary:BootWindow(windowsettings)
             end)
             layoutorder += 2
             KeybindElement.LayoutOrder = layoutorder
+            if keybindsettings.Flag then
+                FPSLibrary.Flags[keybindsettings.Flag] = {}
+            end
             -- Set Metatable
             setmetatable(KeybindModule,mt)
             -- Elements Table
