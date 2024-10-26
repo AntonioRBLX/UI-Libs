@@ -44,7 +44,8 @@ getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
 local Window = Library:BootWindow({
 	Name = "FPSLibrary";
 	LoadingTitle = "FPSLibrary Interface Suite";
-	TabsVisible = true;
+	WindowVisible = true;
+	ToggleGUIKeybind = Enum.KeyCode.RightShift;
 	ConfigurationSaving = {
 		Enabled = false;
 		FolderName = "configs"; -- Must keep it unique, otherwise other scripts using FPSLibrary may overwrite your file
@@ -216,6 +217,21 @@ local ColorPicker = Tab:CreateColorPicker({
 	IgnoreList = {}; -- The properties the flag will blacklist/not saved
 	Callback = function(color) -- The function that is called after button is activated
 		print("Color Picked:",tostring(color))
+	end
+})
+```
+
+### Create Keybind
+
+```lua
+local Keybind = Tab:CreateKeybind({
+	Name = "Keybind";
+	RichText = false; -- Enables RichText for the Name
+	CurrentKeybind = Enum.KeyCode.E;
+   	HoldToInteract = false;
+	SectionParent = nil; -- The SectionTab the element is parented to
+	Callback = function(keybind) -- The function that is called after button is activated
+		print("Keybind set to: "..tostring(keybind))
 	end
 })
 ```
