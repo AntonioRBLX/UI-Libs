@@ -351,10 +351,7 @@ function FPSLibrary:Notify(settings)
                             CloseNotification()
                         end
                         if actionsettings.Callback then
-                            local suc, err = pcall(actionsettings.Callback)
-                            if not suc then
-                                CallbackErrorMessage(err)
-                            end
+                            Callback(actionsettings.Callback)
                         end
                     end
                 end)
@@ -947,10 +944,7 @@ function FPSLibrary:BootWindow(windowsettings)
             RippleEffects(ButtonElement)
             ButtonElement.MouseButton1Click:Connect(function()
                 if buttonsettings.Callback and buttonsettings.Active then
-                    local suc, err = pcall(buttonsettings.Callback)
-                    if not suc then
-                        CallbackErrorMessage(err)
-                    end
+                    Callback(buttonsettings.Callback)
                 end
             end)
             layoutorder += 2
@@ -1127,10 +1121,7 @@ function FPSLibrary:BootWindow(windowsettings)
             ToggleElement.MouseButton1Click:Connect(function()
                 ToggleModule.CurrentValue = not ToggleModule.CurrentValue
                 if togglesettings.Callback and togglesettings.Active then
-                    local suc, err = pcall(togglesettings.Callback,togglesettings.CurrentValue)
-                    if not suc then
-                        CallbackErrorMessage(err)
-                    end
+                    Callback(togglesettings.Callback,togglesettings.CurrentValue)
                 end
             end)
             if togglesettings.Flag then
@@ -1742,7 +1733,7 @@ function FPSLibrary:BootWindow(windowsettings)
             local TextBoxModule = {}
             local mt = {}
             -- Functions
-            local function Callback()
+            local function TextBoxCallback()
                 local text = textboxsettings.CurrentValue
                 if textboxsettings.NumbersOnly then
                     text = tonumber(textboxsettings.CurrentValue)
@@ -1857,7 +1848,7 @@ function FPSLibrary:BootWindow(windowsettings)
             TextBoxElement.LayoutOrder = layoutorder
             TextBox.FocusLost:Connect(function()
                 TextBoxModule.CurrentValue = TextBox.Text
-                Callback()
+                TextBoxCallback()
             end)
             TextBox:GetPropertyChangedSignal("Text"):Connect(function()
                 if TextBox.Text == "" then return end
