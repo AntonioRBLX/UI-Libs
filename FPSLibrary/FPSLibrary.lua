@@ -2373,7 +2373,6 @@ function FPSLibrary:BootWindow(windowsettings)
                     if not processed then
                         if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= windowsettings.ToggleGUIKeybind then
                             KeybindModule.CurrentKeybind = input.KeyCode
-                            task.spawn(Callback,keybindsettings.Callback,keybindsettings.CurrentKeybind)
                             Disconnect()
                         end
                     end
@@ -2390,6 +2389,11 @@ function FPSLibrary:BootWindow(windowsettings)
                         Disconnect()
                     end
                 end)
+            end)
+            UserInputService.InputBegan:Connect(function(input, processed)
+                if not processed and input.KeyCode == windowsettings.ToggleGUIKeybind then
+                    task.spawn(Callback,keybindsettings.Callback,keybindsettings.CurrentKeybind)
+                end
             end)
             layoutorder += 2
             KeybindElement.LayoutOrder = layoutorder
