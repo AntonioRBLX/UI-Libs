@@ -2357,6 +2357,7 @@ function FPSLibrary:BootWindow(windowsettings)
                     inputbegan:Disconnect()
                     mousedown:Disconnect()
                     mouseup:Disconnect()
+                    CheckingForKey = false
                 end
                 renderstepped = RunService.RenderStepped:Connect(function()
                     if spawn1 + 1/3 < tick() then
