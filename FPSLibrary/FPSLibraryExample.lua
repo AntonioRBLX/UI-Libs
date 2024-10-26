@@ -1,7 +1,7 @@
 local cloneref = cloneref or function(o) return o end
 local ConfigsDropdown
 getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY512/UI-Libs/refs/heads/main/FPSLibrary/FPSLibrary.lua", true))()
+local Library = loadstring(game:HttpGet("https://pastebin.com/raw/W6vhHP0G", true))()
 ------------------------------------------------------------------------------------------
 function UpdateConfigsDropdown()
 	ConfigsDropdown.Options = Library:ListConfigurationFiles()
@@ -63,6 +63,7 @@ local Tab2 = Window:CreateTab({
 ------------------------------------------------------------------------------------------
 -- Elements
 -- Universal
+Tab:CreateSeparator("Main",nil) -- Text, SectionParent
 local Button = Tab:CreateButton({
 	Name = "Button";
 	RichText = false; -- Enables RichText for the Name
@@ -120,6 +121,7 @@ local Dropdown = Tab:CreateDropdown({
 	end
 })
 Window:AddElementTip(Dropdown,"This is a dropdown!",5)
+Tab:CreateSeparator("Fun",nil) -- Text, SectionParent
 local PassCodeInput = Tab:CreateInput({
 	Name = "Passcode";
 	PlaceholderText = "Enter 3-Digit Code.";
@@ -148,10 +150,10 @@ local PassCodeInput = Tab:CreateInput({
 })
 Window:AddElementTip(PassCodeInput,"Enter correct passcode.",5)
 local ColorPicker = Tab:CreateColorPicker({
-	Name = "ColorPicker";
+	Name = "Rainbow ColorPicker";
 	RichText = false; -- Enables RichText for the Name
 	CurrentColor = Color3.fromRGB(255, 206, 92);
-	CallbackOnRelease = false; -- Callback only when mouse is released
+	CallbackOnRelease = true; -- Callback only when mouse is released
 	EnableRainbowMode = true; -- Allows the user to switch between rainbow mode
 	Rainbow = false;
 	RainbowSpeed = 1; -- Cycles per second
@@ -159,10 +161,10 @@ local ColorPicker = Tab:CreateColorPicker({
 	RainbowBrightness = 255; -- (0 - 255)
 	RainbowCallback = false; -- Callback every rainbow step
 	SectionParent = nil; -- The SectionTab the element is parented to
-	Flag = ""; -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
+	Flag = "COLORPICKERFLAG"; -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
 	IgnoreList = {}; -- The properties the flag will blacklist/not saved
-	Callback = function() -- The function that is called after button is activated
-		print("Button Clicked!")
+	Callback = function(color) -- The function that is called after button is activated
+		print("ColorPicker set to: "..tostring(color))
 	end
 })
 Window:AddElementTip(ColorPicker,"This is a ColorPicker!",5)
@@ -175,10 +177,11 @@ local CallbackErrorButton = Tab:CreateButton({
 	end
 })
 Window:AddElementTip(CallbackErrorButton,"This is a Callback Error Button!",5)
+Tab:CreateParagraph("Info","FPSLibrary v1.1. Second official release. Made By CITY512 and Nobody Else")
 -- Others
 local PaddingSection = Tab2:CreateSection("Padding",120,true) -- Name, DropdownSizeY, Opened
 local Padding
-local OrganizeTabsButton = Tab2:CreateButton({
+Tab2:CreateButton({
 	Name = "Organize Tabs";
 	RichText = false; -- Enables RichText for the Name
 	SectionParent = PaddingSection; -- The SectionTab the element is parented to
@@ -235,7 +238,7 @@ local FileNameTextBox = Tab2:CreateInput({
 		print("Toggle set to "..tostring(value))
 	end
 })
-local SaveConfigsButton = Tab2:CreateButton({
+Tab2:CreateButton({
 	Name = "Save File";
 	RichText = false; -- Enables RichText for the Name
 	SectionParent = ConfigsSection; -- The SectionTab the element is parented to
@@ -244,7 +247,7 @@ local SaveConfigsButton = Tab2:CreateButton({
 		UpdateConfigsDropdown()
 	end
 })
-local LoadConfigsButton = Tab2:CreateButton({
+Tab2:CreateButton({
 	Name = "Load File";
 	RichText = false; -- Enables RichText for the Name
 	SectionParent = ConfigsSection; -- The SectionTab the element is parented to
@@ -252,7 +255,7 @@ local LoadConfigsButton = Tab2:CreateButton({
 		Library:LoadConfiguration(ConfigsDropdown.CurrentOption[1])
 	end
 })
-local DeleteConfigsButton = Tab2:CreateButton({
+Tab2:CreateButton({
 	Name = "Delete File";
 	RichText = false; -- Enables RichText for the Name
 	SectionParent = ConfigsSection; -- The SectionTab the element is parented to
@@ -294,3 +297,4 @@ Library:Notify({
 		}
 	}
 })
+task.wait(5)
