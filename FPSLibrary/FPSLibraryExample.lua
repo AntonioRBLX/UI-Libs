@@ -121,6 +121,7 @@ local Dropdown = Tab:CreateDropdown({
 	end
 })
 Window:AddElementTip(Dropdown,"This is a dropdown!",5)
+--[[
 local Keybind = Tab:CreateKeybind({
 	Name = "Keybind";
 	RichText = false; -- Enables RichText for the Name
@@ -133,6 +134,7 @@ local Keybind = Tab:CreateKeybind({
 	end
 })
 Window:AddElementTip(Keybind,"This is a keybind",5)
+]]
 local ColorPicker = Tab:CreateColorPicker({
 	Name = "Rainbow ColorPicker";
 	RichText = false; -- Enables RichText for the Name
