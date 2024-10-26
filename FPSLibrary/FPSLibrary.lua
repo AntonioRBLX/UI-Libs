@@ -2227,7 +2227,7 @@ function FPSLibrary:BootWindow(windowsettings)
             keybindsettings.TipDuration = keybindsettings.TipDuration or 5
             if typeof(keybindsettings.Name) ~= "string" then return end
             if typeof(keybindsettings.RichText) ~= "boolean" then return end
-            if typeof(keybindsettings.CurrentKeybind) ~= "EnumItem" or keybindsettings.CurrentKeybind.EnumType ~= "KeyCode" then return end
+            if typeof(keybindsettings.CurrentKeybind) ~= "EnumItem" or keybindsettings.CurrentKeybind.EnumType ~= Enum.KeyCode then return end
             if typeof(keybindsettings.HoldToInteract) ~= "boolean" then return end
             if (typeof(keybindsettings.SectionParent) ~= "table" or keybindsettings.SectionParent.ClassName ~= "SectionParent") and keybindsettings.SectionParent ~= nil then return end
             if keybindsettings.Flag ~= nil and typeof(keybindsettings.Flag) ~= "string" then return end
@@ -2287,7 +2287,7 @@ function FPSLibrary:BootWindow(windowsettings)
                     keybindsettings.RichText = value
                     KeybindNameLabel.RichText = keybindsettings.RichText
                 elseif idx == "CurrentKeybind" then
-                    if value == nil or typeof(value) ~= "EnumItem" or value ~= "KeyCode" then return end
+                    if value == nil or typeof(value) ~= "EnumItem" or value.EnumType ~= Enum.KeyCode then return end
                     keybindsettings.CurrentKeybind = value or nil
                     KeybindText.Text = value and value.Name or ""
                 elseif idx == "HoldToInteract" then
