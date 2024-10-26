@@ -2073,6 +2073,9 @@ function FPSLibrary:BootWindow(windowsettings)
                     ColorPickerNameLabel.Size = size
                     ColorPickerNameLabel.Position = pos
                 end
+                if colorpickersettings.Flag then
+                    UpdateFlags(colorpickersettings)
+                end
             end
             -- ColorPicker Main
             RippleEffects(ColorPickerElement)
@@ -2270,6 +2273,8 @@ function FPSLibrary:BootWindow(windowsettings)
                     return keybindsettings.TipDuration
                 elseif idx == "Instance" then
                     return KeybindElement
+                elseif idx == "Flag" then
+                    return keybindsettings.Flag
                 elseif idx == "ClassName" then
                     return "KeybindElement"
                 else
@@ -2334,6 +2339,9 @@ function FPSLibrary:BootWindow(windowsettings)
                 if size and pos then
                     KeybindNameLabel.Size = size
                     KeybindNameLabel.Position = pos
+                end
+                if keybindsettings.Flag then
+                    UpdateFlags(keybindsettings)
                 end
             end
             -- Keybind Main
