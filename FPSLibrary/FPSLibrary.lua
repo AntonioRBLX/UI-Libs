@@ -19,7 +19,7 @@ local KeyboardEnabled = UserInputService.KeyboardEnabled
 local connections = {}
 local a = 0
 local Notifications = {}
-local TabsVisible = false
+local WindowVisible = false
 local executespawn = tick()
 local FPSLibrary = {
     Flags = {};
@@ -146,7 +146,7 @@ function UpdateCanvasSize()
             for i, v in FPSLibrary.Elements do
                 if v.SectionParent == ElementsContainer or v.Instance.Parent == ElementsContainer then
                     yoffset += v.Instance.Size.Y.Offset
-                    if v.ClassName == "SectionParent" then
+                    if v.ClassName == "SectionParent" and v.Opened then
                         yoffset += v.DropdownSizeY + 3
                     end
                 end
@@ -164,17 +164,24 @@ function UpdateCanvasSize()
         end
     end
 end
-function ShowHideTabs()
+function ToggleTabVisibility()
     for i, v in FPSLibrary.Elements do
         if v.ClassName == "Tab" then
-            v.Visible = TabsVisible
+            v.Visible = WindowVisible
         end
+    end
+    if not WindowVisible then
+        FPSLibrary:Notify({
+            Type = "id0x2";
+            Message = "You can press 'RightShift' to Toggle GUI";
+            Duration = 3;
+        })
     end
 end
 function RippleEffects(Button)
     local ripplecontainer = Button:WaitForChild("RippleContainerFrame")
 	local function tweenInRipple(rippleeffect)
-		spawn(function()
+		task.spawn(function()
 			local Info = TweenInfo.new(0.9,Enum.EasingStyle.Linear,Enum.EasingDirection.InOut,0,false,0)
 			local Goals = {Size = UDim2.new(0, 200, 0, 200)}
 			local Tween = TweenService:Create(rippleeffect, Info, Goals)
@@ -182,7 +189,7 @@ function RippleEffects(Button)
 		end)
 	end
 	local function fadeOutRipple(rippleeffect)
-		spawn(function()
+		task.spawn(function()
 			local Info = TweenInfo.new(0.6,Enum.EasingStyle.Linear,Enum.EasingDirection.InOut,0,false,0)
 			local goal = {ImageTransparency = 1}
 			local Tween = TweenService:Create(rippleeffect, Info, goal)
@@ -251,6 +258,19 @@ function UpdateElementTip(enabled,element,tip,duration)
                 end
             end)
         end)}
+    end
+end
+function Callback(f,...)
+    local suc, err = pcall(f,...)
+    if not suc then
+        CallbackErrorMessage(err)
+    end
+end
+function UpdateFlags(dictionary)
+    for i, v in dictionary do
+        if not dictionary.IgnoreList or not table.find(dictionary.IgnoreList,i) then
+            FPSLibrary.Flags[dictionary.Flag][i] = v
+        end
     end
 end
 function BlendColors(bg,bgalpha,fg,fgalpha)
@@ -638,7 +658,7 @@ function FPSLibrary:BootWindow(windowsettings)
             Message = "An Unexpected Error Occurred While Loading Configurations";
         })
     end
-    if windowsettings.TabsVisible then TabsVisible = true end
+    if windowsettings.WindowVisible then WindowVisible = true end
     if not KeyboardEnabled then
         local MenuToggleButton = FPSLibraryAssets:WaitForChild("MobileMenuToggle"):Clone()
         MenuToggleButton.Parent = Interface
@@ -647,8 +667,16 @@ function FPSLibrary:BootWindow(windowsettings)
         MenuToggleButton.Position = UDim2.new(1,-19 - MenuToggleButton.Size.X.Offset,0,19)
         MakeDraggable(true,MenuToggleButton)
         MenuToggleButton.MouseButton1Click:Connect(function()
-            TabsVisible = not TabsVisible
-            ShowHideTabs()
+            WindowVisible = not WindowVisible
+            ToggleTabVisibility()
+        end)
+    end
+    if windowsettings.ToggleGUIKeybind then
+        UserInputService.InputBegan:Connect(function(input, processed)
+            if not processed and input.KeyCode == windowsettings.ToggleGUIKeybind then
+                WindowVisible = not WindowVisible
+                ToggleTabVisibility()
+            end
         end)
     end
     function Window:CreateTab(tabsettings)
@@ -696,14 +724,6 @@ function FPSLibrary:BootWindow(windowsettings)
         local ElementsContainer = ElementsFrame:WaitForChild("Container")
         ElementsFrame.Size = tabsettings.Opened and UDim2.new(1,0,0,tabsettings.SizeY + 10) or UDim2.new(1,0,0,10)
         MinimizeButton.Rotation = tabsettings.Opened and 0 or 180
-        -- Functions
-        local function UpdateFlags()
-            for i, v in tabsettings do
-                if not table.find(tabsettings.IgnoreList,i) then
-                    FPSLibrary.Flags[tabsettings.Flag][i] = v
-                end
-            end
-        end
         -- Metatable Functions
         function mt.__newindex(self, idx, value)
             if idx == "Title" then
@@ -778,7 +798,7 @@ function FPSLibrary:BootWindow(windowsettings)
             end
             UpdateCanvasSize()
             if tabsettings.Flag then
-                UpdateFlags()
+                UpdateFlags(tabsettings)
             end
         end
         function mt.__index(self, idx)
@@ -935,7 +955,6 @@ function FPSLibrary:BootWindow(windowsettings)
             end)
             layoutorder += 2
             ButtonElement.LayoutOrder = layoutorder
-            ElementsContainer.CanvasSize = UDim2.new(0,0,0,ElementsContainer.CanvasSize.Y.Offset + 12)
             -- Set Metatable
             setmetatable(ButtonModule,mt)
             -- Elements Table
@@ -985,14 +1004,6 @@ function FPSLibrary:BootWindow(windowsettings)
             local Glow = StatusFrame:WaitForChild("Glow")
             local ToggleModule = {}
             local mt = {}
-            -- Functions
-            local function UpdateFlags()
-                for i, v in togglesettings do
-                    if not table.find(togglesettings.IgnoreList,i) then
-                        FPSLibrary.Flags[togglesettings.Flag][i] = v
-                    end
-                end
-            end
             -- Metatable Functions
             function mt.__index(self,idx)
                 if idx == "Name" then
@@ -1106,13 +1117,12 @@ function FPSLibrary:BootWindow(windowsettings)
                     ToggleNameLabel.Position = pos
                 end
                 if togglesettings.Flag then
-                    UpdateFlags()
+                    UpdateFlags(togglesettings)
                 end
             end
             -- Toggle Main
             layoutorder += 2
             ToggleElement.LayoutOrder = layoutorder
-            ElementsContainer.CanvasSize = UDim2.new(0,0,0,ElementsContainer.CanvasSize.Y.Offset + 12)
             RippleEffects(ToggleElement)
             ToggleElement.MouseButton1Click:Connect(function()
                 ToggleModule.CurrentValue = not ToggleModule.CurrentValue
@@ -1202,24 +1212,11 @@ function FPSLibrary:BootWindow(windowsettings)
             local SliderModule = {}
             local mt = {}
             -- Functions
-            local function UpdateFlags()
-                for i, v in slidersettings do
-                    if not table.find(slidersettings.IgnoreList,i) then
-                        FPSLibrary.Flags[slidersettings.Flag][i] = v
-                    end
-                end
-            end
             local function SliderBlendColors()
                 SliderModule.SliderColor = BlendColors(
                     slidersettings.MinColor,((slidersettings.MaxValue-slidersettings.MinValue) - (slidersettings.CurrentValue - slidersettings.MinValue))/(slidersettings.MaxValue-slidersettings.MinValue),
                     slidersettings.MaxColor,((slidersettings.MaxValue-slidersettings.MinValue) - (slidersettings.MaxValue - slidersettings.CurrentValue))/(slidersettings.MaxValue-slidersettings.MinValue)
                 )
-            end
-            local function Callback()
-                local suc, err = pcall(slidersettings.Callback,slidersettings.CurrentValue)
-                if not suc then
-                    CallbackErrorMessage(err)
-                end
             end
             -- Metatable Functions
             function mt.__index(self,idx)
@@ -1385,13 +1382,12 @@ function FPSLibrary:BootWindow(windowsettings)
                     SliderNameLabel.Position = pos
                 end
                 if slidersettings.Flag then
-                    UpdateFlags()
+                    UpdateFlags(slidersettings)
                 end
             end
             -- Slider Main
             layoutorder += 2
             SliderElement.LayoutOrder = layoutorder
-            ElementsContainer.CanvasSize = UDim2.new(0,0,0,ElementsContainer.CanvasSize.Y.Offset + 24)
             SliderElement.MouseButton1Down:Connect(function()
                 local renderstepped 
                 renderstepped = RunService.RenderStepped:Connect(function()
@@ -1400,12 +1396,12 @@ function FPSLibrary:BootWindow(windowsettings)
                     local proportion = math.clamp((mouse.X - startpos)/(endpos - startpos),0,1)
                     SliderModule.CurrentValue = math.floor((slidersettings.MaxValue * proportion) / slidersettings.Increment) * slidersettings.Increment + slidersettings.MinValue
                     if not slidersettings.CallbackOnRelease then
-                        Callback()
+                        Callback(slidersettings.Callback,slidersettings.CurrentValue)
                     end
                 end)
                 local mouse1up
                 mouse1up = mouse.Button1Up:Connect(function()
-                    task.spawn(Callback)
+                    task.spawn(Callback,slidersettings.Callback,slidersettings.CurrentValue)
                     renderstepped:Disconnect()
                     mouse1up:Disconnect()
                 end)
@@ -1481,20 +1477,6 @@ function FPSLibrary:BootWindow(windowsettings)
             local mt = {}
             -- Variables
             local opened = false
-            -- Functions
-            local function Callback()
-                local suc, err = pcall(dropdownsettings.Callback,dropdownsettings.CurrentOption)
-                if not suc then
-                    CallbackErrorMessage(err)
-                end
-            end
-            local function UpdateFlags()
-                for i, v in dropdownsettings do
-                    if not table.find(dropdownsettings.IgnoreList,i) then
-                        FPSLibrary.Flags[dropdownsettings.Flag][i] = v
-                    end
-                end
-            end
             -- Metatable Functions
             function mt.__index(self,idx)
                 if idx == "Name" then
@@ -1620,13 +1602,12 @@ function FPSLibrary:BootWindow(windowsettings)
                     DropdownNameLabel.Position = pos
                 end
                 if dropdownsettings.Flag then
-                    UpdateFlags()
+                    UpdateFlags(dropdownsettings)
                 end
             end
             -- Dropdown Main
             layoutorder += 2
             DropdownElement.LayoutOrder = layoutorder
-            ElementsContainer.CanvasSize = UDim2.new(0,0,0,ElementsContainer.CanvasSize.Y.Offset + 24)
             RippleEffects(DropdownElement)
             DropdownElement.MouseButton1Click:Connect(function()
                 if opened then return end
@@ -1649,7 +1630,7 @@ function FPSLibrary:BootWindow(windowsettings)
                         end
                     end
                     DropdownModule.CurrentOption = currentoptions
-                    task.spawn(Callback)
+                    task.spawn(Callback,dropdownsettings.Callback,dropdownsettings.CurrentOption)
                 end
                 local function Close()
                     UpdateCurrentOptions()
@@ -1761,22 +1742,12 @@ function FPSLibrary:BootWindow(windowsettings)
             local TextBoxModule = {}
             local mt = {}
             -- Functions
-            local function UpdateFlags()
-                for i, v in textboxsettings do
-                    if not table.find(textboxsettings.IgnoreList,i) then
-                        FPSLibrary.Flags[textboxsettings.Flag][i] = v
-                    end
-                end
-            end
             local function Callback()
                 local text = textboxsettings.CurrentValue
                 if textboxsettings.NumbersOnly then
                     text = tonumber(textboxsettings.CurrentValue)
                 end
-                local suc, err = pcall(textboxsettings.Callback,text)
-                if not suc then
-                    CallbackErrorMessage(err)
-                end
+                Callback(textboxsettings.Callback,text)
             end
             -- Metatable Functions
             function mt.__index(self,idx)
@@ -1824,7 +1795,7 @@ function FPSLibrary:BootWindow(windowsettings)
                 elseif idx == "PlaceholderText" then
                     if typeof(value) ~= "string" then return end
                     textboxsettings.PlaceholderText = tostring(value)
-                    TextBox.PlaceholderText = textboxsettings.PlaceholderText
+                    TextBox.PlaceholderText = textboxsettings.Active and textboxsettings.PlaceholderText or ""
                 elseif idx == "RichText" then
                     if typeof(value) ~= "boolean" then return end
                     textboxsettings.RichText = value
@@ -1851,11 +1822,13 @@ function FPSLibrary:BootWindow(windowsettings)
                 elseif idx == "Active" then
                     if typeof(value) ~= "boolean" then return end
                     textboxsettings.Active = value
-                    TextBoxElement.Interactable = textboxsettings.Active
+                    TextBox.Interactable = textboxsettings.Active
                     if textboxsettings.Active then
+                        TextBox.PlaceholderText = textboxsettings.PlaceholderText
                         InactiveSymbol.Visible = false
                         TextBoxElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
                     else
+                        TextBox.PlaceholderText = ""
                         InactiveSymbol.Visible = true
                         TextBoxElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
                     end
@@ -1875,27 +1848,13 @@ function FPSLibrary:BootWindow(windowsettings)
                     return
                 end
                 UpdateCanvasSize()
-                local size
-                local pos
-                if not textboxsettings.Active then
-                    size = UDim2.new(1,-10,1,0)
-                    pos = UDim2.new(0,10,0,0)
-                else
-                    size = UDim2.new(0.5,-2,1,0)
-                    pos = UDim2.new(0,0,0,0)
-                end
-                if size and pos then
-                    TextBoxNameLabel.Size = size
-                    TextBoxNameLabel.Position = pos
-                end
                 if textboxsettings.Flag then
-                    UpdateFlags()
+                    UpdateFlags(textboxsettings)
                 end
             end
             -- Input Main
             layoutorder += 2
             TextBoxElement.LayoutOrder = layoutorder
-            ElementsContainer.CanvasSize = UDim2.new(0,0,0,ElementsContainer.CanvasSize.Y.Offset + 12)
             TextBox.FocusLost:Connect(function()
                 TextBoxModule.CurrentValue = TextBox.Text
                 Callback()
@@ -1980,13 +1939,6 @@ function FPSLibrary:BootWindow(windowsettings)
             local ColorPickerModule = {}
             local renderstepped
             local mt = {}
-            -- Functions
-            local function Callback()
-                local suc, err = pcall(colorpickersettings.Callback,colorpickersettings.CurrentColor)
-                if not suc then
-                    CallbackErrorMessage(err)
-                end
-            end
             -- Metatable Functions
             function mt.__index(self,idx)
                 if idx == "Name" then
@@ -2061,7 +2013,7 @@ function FPSLibrary:BootWindow(windowsettings)
                             local hue = time * colorpickersettings.RainbowSpeed - math.floor(time * colorpickersettings.RainbowSpeed)
                             ColorPickerModule.CurrentColor = Color3.fromHSV(hue,colorpickersettings.RainbowSaturation/255,colorpickersettings.RainbowBrightness/255)
                             if colorpickersettings.RainbowCallback then
-                                Callback()
+                                task.spawn(Callback,colorpickersettings.Callback,colorpickersettings.CurrentColor)
                             end
                         end)
                     end
@@ -2147,6 +2099,16 @@ function FPSLibrary:BootWindow(windowsettings)
                 local SwitchGlow = SwitchContainer:WaitForChild("Glow")
                 ColorSelectionCursor.Position = UDim2.new(1-hue,0,1-sat,0)
                 ValueSliderArrow.Position = UDim2.new(0,4,1-val,0)
+                local function ChangeColor()
+                    ColorSelectionCursor.Position = UDim2.new(1-hue,0,1-sat,0)
+                    ValueSliderArrow.Position = UDim2.new(0,4,1-val,0)
+                    if not colorpickersettings.Rainbow then
+                        ColorPickerModule.CurrentColor = Color3.fromHSV(hue,sat,val)
+                        if not colorpickersettings.CallbackOnRelease then
+                            task.spawn(Callback,colorpickersettings.Callback,colorpickersettings.CurrentColor)
+                        end
+                    end
+                end
                 if colorpickersettings.Rainbow then
                     SwitchContainer.BackgroundColor3 = Color3.fromRGB(255, 107, 107)
                     SwitchCircle.Position = UDim2.new(0,16,0.5,0)
@@ -2158,16 +2120,14 @@ function FPSLibrary:BootWindow(windowsettings)
                         renderstepped = RunService.RenderStepped:Connect(function()
                             hue = math.clamp((ColorPaletteFrame.AbsolutePosition.X + 72 - mouse.X) / 72,0,1)
                             sat = math.clamp((ColorPaletteFrame.AbsolutePosition.Y + 72 - mouse.Y) / 72,0,1)
-                            ColorSelectionCursor.Position = UDim2.new(1-hue,0,1-sat,0)
-                            if not colorpickersettings.Rainbow then
-                                ColorPickerModule.CurrentColor = Color3.fromHSV(hue,sat,val)
-                            end
+                            ChangeColor()
                         end)
                         local inputchanged
                         inputchanged = input.Changed:Connect(function()
                             if input.UserInputState == Enum.UserInputState.End then
                                 inputchanged:Disconnect()
                                 renderstepped:Disconnect()
+                                Callback(colorpickersettings.Callback,colorpickersettings.CurrentColor)
                             end
                         end)
                     end
@@ -2177,20 +2137,14 @@ function FPSLibrary:BootWindow(windowsettings)
                         local renderstepped
                         renderstepped = RunService.RenderStepped:Connect(function()
                             val = math.clamp((ValueSlider.AbsolutePosition.Y + 72 - mouse.Y) / 72,0,1)
-                            ValueSliderArrow.Position = UDim2.new(0,4,1-val,0)
-                            if not colorpickersettings.Rainbow then
-                                ColorPickerModule.CurrentColor = Color3.fromHSV(hue,sat,val)
-                                if not colorpickersettings.CallbackOnRelease then
-                                    Callback()
-                                end
-                            end
+                            ChangeColor()
                         end)
                         local inputchanged
                         inputchanged = input.Changed:Connect(function()
                             if input.UserInputState == Enum.UserInputState.End then
                                 inputchanged:Disconnect()
                                 renderstepped:Disconnect()
-                                Callback()
+                                Callback(colorpickersettings.Callback,colorpickersettings.CurrentColor)
                             end
                         end)
                     end
@@ -2234,7 +2188,6 @@ function FPSLibrary:BootWindow(windowsettings)
             end)
             layoutorder += 2
             ColorPickerElement.LayoutOrder = layoutorder
-            ElementsContainer.CanvasSize = UDim2.new(0,0,0,ElementsContainer.CanvasSize.Y.Offset + 12)
             -- Set Metatable
             setmetatable(ColorPickerModule,mt)
             -- Elements Table
@@ -2260,13 +2213,205 @@ function FPSLibrary:BootWindow(windowsettings)
             -- Return Module
             return ColorPickerModule
         end
-        function TabModule:CreateSection(Name,DropdownSizeY,Opened)
+        function TabModule:CreateKeybind(keybindsettings)
+            -- Tab Settings
+            keybindsettings.Name = keybindsettings.Name or "Keybind"
+            keybindsettings.RichText = keybindsettings.RichText or false
+            keybindsettings.CurrentKeybind = keybindsettings.CurrentKeybind or Enum.KeyCode.E
+            keybindsettings.HoldToInteract = keybindsettings.HoldToInteract or false
+            keybindsettings.SectionParent = keybindsettings.SectionParent or nil
+            keybindsettings.Flag = keybindsettings.Flag ~= "" and keybindsettings.Flag or nil
+            keybindsettings.Callback = keybindsettings.Callback or function() end
+            keybindsettings.Active = keybindsettings.Active == nil or keybindsettings.Active
+            keybindsettings.Visible = keybindsettings.Visible == nil or keybindsettings.Visible
+            keybindsettings.Tip = keybindsettings.Tip ~= "" and keybindsettings.Tip or nil
+            keybindsettings.TipDuration = keybindsettings.TipDuration or 5
+            if typeof(keybindsettings.Name) ~= "string" then return end
+            if typeof(keybindsettings.RichText) ~= "boolean" then return end
+            if typeof(keybindsettings.CurrentKeybind) ~= "EnumItem" or keybindsettings.CurrentKeybind.EnumType ~= "KeyCode" then return end
+            if typeof(keybindsettings.HoldToInteract) ~= "boolean" then return end
+            if (typeof(keybindsettings.SectionParent) ~= "table" or keybindsettings.SectionParent.ClassName ~= "SectionParent") and keybindsettings.SectionParent ~= nil then return end
+            if keybindsettings.Flag ~= nil and typeof(keybindsettings.Flag) ~= "string" then return end
+            if typeof(keybindsettings.Callback) ~= "function" then return end
+            if typeof(keybindsettings.Active) ~= "boolean" then return end
+            if typeof(keybindsettings.Visible) ~= "boolean" then return end
+            if typeof(keybindsettings.Tip) ~= "string" and keybindsettings.Tip ~= nil then return end
+            if typeof(keybindsettings.TipDuration) ~= "number" then return end
+            -- Variables
+            local KeybindElement = FPSLibraryAssets:WaitForChild("Keybind"):Clone()
+            local InactiveSymbol = KeybindElement:WaitForChild("InactiveSymbol")
+            local KeybindNameLabel = KeybindElement:WaitForChild("NameTextLabel")
+            local KeybindFrame = KeybindElement:WaitForChild("KeybindFrame")
+            local KeybindText = KeybindFrame:WaitForChild("Keybind")
+            local CheckingForKey = false
+            local KeybindModule = {}
+            local mt = {}
+            -- Metatable Functions
+            function mt.__index(self,idx)
+                if idx == "Name" then
+                    return keybindsettings.Name
+                elseif idx == "RichText" then
+                    return keybindsettings.RichText
+                elseif idx == "CurrentKeybind" then
+                    return keybindsettings.CurrentKeybind
+                elseif idx == "HoldToInteract" then
+                    return keybindsettings.HoldToInteract
+                elseif idx == "SectionParent" then
+                    return keybindsettings.SectionParent
+                elseif idx == "Callback" then
+                    return keybindsettings.Callback
+                elseif idx == "Active" then
+                    return keybindsettings.Active
+                elseif idx == "Visible" then
+                    return keybindsettings.Visible
+                elseif idx == "Tip" then
+                    return keybindsettings.Tip
+                elseif idx == "TipDuration" then
+                    return keybindsettings.TipDuration
+                elseif idx == "Instance" then
+                    return KeybindElement
+                elseif idx == "ClassName" then
+                    return "KeybindElement"
+                else
+                    return
+                end
+            end
+            function mt.__newindex(self,idx,value)
+                if idx == "Name" then
+                    if typeof(value) ~= "string" then return end
+                    keybindsettings.Name = tostring(value)
+                    KeybindNameLabel.Text = keybindsettings.Name
+                elseif idx == "RichText" then
+                    if typeof(value) ~= "boolean" then return end
+                    keybindsettings.RichText = value
+                    KeybindNameLabel.RichText = keybindsettings.RichText
+                elseif idx == "CurrentKeybind" then
+                    if value == nil or typeof(value) ~= "EnumItem" or value ~= "KeyCode" then return end
+                    keybindsettings.CurrentKeybind = value or nil
+                    KeybindText.Text = value and value.Name or ""
+                elseif idx == "HoldToInteract" then
+                    if typeof(value) ~= "boolean" then return end
+                elseif idx == "SectionParent" then
+                    if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
+                    keybindsettings.SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
+                    KeybindElement.Parent = keybindsettings.SectionParent
+                elseif idx == "Active" then
+                    if typeof(value) ~= "boolean" then return end
+                    keybindsettings.Active = value
+                    KeybindElement.Interactable = keybindsettings.Active
+                    if keybindsettings.Active then
+                        InactiveSymbol.Visible = false
+                        KeybindElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
+                    else
+                        InactiveSymbol.Visible = true
+                        KeybindElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
+                    end
+                elseif idx == "Visible" then
+                    if typeof(value) ~= "boolean" then return end
+                    keybindsettings.Visible = value
+                    KeybindElement.Visible = keybindsettings.Visible
+                elseif idx == "Tip" then
+                    if typeof(value) ~= "string" and value ~= nil then return end
+                    keybindsettings.Tip = value ~= nil and tostring(value) or value
+                    UpdateElementTip(value ~= nil,KeybindElement,keybindsettings.Tip,keybindsettings.TipDuration)
+                elseif idx == "TipDuration" then
+                    if typeof(value) ~= "number" then return end
+                    keybindsettings.TipDuration = value
+                    UpdateElementTip(keybindsettings.Tip ~= nil,KeybindElement,keybindsettings.Tip,keybindsettings.TipDuration)
+                else
+                    return
+                end
+                UpdateCanvasSize()
+                local size
+                local pos
+                if not keybindsettings.Active then
+                    size = UDim2.new(1,-10,1,0)
+                    pos = UDim2.new(0,10,0,0)
+                else
+                    size = UDim2.new(1,0,1,0)
+                    pos = UDim2.new(0,0,0,0)
+                end
+                if size and pos then
+                    KeybindNameLabel.Size = size
+                    KeybindNameLabel.Position = pos
+                end
+            end
+            -- Keybind Main
+            RippleEffects(KeybindElement)
+            KeybindElement.MouseButton1Down:Connect(function()
+                if CheckingForKey then return end
+                CheckingForKey = true
+                local spawn1 = 0
+                local dots = 0
+                local renderstepped
+                local mousedown
+                local mouseup
+                local inputbegan
+                local function Disconnect()
+                    renderstepped:Disconnect()
+                    inputbegan:Disconnect()
+                    mousedown:Disconnect()
+                    mouseup:Disconnect()
+                end
+                renderstepped = RunService.RenderStepped:Connect(function()
+                    if spawn1 + 1/3 < tick() then
+                        dots += 1
+                        if dots > 3 then
+                            dots = 1
+                        end
+                        KeybindText.Text = string.rep(".",dots)
+                        spawn1 = tick()
+                    end
+                end)
+                inputbegan = UserInputService.InputBegan:Connect(function(input, processed)
+                    if not processed then
+                        if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= windowsettings.ToggleGUIKeybind then
+                            KeybindModule.CurrentKeybind = input.KeyCode
+                            task.spawn(Callback,keybindsettings.Callback,keybindsettings.CurrentKeybind)
+                            Disconnect()
+                        end
+                    end
+                end)
+                mousedown = mouse.Button1Down:Connect(function()
+                    if not isHoveringOverObj(TabContainer) then
+                        KeybindModule.CurrentKeybind = nil
+                        Disconnect()
+                    end
+                end)
+                mouseup = KeybindElement.MouseButton1Up:Connect(function()
+                    if keybindsettings.HoldToInteract then
+                        KeybindModule.CurrentKeybind = nil
+                        Disconnect()
+                    end
+                end)
+            end)
+            layoutorder += 2
+            KeybindElement.LayoutOrder = layoutorder
+            -- Set Metatable
+            setmetatable(KeybindModule,mt)
+            -- Elements Table
+            table.insert(FPSLibrary.Elements,KeybindModule)
+            -- Set Configs
+            KeybindModule.Name = keybindsettings.Name
+            KeybindModule.RichText = keybindsettings.RichText
+            KeybindModule.SectionParent = keybindsettings.SectionParent
+            KeybindModule.Callback = keybindsettings.Callback
+            KeybindModule.Active = keybindsettings.Active
+            KeybindModule.Visible = keybindsettings.Visible
+            KeybindModule.Tip = keybindsettings.Tip
+            KeybindModule.TipDuration = keybindsettings.TipDuration
+            -- Return Module
+            return KeybindModule
+        end
+        function TabModule:CreateSection(Name,DropdownSizeY,Opened,Visible)
             Name = Name or "Container"
             DropdownSizeY = DropdownSizeY or 60
             Opened = Opened or false
+            Visible = Visible == nil or Visible
             if typeof(Name) ~= "string" then return end
             if typeof(DropdownSizeY) ~= "number" or DropdownSizeY < 0 then return end
             if typeof(Opened) ~= "boolean" then return end
+            if typeof(Visible) ~= "boolean" then return end
             -- Variables
             local SectionContainer = FPSLibraryAssets:WaitForChild("SectionContainer"):Clone()
             SectionContainer.Parent = ElementsContainer
@@ -2287,6 +2432,8 @@ function FPSLibrary:BootWindow(windowsettings)
                     return DropdownSizeY
                 elseif idx == "Opened" then
                     return Opened
+                elseif idx == "Visible" then
+                    return Visible
                 elseif idx == "Instance" then
                     return SectionContainer
                 elseif idx == "ClassName" then
@@ -2313,6 +2460,10 @@ function FPSLibrary:BootWindow(windowsettings)
                         TweenService:Create(Spacing,TweenOut50Sine,{Size = UDim2.new(1,0,0,0)}):Play()
                         TweenService:Create(SectionMinimizeButton,TweenOut32Sine,{Rotation = 180}):Play()
                     end
+                elseif idx == "Visible" then
+                    if typeof(value) ~= "boolean" then return end
+                    Visible = value
+                    SectionContainer.Visible = Visible
                 end
                 UpdateCanvasSize()
             end
@@ -2323,7 +2474,6 @@ function FPSLibrary:BootWindow(windowsettings)
             layoutorder += 2
             SectionContainer.LayoutOrder = layoutorder
             Spacing.LayoutOrder = layoutorder + 1
-            ElementsContainer.CanvasSize = UDim2.new(0,0,0,ElementsContainer.CanvasSize.Y.Offset + DropdownSizeY + 12)
             -- Set Metatable
             setmetatable(SectionModule,mt)
             -- Elements Table
@@ -2334,6 +2484,130 @@ function FPSLibrary:BootWindow(windowsettings)
             SectionModule.Opened = Opened
             -- Return Module
             return SectionModule
+        end
+        function TabModule:CreateSeparator(Text,SectionParent,Visible)
+            Text = Text or "This is a separator"
+            SectionParent = SectionParent or nil
+            Visible = Visible == nil or Visible
+            if typeof(Text) ~= "string" then return end
+            if (typeof(SectionParent) ~= "table" or SectionParent.ClassName ~= "SectionParent") and SectionParent ~= nil then return end
+            if typeof(Visible) ~= "boolean" then return end
+            -- Variables
+            local Separator = FPSLibraryAssets:WaitForChild("Separator"):Clone()
+            local SeparatorModule = {}
+            local mt = {}
+            -- Metatable Functions
+            function mt.__index(self,idx)
+                if idx == "Text" then
+                    return Text
+                elseif idx == "SectionParent" then
+                    return SectionParent
+                elseif idx == "Visible" then
+                    return Visible
+                elseif idx == "Instance" then
+                    return Separator
+                elseif idx == "ClassName" then
+                    return "Separator"
+                end
+            end
+            function mt.__newindex(self,idx,value)
+                if idx == "Text" then
+                    if typeof(value) ~= "string" then return end
+                    Text = value
+                    Separator.Text = Text
+                elseif idx == "SectionParent" then
+                    if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
+                    SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
+                    Separator.Parent = SectionParent
+                elseif idx == "Visible" then
+                    if typeof(value) ~= "boolean" then return end
+                    Visible = value
+                    Separator.Visible = Visible
+                end
+                UpdateCanvasSize()
+            end
+            -- Section Main
+            layoutorder += 2
+            Separator.LayoutOrder = layoutorder
+            -- Set Metatable
+            setmetatable(SeparatorModule,mt)
+            -- Elements Table
+            table.insert(FPSLibrary.Elements,SeparatorModule)
+            -- Set Configs
+            SeparatorModule.Text = Text
+            SeparatorModule.SectionParent = SectionParent
+            SeparatorModule.Visible = Visible
+            -- Return Module
+            return SeparatorModule
+        end
+        function TabModule:CreateParagraph(Title,Content,SectionParent,Visible)
+            Title = Title or "This is a paragraph"
+            Content = Content or "This is content"
+            SectionParent = SectionParent or nil
+            Visible = Visible == nil or Visible
+            if typeof(Title) ~= "string" then return end
+            if typeof(Content) ~= "string" then return end
+            if (typeof(SectionParent) ~= "table" or SectionParent.ClassName ~= "SectionParent") and SectionParent ~= nil then return end
+            if typeof(Visible) ~= "boolean" then return end
+            -- Variables
+            local Paragraph = FPSLibraryAssets:WaitForChild("Paragraph"):Clone()
+            local TitleLabel = Paragraph:WaitForChild("Title")
+            local ContentLabel = Paragraph:WaitForChild("Content")
+            local ParagraphModule = {}
+            local mt = {}
+            -- Metatable Functions
+            function mt.__index(self,idx)
+                if idx == "Title" then
+                    return Title
+                elseif idx == "Content" then
+                    return Content
+                elseif idx == "SectionParent" then
+                    return SectionParent
+                elseif idx == "Visible" then
+                    return Visible
+                elseif idx == "Instance" then
+                    return Paragraph
+                elseif idx == "ClassName" then
+                    return "Paragraph"
+                end
+            end
+            function mt.__newindex(self,idx,value)
+                if idx == "Title" then
+                    if typeof(value) ~= "string" then return end
+                    Title = value
+                    TitleLabel.Text = Title
+                elseif idx == "Content" then
+                    if typeof(value) ~= "string" then return end
+                    Content = value
+                    ContentLabel.Text = Content
+                    ContentLabel.Size = UDim2.new(0,80,100,0)
+                    Paragraph.Size = UDim2.new(0,80,0,12 + ContentLabel.TextBounds.Y)
+                    ContentLabel.Size = UDim2.new(0,80,1,-ContentLabel.TextBounds.Y)
+                elseif idx == "SectionParent" then
+                    if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
+                    SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
+                    Paragraph.Parent = SectionParent
+                elseif idx == "Visible" then
+                    if typeof(value) ~= "boolean" then return end
+                    Visible = value
+                    Paragraph.Visible = Visible
+                end
+                UpdateCanvasSize()
+            end
+            -- Section Main
+            layoutorder += 2
+            Paragraph.LayoutOrder = layoutorder
+            -- Set Metatable
+            setmetatable(ParagraphModule,mt)
+            -- Elements Table
+            table.insert(FPSLibrary.Elements,ParagraphModule)
+            -- Set Configs
+            ParagraphModule.Title = Title
+            ParagraphModule.Content = Content
+            ParagraphModule.SectionParent = SectionParent
+            ParagraphModule.Visible = Visible
+            -- Return Module
+            return ParagraphModule
         end
         if tabsettings.Flag then
             FPSLibrary.Flags[tabsettings.Flag] = {}
