@@ -1,7 +1,7 @@
 local cloneref = cloneref or function(o) return o end
 local ConfigsDropdown
 getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
-local Library = loadstring(game:HttpGet("https://pastebin.com/raw/W6vhHP0G", true))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY512/UI-Libs/refs/heads/main/FPSLibrary/FPSLibrary.lua", true))()
 ------------------------------------------------------------------------------------------
 function UpdateConfigsDropdown()
 	ConfigsDropdown.Options = Library:ListConfigurationFiles()
@@ -121,6 +121,64 @@ local Dropdown = Tab:CreateDropdown({
 	end
 })
 Window:AddElementTip(Dropdown,"This is a dropdown!",5)
+local Keybind = Tab:CreateKeybind({
+	Name = "Keybind";
+	RichText = false; -- Enables RichText for the Name
+	CurrentKeybind = Enum.KeyCode.E;
+   	HoldToInteract = false;
+	SectionParent = nil; -- The SectionTab the element is parented to
+	Flag = "KEYBINDFLAG";
+	Callback = function(keybind) -- The function that is called after button is activated
+		print("Keybind set to: "..tostring(keybind))
+	end
+})
+Window:AddElementTip(Keybind,"This is a keybind",5)
+local ColorPicker = Tab:CreateColorPicker({
+	Name = "Rainbow ColorPicker";
+	RichText = false; -- Enables RichText for the Name
+	CurrentColor = Color3.fromRGB(255, 206, 92);
+	CallbackOnRelease = true; -- Callback only when mouse is released
+	EnableRainbowMode = true; -- Allows the user to switch between rainbow mode
+	Rainbow = false;
+	RainbowSpeed = 1; -- Cycles per second
+	RainbowSaturation = 163; -- (0 - 255)
+	RainbowBrightness = 255; -- (0 - 255)
+	RainbowCallback = false; -- Callback every rainbow step
+	SectionParent = nil; -- The SectionTab the element is parented to
+	Flag = "COLORPICKERFLAG"; -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
+	IgnoreList = {}; -- The properties the flag will blacklist/not saved
+	Callback = function(color) -- The function that is called after button is activated
+		print("ColorPicker set to: "..tostring(color))
+	end
+})
+Window:AddElementTip(ColorPicker,"This is a ColorPicker!",5)
+local Input = Tab:CreateInput({
+	Name = "Input";
+	PlaceholderText = "Type anything";
+	NumbersOnly = false;
+	RichText = false; -- Enables RichText for the Name
+	CharacterLimit = 1000;
+	ClearTextOnFocus = false;
+	SectionParent = nil; -- The SectionTab the button is parented to
+	CurrentValue = ""; -- The text of the textbox
+	Flag = "INPUTFLAG"; -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
+	Callback = function(value) -- The function that is called after toggle is pressed
+		if value == 512 then
+			Library:Notify({
+				Type = "id0x3";
+				Message = "Correct!";
+				Duration = 3;
+			})
+		else
+			Library:Notify({
+				Type = "id0x1";
+				Message = "Try Again!";
+				Duration = 3;
+			})
+		end
+	end
+})
+Window:AddElementTip(Input,"This is an adaptive input.",5)
 Tab:CreateSeparator("Fun",nil) -- Text, SectionParent
 local PassCodeInput = Tab:CreateInput({
 	Name = "Passcode";
@@ -149,25 +207,6 @@ local PassCodeInput = Tab:CreateInput({
 	end
 })
 Window:AddElementTip(PassCodeInput,"Enter correct passcode.",5)
-local ColorPicker = Tab:CreateColorPicker({
-	Name = "Rainbow ColorPicker";
-	RichText = false; -- Enables RichText for the Name
-	CurrentColor = Color3.fromRGB(255, 206, 92);
-	CallbackOnRelease = true; -- Callback only when mouse is released
-	EnableRainbowMode = true; -- Allows the user to switch between rainbow mode
-	Rainbow = false;
-	RainbowSpeed = 1; -- Cycles per second
-	RainbowSaturation = 163; -- (0 - 255)
-	RainbowBrightness = 255; -- (0 - 255)
-	RainbowCallback = false; -- Callback every rainbow step
-	SectionParent = nil; -- The SectionTab the element is parented to
-	Flag = "COLORPICKERFLAG"; -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
-	IgnoreList = {}; -- The properties the flag will blacklist/not saved
-	Callback = function(color) -- The function that is called after button is activated
-		print("ColorPicker set to: "..tostring(color))
-	end
-})
-Window:AddElementTip(ColorPicker,"This is a ColorPicker!",5)
 local CallbackErrorButton = Tab:CreateButton({
 	Name = "Callback Error!";
 	RichText = false; -- Enables RichText for the Name
