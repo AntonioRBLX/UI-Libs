@@ -2287,7 +2287,7 @@ function FPSLibrary:BootWindow(windowsettings)
                     keybindsettings.RichText = value
                     KeybindNameLabel.RichText = keybindsettings.RichText
                 elseif idx == "CurrentKeybind" then
-                    if value == nil or typeof(value) ~= "EnumItem" or value.EnumType ~= Enum.KeyCode then return end
+                    if value ~= nil or typeof(value) ~= "EnumItem" or value.EnumType ~= Enum.KeyCode then return end
                     keybindsettings.CurrentKeybind = value or nil
                     KeybindText.Text = value and value.Name or ""
                 elseif idx == "HoldToInteract" then
@@ -2357,6 +2357,7 @@ function FPSLibrary:BootWindow(windowsettings)
                     inputbegan:Disconnect()
                     mousedown:Disconnect()
                     mouseup:Disconnect()
+                    task.wait()
                     CheckingForKey = false
                 end
                 renderstepped = RunService.RenderStepped:Connect(function()
@@ -2391,7 +2392,7 @@ function FPSLibrary:BootWindow(windowsettings)
                 end)
             end)
             UserInputService.InputBegan:Connect(function(input, processed)
-                if not processed and not CheckingForKey and input.KeyCode == windowsettings.ToggleGUIKeybind then
+                if not processed and not CheckingForKey and input.KeyCode == keybindsettings.CurrentKeybind then
                     task.spawn(Callback,keybindsettings.Callback)
                 end
             end)
