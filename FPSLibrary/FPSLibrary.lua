@@ -389,8 +389,8 @@ function FPSLibrary:SaveConfiguration(filename)
         end
     end
 end
-function FPSLibrary:LoadConfiguration(filename)
-    if typeof(filename) == "string" and LocalConfigurationFolderName and LocalConfigurationSubFolderName and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) and isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) then
+function FPSLibrary:LoadConfiguration(filename,callback)
+    if typeof(filename) == "string" and (callback == nil or typeof(callback) == "boolean") and LocalConfigurationFolderName and LocalConfigurationSubFolderName and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) and isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) then
         local suc, res = pcall(function()
             local contents = HttpService:JSONDecode(readfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename))
             for idx in FPSLibrary.Elements do
@@ -399,6 +399,19 @@ function FPSLibrary:LoadConfiguration(filename)
                     if contents[flagName] then
                         for property, value in contents[flagName] do
                             FPSLibrary.Elements[idx][property] = value
+                            if callback and FPSLibrary.Elements[idx].Callback then
+                                local args = {}
+                                if FPSLibrary.Elements[idx].CurrentValue then
+                                    args = {FPSLibrary.Elements[idx].CurrentValue}
+                                elseif FPSLibrary.Elements[idx].CurrentColor then
+                                    args = {FPSLibrary.Elements[idx].CurrentColor}
+                                elseif FPSLibrary.Elements[idx].CurrentOption then
+                                    args = {FPSLibrary.Elements[idx].CurrentOption}
+                                elseif FPSLibrary.Elements[idx].CurrentKeybind then
+                                    args = {FPSLibrary.Elements[idx].CurrentKeybind}
+                                end
+                                task.spawn(FPSLibrary.Elements[idx].Callback,table.unpack(args))
+                            end
                         end
                     else
                         FPSLibrary:Notify({
