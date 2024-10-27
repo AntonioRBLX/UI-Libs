@@ -33,7 +33,7 @@ local DiscordInvitesFileName = FPSLibraryFolder.."/Discord"
 local LocalConfigurationFolderName = nil
 local LocalConfigurationSubFolderName = nil
 -- Library Interface
-local FPSLibraryAssets = game:GetObjects("rbxassetid://123286401328821")[1].Source
+local FPSLibraryAssets = game:GetObjects("rbxassetid://123286401328821")[1]
 local Interface = FPSLibraryAssets:WaitForChild("Interface"):Clone()
 if FPSLibraryProtectGui then
     protectgui(Interface)
