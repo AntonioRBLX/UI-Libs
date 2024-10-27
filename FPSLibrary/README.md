@@ -28,7 +28,7 @@ ROBLOX User Interface Library Created By CITY512.
 ## Boot Library
 
 ```lua
-local Library = require(game:GetObjects("rbxassetid://123286401328821")[1])
+local Library = require(game:GetObjects("rbxassetid://123286401328821")[1]):Initialize()
 ```
 
 ### Protect Library Gui
