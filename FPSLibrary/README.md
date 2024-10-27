@@ -30,7 +30,7 @@ ROBLOX User Interface Library Created By CITY512.
 ### Boot Library
 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY512/UI-Libs/refs/heads/main/FPSLibrary/FPSLibrary.lua"))():Initialize()
+local Library = require(game:GetObjects("rbxassetid://123286401328821")[1]):Initialize()
 ```
 
 ### Protect Library Gui
@@ -76,7 +76,7 @@ local Window = Library:BootWindow({
 })
 ```
 
-Configuration Folder Management
+### Configuration Folder Management
 
 ```lua
 Library:SaveConfiguration("Configuration #1")
