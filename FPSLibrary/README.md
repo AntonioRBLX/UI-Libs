@@ -28,7 +28,7 @@ ROBLOX User Interface Library Created By CITY512.
 ## Boot Library
 
 ```lua
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY512/UI-Libs/main/FPSLibrary/FPSLibrary.lua", true))()
+local Library = require(123286401328821)
 ```
 
 ### Protect Library Gui
