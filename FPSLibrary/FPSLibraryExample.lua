@@ -1,7 +1,7 @@
 local cloneref = cloneref or function(o) return o end
 local ConfigsDropdown
 getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY512/UI-Libs/refs/heads/main/FPSLibrary/FPSLibrary.lua", true))()
+local Library = require(123286401328821)
 ------------------------------------------------------------------------------------------
 function UpdateConfigsDropdown()
 	ConfigsDropdown.Options = Library:ListConfigurationFiles()
