@@ -24,7 +24,9 @@ ROBLOX User Interface Library Created By CITY512.
 <img src="https://i.imgur.com/zfIKrwp.jpg" />
 
 # How To Use FPSLibrary
-## Library
+
+> ## Library
+
 ### Boot Library
 
 ```lua
@@ -37,7 +39,9 @@ local Library = require(game:GetObjects("rbxassetid://123286401328821")[1]):Init
 -- WARNING: IF THE GAME YOU ARE RUNNING FPSLIBRARY ON IS CRASHING OR DETECTING
 getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
 ```
-## Window
+
+> ## Window
+
 ### Create Window
 
 ```lua
@@ -71,7 +75,9 @@ local Window = Library:BootWindow({
 	}
 })
 ```
-### Configuration Folder Management
+
+Configuration Folder Management
+
 ```lua
 Library:SaveConfiguration("Configuration #1")
 Library:LoadConfiguration("Configuration #1", true) -- 2nd argument is to callback elements once loaded
@@ -90,7 +96,8 @@ Window:PromptDiscordInvite() -- If you want to prompt invite on boot, put it rig
 Window:OrganizeTabs(25,25,0) -- x, y, padding
 ```
 
-## Elements
+> ## Elements
+
 ### Create Tab
 
 ```lua
