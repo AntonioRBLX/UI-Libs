@@ -27,17 +27,17 @@ ROBLOX User Interface Library Created By CITY512.
 
 > ## Library
 
-### Boot Library
-
-```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY512/UI-Libs/refs/heads/main/FPSLibrary/FPSLibrary.lua"))()
-```
-
 ### Protect Library Gui
 
 ```lua
 -- WARNING: IF THE GAME YOU ARE RUNNING FPSLIBRARY ON IS CRASHING OR DETECTING
 getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
+```
+
+### Boot Library
+
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY512/UI-Libs/refs/heads/main/FPSLibrary/FPSLibrary.lua"))()
 ```
 
 > ## Window
