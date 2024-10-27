@@ -291,7 +291,7 @@ Tab2:CreateButton({
 	RichText = false; -- Enables RichText for the Name
 	SectionParent = ConfigsSection; -- The SectionTab the element is parented to
 	Callback = function() -- The function that is called after button is activated
-		Library:LoadConfiguration(ConfigsDropdown.CurrentOption[1])
+		Library:LoadConfiguration(ConfigsDropdown.CurrentOption[1],true)
 	end
 })
 Tab2:CreateButton({
