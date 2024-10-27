@@ -1,7 +1,7 @@
 local cloneref = cloneref or function(o) return o end
 local ConfigsDropdown
 getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
-local Library = require(game:GetObjects("rbxassetid://123286401328821")[1])
+local Library = require(game:GetObjects("rbxassetid://123286401328821")[1]):Initialize()
 ------------------------------------------------------------------------------------------
 function UpdateConfigsDropdown()
 	ConfigsDropdown.Options = Library:ListConfigurationFiles()
