@@ -39,6 +39,31 @@ getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
 loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY512/UI-Libs/refs/heads/main/FPSLibrary/FPSLibrary.lua"))()
 ```
 
+### Prompt Notification
+
+```lua
+Library:Notify({
+	Type = "id0x1"; -- (Required) id0x1 = Error, id0x2 = Info, id0x3 = Success, set to nil for normal notification
+    Message = "This is an example message."; -- (Required)
+	Image = "rbxassetid://97207553955899"; -- (Optional) delete this line or set to nil for no image
+	Duration = 10; -- (Required)
+	Actions = { -- (Optional) remove for no action button
+		Action1 = {
+			Name = "Action1";
+			Callback = function()
+				print("Action #1 pressed")
+			end
+		};
+		Action2 = {
+			Name = "Action2";
+			Callback = function()
+				print("Action #2 pressed")
+			end
+		};
+	}
+})
+```
+
 > ## Window
 
 ### Create Window
