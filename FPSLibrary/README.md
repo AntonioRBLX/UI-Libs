@@ -44,7 +44,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY512/UI-Libs/refs/
 ```lua
 Library:Notify({
 	Type = "id0x1"; -- (Required) id0x1 = Error, id0x2 = Info, id0x3 = Success, set to nil for normal notification
-    Message = "This is an example message."; -- (Required)
+    	Message = "This is an example message."; -- (Required)
 	Image = "rbxassetid://97207553955899"; -- (Optional) delete this line or set to nil for no image
 	Duration = 10; -- (Required)
 	Actions = { -- (Optional) remove for no action button
