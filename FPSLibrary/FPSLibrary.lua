@@ -16,6 +16,7 @@ repeat task.wait() until Players.LocalPlayer
 local LocalPlayer = Players.LocalPlayer
 local mouse = LocalPlayer:GetMouse()
 local KeyboardEnabled = UserInputService.KeyboardEnabled
+local KeySystemContainer
 local connections = {}
 local a = 0
 local Notifications = {}
@@ -70,14 +71,14 @@ function UpdateNotificationLayout()
 		tween:Play()
 	end
 end
-function MakeDraggable(enabled,Frame)
+function MakeDraggable(draggable,Frame)
     for _, v in connections do
         if typeof(v) == "table" and v[1] == "Drag" and v[2] == Frame then
             v[3]:Disconnect()
             v[4]:Disconnect()
         end
     end
-    if enabled then
+    if draggable then
         a += 1
         local b = a
         local dragging
@@ -169,6 +170,9 @@ function ToggleTabVisibility()
         if v.ClassName == "Tab" then
             v.Visible = WindowVisible
         end
+    end
+    if KeySystemContainer then
+        TweenService:Create(KeySystemContainer,TweenOut50Sine,{Size = WindowVisible and UDim2.new(0,274,0,199) or UDim2.new(0,274,0,0)}):Play()
     end
     if not WindowVisible then
         FPSLibrary:Notify({
@@ -456,14 +460,37 @@ function FPSLibrary:ListConfigurationFiles()
 end
 function FPSLibrary:BootWindow(windowsettings)
     local Window = {}
+    if not KeyboardEnabled then
+        local MenuToggleButton = FPSLibraryAssets:WaitForChild("MobileMenuToggle"):Clone()
+        MenuToggleButton.Parent = Interface
+        MenuToggleButton.Text = windowsettings.Name or "FPSLibrary"
+        MenuToggleButton.Size = UDim2.new(0,MenuToggleButton.TextBounds.X <= 83 and 112 or MenuToggleButton.TextBounds.X + 29,0,48)
+        MenuToggleButton.Position = UDim2.new(1,-19 - MenuToggleButton.Size.X.Offset,0,19)
+        MakeDraggable(true,MenuToggleButton)
+        MenuToggleButton.MouseButton1Click:Connect(function()
+            WindowVisible = not WindowVisible
+            ToggleTabVisibility()
+        end)
+    end
+    if windowsettings.ToggleGUIKeybind then
+        UserInputService.InputBegan:Connect(function(input, processed)
+            if not processed and input.KeyCode == windowsettings.ToggleGUIKeybind then
+                WindowVisible = not WindowVisible
+                ToggleTabVisibility()
+            end
+        end)
+    end
     if windowsettings.KeySystem and windowsettings.KeySystem.Enabled then
         local keyverified = false
-        local KeySystemContainer = FPSLibraryAssets:WaitForChild("KeySystem"):Clone()
+        KeySystemContainer = FPSLibraryAssets:WaitForChild("KeySystem"):Clone()
         KeySystemContainer.Parent = Interface
         KeySystemContainer.Size = UDim2.new(0,274,0,0)
         TweenService:Create(KeySystemContainer,TweenOut50Sine,{Size = UDim2.new(0,274,0,199)}):Play()
         MakeDraggable(true,KeySystemContainer)
         local KeySystemInterface = KeySystemContainer:WaitForChild("Frame")
+        local KeySystemTitle = KeySystemInterface:WaitForChild("Title")
+        KeySystemTitle.Text = windowsettings.Name
+        local CloseButton = KeySystemInterface:WaitForChild("ImageButton")
         local TextBox = KeySystemInterface:WaitForChild("TextBox")
         local CheckKeyButton = FPSLibraryAssets:WaitForChild("Button"):Clone()
         local CheckKeyName = CheckKeyButton:WaitForChild("NameTextLabel")
@@ -568,6 +595,9 @@ function FPSLibrary:BootWindow(windowsettings)
                 })
             end
         end)
+        CloseButton.MouseButton1Click:Connect(function()
+        
+        end)
         if windowsettings.KeySystem.RememberKey and windowsettings.KeySystem.FileName and isfile(KeyFolderName.."/"..windowsettings.KeySystem.FileName) then
             local suc, err = pcall(function()
                 local contents = HttpService:JSONDecode(readfile(KeyFolderName.."/"..windowsettings.KeySystem.FileName))
@@ -669,26 +699,6 @@ function FPSLibrary:BootWindow(windowsettings)
         })
     end
     if windowsettings.WindowVisible then WindowVisible = true end
-    if not KeyboardEnabled then
-        local MenuToggleButton = FPSLibraryAssets:WaitForChild("MobileMenuToggle"):Clone()
-        MenuToggleButton.Parent = Interface
-        MenuToggleButton.Text = windowsettings.Name or "FPSLibrary"
-        MenuToggleButton.Size = UDim2.new(0,MenuToggleButton.TextBounds.X <= 83 and 112 or MenuToggleButton.TextBounds.X + 29,0,48)
-        MenuToggleButton.Position = UDim2.new(1,-19 - MenuToggleButton.Size.X.Offset,0,19)
-        MakeDraggable(true,MenuToggleButton)
-        MenuToggleButton.MouseButton1Click:Connect(function()
-            WindowVisible = not WindowVisible
-            ToggleTabVisibility()
-        end)
-    end
-    if windowsettings.ToggleGUIKeybind then
-        UserInputService.InputBegan:Connect(function(input, processed)
-            if not processed and input.KeyCode == windowsettings.ToggleGUIKeybind then
-                WindowVisible = not WindowVisible
-                ToggleTabVisibility()
-            end
-        end)
-    end
     function Window:CreateTab(tabsettings)
         -- Tab Setttings
         tabsettings.Title =  tabsettings.Title or "Title"
