@@ -596,7 +596,9 @@ function FPSLibrary:BootWindow(windowsettings)
             end
         end)
         CloseButton.MouseButton1Click:Connect(function()
-        
+            TweenService:Create(KeySystemContainer,TweenOut50Sine,{Size = UDim2.new(0,274,0,0)}):Play()
+            task.wait(0.5)
+            KeySystemContainer:Destroy()
         end)
         if windowsettings.KeySystem.RememberKey and windowsettings.KeySystem.FileName and isfile(KeyFolderName.."/"..windowsettings.KeySystem.FileName) then
             local suc, err = pcall(function()
