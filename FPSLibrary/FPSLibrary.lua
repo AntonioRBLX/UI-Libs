@@ -1,9 +1,10 @@
+-- Exploit Variables
 local cloneref = cloneref or function(o) return o end
-local protectgui = protectgui or syn and syn.protect_gui or function() end
+local protectgui = protectgui or syn and syn.protect_gui
 local request = request or http_request or syn and syn.request or http and http.request or fluxus and fluxus.request
-local setclipboard = setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set)
-local encrypt = syn and syn.crypt and syn.crypt.encrypt or crypt and crypt.encrypt or nil
-local decrypt = syn and syn.crypt and syn.crypt.decrypt or crypt and crypt.decrypt or nil
+local setclipboard = setclipboard or toclipboard or set_clipboard or syn and syn.write_clipboard or Clipboard and Clipboard.set
+local encrypt = syn and syn.crypt and syn.crypt.encrypt or crypt and crypt.encrypt
+local decrypt = syn and syn.crypt and syn.crypt.decrypt or crypt and crypt.decrypt
 -- Services
 local CoreGui = cloneref(game:GetService("CoreGui"))
 local RunService = cloneref(game:GetService("RunService"))
@@ -36,7 +37,7 @@ local LocalConfigurationSubFolderName = nil
 -- Library Interface
 local FPSLibraryAssets = game:GetObjects("rbxassetid://123286401328821")[1]
 local Interface = FPSLibraryAssets:WaitForChild("Interface"):Clone()
-if FPSLibraryProtectGui then
+if FPSLibraryProtectGui and protectgui then
     protectgui(Interface)
 end
 Interface.Parent = CoreGui
@@ -707,6 +708,7 @@ function FPSLibrary:BootWindow(windowsettings)
         tabsettings.Subtitle = tabsettings.Subtitle or "Subtitle"
         tabsettings.TitleRichText = tabsettings.TitleRichText ~= nil and tabsettings.TitleRichText or false
         tabsettings.SubtitleRichText = tabsettings.SubtitleRichText ~= nil and tabsettings.SubtitleRichText or false
+        tabsettings.Image = tabsettings.Image or "rbxassetid://0"
         tabsettings.SizeY = tabsettings.SizeY ~= nil and tabsettings.SizeY or 300
         tabsettings.MaxSizeY = tabsettings.MaxSizeY ~= nil and tabsettings.MaxSizeY or 300
         tabsettings.Opened = tabsettings.Opened ~= nil and tabsettings.Opened or false
@@ -719,6 +721,7 @@ function FPSLibrary:BootWindow(windowsettings)
         if typeof(tabsettings.Subtitle) ~= "string" then return end
         if typeof(tabsettings.TitleRichText) ~= "boolean" then return end
         if typeof(tabsettings.SubtitleRichText) ~= "boolean" then return end
+        if typeof(tabsettings.Image) ~= "string" or not string.match(tabsettings.Image,"rbxassetid://") or not string.match(tabsettings.Image,"http://www.roblox.com/asset/?id=") or not string.match(tabsettings.Image,"https://www.roblox.com/asset/?id=") then return end
         if typeof(tabsettings.SizeY) ~= "number" then return end
         if typeof(tabsettings.MaxSizeY) ~= "number" then return end
         if typeof(tabsettings.Opened) ~= "boolean" then return end
@@ -741,6 +744,7 @@ function FPSLibrary:BootWindow(windowsettings)
         local Tab = TabContainer:WaitForChild("Frame")
         local Title = Tab:WaitForChild("Title")
         local Subtitle = Tab:WaitForChild("Subtitle")
+        local Icon = Tab:WaitForChild("ImageLabel")
         local MinimizeButton = Tab:WaitForChild("ArrowImageButton")
         local ElementsFrame = Tab:WaitForChild("Elements")
         local ElementsContainer = ElementsFrame:WaitForChild("Container")
@@ -764,6 +768,10 @@ function FPSLibrary:BootWindow(windowsettings)
                 if typeof(value) ~= "boolean" then return end
                 tabsettings.SubtitleRichText = value
                 Subtitle.RichText = tabsettings.SubtitleRichText
+            elseif idx == "RichText" then
+                if  typeof(tabsettings.Image) ~= "string" or not string.match(tabsettings.Image,"rbxassetid://") or not string.match(tabsettings.Image,"http://www.roblox.com/asset/?id=") or not string.match(tabsettings.Image,"https://www.roblox.com/asset/?id=") then return end
+                tabsettings.Image = value
+                Icon.Image = tabsettings.Image
             elseif idx == "SizeY" then
                 if typeof(value) ~= "number" then return end
                 tabsettings.SizeY = math.clamp(value,100,tabsettings.MaxSizeY)
@@ -2708,15 +2716,15 @@ function FPSLibrary:BootWindow(windowsettings)
             pcall(function()
                 if request then
                     request({
-                        Url = 'http://127.0.0.1:6463/rpc?v=1',
-                        Method = 'POST',
+                        Url = 'http://127.0.0.1:6463/rpc?v=1';
+                        Method = 'POST';
                         Headers = {
-                            ['Content-Type'] = 'application/json',
+                            ['Content-Type'] = 'application/json';
                             Origin = 'https://discord.com'
-                        },
+                        };
                         Body = HttpService:JSONEncode({
-                            cmd = 'INVITE_BROWSER',
-                            nonce = HttpService:GenerateGUID(false),
+                            cmd = 'INVITE_BROWSER';
+                            nonce = HttpService:GenerateGUID(false);
                             args = {code = windowsettings.Discord.InviteLink}
                         })
                     })
