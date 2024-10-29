@@ -733,7 +733,7 @@ function FPSLibrary:BootWindow(windowsettings)
 		if typeof(tabsettings.Subtitle) ~= "string" then return end
 		if typeof(tabsettings.TitleRichText) ~= "boolean" then return end
 		if typeof(tabsettings.SubtitleRichText) ~= "boolean" then return end
-		if typeof(tabsettings.Image) ~= "string" or not string.match(tabsettings.Image,"rbxassetid://") or not string.match(tabsettings.Image,"http://www.roblox.com/asset/?id=") or not string.match(tabsettings.Image,"https://www.roblox.com/asset/?id=") then return end
+		if typeof(tabsettings.Image) ~= "string" then return end
 		if typeof(tabsettings.SizeY) ~= "number" then return end
 		if typeof(tabsettings.MaxSizeY) ~= "number" then return end
 		if typeof(tabsettings.Opened) ~= "boolean" then return end
@@ -781,7 +781,7 @@ function FPSLibrary:BootWindow(windowsettings)
 				tabsettings.SubtitleRichText = value
 				Subtitle.RichText = tabsettings.SubtitleRichText
 			elseif idx == "RichText" then
-				if  typeof(tabsettings.Image) ~= "string" or not string.match(tabsettings.Image,"rbxassetid://") or not string.match(tabsettings.Image,"http://www.roblox.com/asset/?id=") or not string.match(tabsettings.Image,"https://www.roblox.com/asset/?id=") then return end
+				if typeof(tabsettings.Image) ~= "string" then return end
 				tabsettings.Image = value
 				Icon.Image = tabsettings.Image
 			elseif idx == "SizeY" then
