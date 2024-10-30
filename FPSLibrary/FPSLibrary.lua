@@ -49,7 +49,7 @@ local LocalConfigurationSubFolderName = nil
 -- Library Interface
 local FPSLibraryAssets = game:GetObjects("rbxassetid://123286401328821")[1]
 local Interface = FPSLibraryAssets:WaitForChild("Interface"):Clone()
-if not IsStudio and protectgui and FPSLibraryProtectGui then
+if protectgui and FPSLibraryProtectGui then
 	protectgui(Interface)
 end
 Interface.Parent = CoreGui
@@ -159,9 +159,9 @@ function UpdateCanvasSize()
 			local ElementsContainer = v.Instance.Elements.Container
 			for i, v in FPSLibrary.Elements do
 				if v.SectionParent == ElementsContainer or v.Instance.Parent == ElementsContainer then
-					yoffset += v.Instance.Size.Y.Offset
+					yoffset += v.Instance.Size.Y.Offset + 6
 					if v.ClassName == "SectionParent" and v.Opened then
-						yoffset += v.DropdownSizeY + 3
+						yoffset += v.DropdownSizeY - 4
 					end
 				end
 			end
@@ -171,7 +171,7 @@ function UpdateCanvasSize()
 			local SectionElementContainer = v.Instance.Dropdown.Container
 			for i, v in FPSLibrary.Elements do
 				if v.SectionParent == SectionElementContainer then
-					yoffset += v.Instance.Size.Y.Offset
+					yoffset += v.Instance.Size.Y.Offset + 3
 				end
 			end
 			SectionElementContainer.CanvasSize = UDim2.new(0,0,0,yoffset)
@@ -691,7 +691,7 @@ function FPSLibrary:BootWindow(windowsettings)
 		BootAnimation:Destroy()
 	end)
 	local suc = pcall(function()
-		if not IsStudio and windowsettings.ConfigurationSaving and windowsettings.ConfigurationSaving.Enabled and windowsettings.ConfigurationSaving.FolderName then
+		if windowsettings.ConfigurationSaving and windowsettings.ConfigurationSaving.Enabled and windowsettings.ConfigurationSaving.FolderName then
 			local FolderName = windowsettings.ConfigurationSaving.FolderName
 			local SubFolderName = "Universal"
 			if windowsettings.ConfigurationSaving.PlaceId then
@@ -2511,7 +2511,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if typeof(value) ~= "boolean" then return end
 					Opened = value
 					if Opened then
-						TweenService:Create(Dropdown,TweenOut50Sine,{Size = UDim2.new(1,0,0,DropdownSizeY)}):Play()
+						TweenService:Create(Dropdown,TweenOut50Sine,{Size = UDim2.new(1,0,0,DropdownSizeY - 1)}):Play()
 						TweenService:Create(Spacing,TweenOut50Sine,{Size = UDim2.new(1,0,0,DropdownSizeY - 3)}):Play()
 						TweenService:Create(SectionMinimizeButton,TweenOut32Sine,{Rotation = 0}):Play()
 					else
@@ -2719,7 +2719,7 @@ function FPSLibrary:BootWindow(windowsettings)
 	function Window:OrganizeTabs(x,y,padding)
 		for i, v in FPSLibrary.Elements do
 			if v.ClassName == "Tab" then
-				v.Position = UDim2.new(0,x+(i-1)*112+(i>=2 and padding-12 or 0),0,y)
+				v.Position = UDim2.new(0,x+(i-1)*112+(i > 1 and (padding-12)*(i-1) or 0),0,y)
 			end
 		end
 	end
