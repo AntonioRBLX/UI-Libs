@@ -165,13 +165,13 @@ local Input = Tab:CreateInput({
 	Callback = function(value) -- The function that is called after toggle is pressed
 		if value == 512 then
 			Library:Notify({
-				Type = "id0x3";
+				Type = "success";
 				Message = "Correct!";
 				Duration = 3;
 			})
 		else
 			Library:Notify({
-				Type = "id0x1";
+				Type = "error";
 				Message = "Try Again!";
 				Duration = 3;
 			})
@@ -193,13 +193,13 @@ local PassCodeInput = Tab:CreateInput({
 	Callback = function(value) -- The function that is called after toggle is pressed
 		if value == 512 then
 			Library:Notify({
-				Type = "id0x3";
+				Type = "success";
 				Message = "Correct!";
 				Duration = 3;
 			})
 		else
 			Library:Notify({
-				Type = "id0x1";
+				Type = "error";
 				Message = "Try Again!";
 				Duration = 3;
 			})
@@ -316,9 +316,9 @@ end)
 -- Notify
 task.wait(1.25)
 Library:Notify({
-	Type = "id0x2";
+	Type = "info";
     Message = "FPSLibrary v1.0. First official release. Go to github website to learn more.";
-	Image = "rbxassetid://132267442786910";
+	Image = Library.Icons.PreviewIcon;
 	Duration = 10;
 	Actions = {
 		Close = {
@@ -327,7 +327,7 @@ Library:Notify({
 				if setclipboard then
                     setclipboard("https://github.com/CITY512/UI-Libs/blob/main/FPSLibrary")
 					Library:Notify({
-						Type = "id0x3";
+						Type = "success";
 						Message = "Link copied to clipboard!";
 						Duration = 3;
 					})
@@ -336,4 +336,3 @@ Library:Notify({
 		}
 	}
 })
-task.wait(5)
