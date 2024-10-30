@@ -17,6 +17,7 @@ ROBLOX User Interface Library Created By CITY512.
 - ColorPicker Rainbow Mode
 - Fixed Config Saving Bugs
 - Mobile Supported Tab Minimizer
+- Roblox Studio Support (for interface beta testing)
 
 ## Interface Preview
 
@@ -131,6 +132,7 @@ local Tab = Window:CreateTab({
 	Opened = false; -- If the tab is open
 	TitleRichText = false; -- Enables RichText for the Title
 	SubtitleRichText = false; -- Enables RichText for the Subtitle
+	Image = "rbxassetid://97207553955899"
 	SizeY = 250; -- Length of the tab dropdown, SizeY must be 100 or more
 	MaxSizeY = 250; -- Maximum length of the tab dropdown, SizeY must be 100 or more
 	Position = UDim2.new(0,20,0,20); -- Position of the Tab on Window
