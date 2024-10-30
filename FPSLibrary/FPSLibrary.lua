@@ -302,7 +302,7 @@ function Callback(f,...)
 end
 function UpdateFlags(dictionary)
 	for i, v in dictionary do
-		if not dictionary.IgnoreList or not table.find(dictionary.IgnoreList,i) then
+		if not dictionary.IgnoreList or i ~= "IgnoreList" and not table.find(dictionary.IgnoreList,i) then
 			FPSLibrary.Flags[dictionary.Flag][i] = v
 		end
 	end
@@ -378,6 +378,8 @@ function FPSLibrary:Notify(settings)
 				Button.Parent = ActionButtonsContainer
 				local ButtonNameLabel = Button:WaitForChild("NameTextLabel")
 				ButtonNameLabel.Text = actionsettings.Name
+				ButtonNameLabel.Size = UDim2.new(1,0,1,0)
+				Button:WaitForChild("Icon"):Destroy()
 				RippleEffects(Button)
 				Button.MouseButton1Click:Connect(function()
 					if not closing then
@@ -529,6 +531,8 @@ function FPSLibrary:BootWindow(windowsettings)
 		CheckKeyButton.Position = UDim2.new(0.5, 0, 0.5, 27)
 		CheckKeyButton.Size = UDim2.new(0, 75, 0, 20)
 		CheckKeyName.Text = "Authenticate"
+		CheckKeyName.Size = UDim2.new(1,0,1,0)
+		CheckKeyButton:WaitForChild("Icon"):Destroy()
 		if windowsettings.KeySystem.GrabKeyFromSite and windowsettings.KeySystem.WebsiteURL then
 			local GetKeyButton = FPSLibraryAssets:WaitForChild("Button"):Clone()
 			local GetKeyName = GetKeyButton:WaitForChild("NameTextLabel")
@@ -541,6 +545,8 @@ function FPSLibrary:BootWindow(windowsettings)
 			GetKeyButton.BackgroundColor3 = Color3.fromRGB(149, 119, 54)
 			GetKeyButtonOutline.BackgroundColor3 = Color3.fromRGB(83, 66, 30)
 			GetKeyName.Text = "Get Key"
+			GetKeyName.Size = UDim2.new(1,0,1,0)
+			GetKeyButton:WaitForChild("Icon"):Destroy()
 			RippleEffects(GetKeyButton)
 			GetKeyButton.MouseButton1Click:Connect(function()
 				if setclipboard then
@@ -967,9 +973,11 @@ function FPSLibrary:BootWindow(windowsettings)
 					ButtonElement.Interactable = buttonsettings.Active
 					if buttonsettings.Active then
 						ElementIcon.Image = Icons.ButtonIcon
+						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
 						ButtonElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
 						ElementIcon.Image = Icons.DisabledElementIcon
+						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						ButtonElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
@@ -1125,9 +1133,11 @@ function FPSLibrary:BootWindow(windowsettings)
 					ToggleElement.Interactable = togglesettings.Active
 					if togglesettings.Active then
 						ElementIcon.Image = Icons.ToggleIcon
+						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
 						ToggleElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
 						ElementIcon.Image = Icons.DisabledElementIcon
+						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						ToggleElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
@@ -1375,9 +1385,11 @@ function FPSLibrary:BootWindow(windowsettings)
 					SliderElement.Interactable = slidersettings.Active
 					if slidersettings.Active then
 						ElementIcon.Image = Icons.SliderIcon
+						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
 						SliderElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
 						ElementIcon.Image = Icons.DisabledElementIcon
+						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						SliderElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
@@ -1581,9 +1593,11 @@ function FPSLibrary:BootWindow(windowsettings)
 					DropdownElement.Interactable = dropdownsettings.Active
 					if dropdownsettings.Active then
 						ElementIcon.Image = Icons.DropdownIcon
+						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
 						DropdownElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
 						ElementIcon.Image = Icons.DisabledElementIcon
+						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						DropdownElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
@@ -1827,11 +1841,13 @@ function FPSLibrary:BootWindow(windowsettings)
 					if textboxsettings.Active then
 						TextBox.PlaceholderText = textboxsettings.PlaceholderText
 						ElementIcon.ImageTransparency = 1
+						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
 						TextBoxElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
 						TextBox.PlaceholderText = ""
                         ElementIcon.ImageTransparency = 0
 						ElementIcon.Image = Icons.DisabledElementIcon
+						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						TextBoxElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
@@ -2043,9 +2059,11 @@ function FPSLibrary:BootWindow(windowsettings)
 					ColorPickerElement.Interactable = colorpickersettings.Active
 					if colorpickersettings.Active then
 						ElementIcon.Image = Icons.ColorPalleteIcon
+						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
 						ColorPickerElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
 						ElementIcon.Image = Icons.DisabledElementIcon
+						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						ColorPickerElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
@@ -2301,9 +2319,11 @@ function FPSLibrary:BootWindow(windowsettings)
 					KeybindElement.Interactable = keybindsettings.Active
 					if keybindsettings.Active then
 						ElementIcon.Image = Icons.KeybindIcon
+						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
 						KeybindElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
 						ElementIcon.Image = Icons.DisabledElementIcon
+						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						KeybindElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
