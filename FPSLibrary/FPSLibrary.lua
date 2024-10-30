@@ -24,9 +24,26 @@ local a = 0
 local Notifications = {}
 local WindowVisible = false
 local executespawn = tick()
+local Icons = {
+    ButtonIcon = "rbxassetid://81603729114653";
+    ToggleIcon = "rbxassetid://99237563194670";
+    SliderIcon = "rbxassetid://79793934273507";
+    DropdownIcon = "rbxassetid://109783026993824";
+    ColorPalleteIcon = "rbxassetid://130634872600990";
+    KeybindIcon = "rbxassetid://133055602281232";
+    DisabledElementIcon = "rbxassetid://5248916036";
+    ErrorIcon = "rbxassetid://76316461447556";
+    InfoIcon = "rbxassetid://76316461447556";
+    SuccessIcon = "rbxassetid://111469034555385";
+    ColorBackgrundIcon = "rbxassetid://132069784511686";
+    PreviewImage = "rbxassetid://132267442786910";
+    ValueSliderIcon = "rbxassetid://124175884994313";
+    ExampleImageIcon = "rbxassetid://111469034555385";
+}
 local FPSLibrary = {
 	Flags = {};
 	Elements = {};
+    Icons = Icons
 }
 if IsStudio then
 	writefile = function() end
@@ -137,7 +154,7 @@ function MakeDraggable(draggable,Frame)
 end
 function CallbackErrorMessage(err)
 	FPSLibrary:Notify({
-		Type = "id0x1";
+		Type = "error";
 		Message = "Callback Error!";
 		Duration = 3;
 		Actions = {
@@ -189,7 +206,7 @@ function ToggleTabVisibility()
 	end
 	if not WindowVisible then
 		FPSLibrary:Notify({
-			Type = "id0x2";
+			Type = "info";
 			Message = "You can press 'RightShift' to Toggle GUI";
 			Duration = 3;
 		})
@@ -314,11 +331,11 @@ end
 function FPSLibrary:Notify(settings)
 	task.spawn(function()
 		local Spawn = tick()
-		settings.Title = settings.Type == "id0x1" and "Error" or settings.Type == "id0x2" and "Info" or settings.Type == "id0x3" and "Success" or settings.Title or "Info";
+		settings.Title = settings.Type == "error" and "Error" or settings.Type == "info" and "Info" or settings.Type == "success" and "Success" or settings.Title or "Info";
 		settings.Message = settings.Message or "Notification Request"
 		settings.Button1 = settings.Button1 ~= "" and settings.Button1 or nil
 		settings.Button2 = settings.Button2 ~= "" and settings.Button2 or nil
-		settings.Icon = settings.Type == "id0x1" and "rbxassetid://102649569795605" or settings.Type == "id0x2" and "rbxassetid://76316461447556" or settings.Type == "id0x3" and "rbxassetid://111469034555385" or settings.Icon or "rbxassetid://0"
+		settings.Icon = settings.Type == "error" and Icons.ErrorIcon or settings.Type == "info" and Icons.InfoIcon or settings.Type == "success" and Icons.SuccessIcon or settings.Icon or "rbxassetid://0"
 		settings.Duration = settings.Duration or 5
 		local NotificationExample = FPSLibraryAssets:WaitForChild("NotificationExample"):Clone()
 		NotificationExample.Parent = Interface
@@ -376,7 +393,7 @@ function FPSLibrary:Notify(settings)
 		end
 		if settings.Type then
 			local sound = Instance.new("Sound", workspace)
-			sound.SoundId = settings.Type == "id0x1" and "rbxassetid://2865228021" or settings.Type == "id0x2" and "rbxassetid://3398620867" or settings.Type == "id0x3" and "rbxassetid://3450794184"
+			sound.SoundId = settings.Type == "error" and "rbxassetid://2865228021" or settings.Type == "info" and "rbxassetid://3398620867" or settings.Type == "success" and "rbxassetid://3450794184"
 			sound.PlayOnRemove = true
 			sound:Destroy()
 		end
@@ -400,7 +417,7 @@ function FPSLibrary:SaveConfiguration(filename)
 		end)
 		if not suc and err then
 			FPSLibrary:Notify({
-				Type = "id0x1";
+				Type = "error";
 				Message = "An unexpected error occured while saving configuration. Please try again.";
 			})
 		end
@@ -432,7 +449,7 @@ function FPSLibrary:LoadConfiguration(filename,callback)
 						end
 					else
 						FPSLibrary:Notify({
-							Type = "id0x1";
+							Type = "error";
 							Message = "Unable to find '"..flagName.. "' in the current configuration file";
 						})
 					end
@@ -441,7 +458,7 @@ function FPSLibrary:LoadConfiguration(filename,callback)
 		end)
 		if not suc then
 			FPSLibrary:Notify({
-				Type = "id0x1";
+				Type = "error";
 				Message = "This configuration file is corrupted.";
 			})
 		end
@@ -454,7 +471,7 @@ function FPSLibrary:DeleteConfiguration(filename)
 		end)
 		if not suc and res then
 			FPSLibrary:Notify({
-				Type = "id0x1";
+				Type = "error";
 				Message = "Failed to find Configuration File";
 			})
 		end
@@ -529,13 +546,13 @@ function FPSLibrary:BootWindow(windowsettings)
 				if setclipboard then
 					setclipboard(windowsettings.KeySystem.WebsiteURL)
 					FPSLibrary:Notify({
-						Type = "id0x3";
+						Type = "success";
 						Message = "Link copied to clipboard!";
 						Duration = 3;
 					})
 				else
 					FPSLibrary:Notify({
-						Type = "id0x2";
+						Type = "info";
 						Message = 'URL: "'..windowsettings.KeySystem.WebsiteURL..'"';
 						Duration = 60;
 						Actions = {
@@ -567,7 +584,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			if verified then
 				keyverified = true
 				FPSLibrary:Notify({
-					Type = "id0x3";
+					Type = "success";
 					Message = "Correct Key!";
 					Duration = 3;
 				})
@@ -577,13 +594,13 @@ function FPSLibrary:BootWindow(windowsettings)
 					if windowsettings.KeySystem.Encrypt and windowsettings.KeySystem.CypherKey then
 						if #windowsettings.KeySystem.CypherKey < 16 then
 							return FPSLibrary:Notify({
-								Type = "id0x2";
+								Type = "info";
 								Message = "Cypher Key Length Must Be 16 Or More";
 								Duration = 3;
 							})
 						elseif not encrypt then
 							return FPSLibrary:Notify({
-								Type = "id0x2";
+								Type = "info";
 								Message = "Your executor is unsupported. Missing function 'encrypt'. Your key has not been saved.";
 								Duration = 3;
 							})
@@ -602,7 +619,7 @@ function FPSLibrary:BootWindow(windowsettings)
 				end
 			else
 				FPSLibrary:Notify({
-					Type = "id0x1";
+					Type = "error";
 					Message = "Invalid Key!";
 					Duration = 3;
 				})
@@ -620,13 +637,13 @@ function FPSLibrary:BootWindow(windowsettings)
 					if windowsettings.KeySystem.Encrypt then
 						if #windowsettings.KeySystem.CypherKey < 16 then
 							return FPSLibrary:Notify({
-								Type = "id0x2";
+								Type = "info";
 								Message = "Cypher Key Length Must Be 16 Or More";
 								Duration = 3;
 							})
 						elseif not decrypt then
 							return FPSLibrary:Notify({
-								Type = "id0x2";
+								Type = "info";
 								Message = "Your executor is unsupported. Missing function 'decrypt'. Please re-enter your key";
 								Duration = 3;
 							})
@@ -642,21 +659,21 @@ function FPSLibrary:BootWindow(windowsettings)
 								keyverified = true
 							else
 								FPSLibrary:Notify({
-									Type = "id0x1";
+									Type = "error";
 									Message = "Key not authenticated. Try again.";
 									Duration = 3;
 								})
 							end
 						else
 							FPSLibrary:Notify({
-								Type = "id0x2";
+								Type = "info";
 								Message = "Your key has expired. Please re-enter your key.";
 								Duration = 3;
 							})
 						end
 					else
 						FPSLibrary:Notify({
-							Type = "id0x1";
+							Type = "error";
 							Message = "Unable to verify key. Your key system file is corrupted.";
 							Duration = 3;
 						})
@@ -665,7 +682,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			end)
 			if not suc then
 				FPSLibrary:Notify({
-					Type = "id0x1";
+					Type = "error";
 					Message = "An Unexpected Error Occurred While Checking Key.";
 				})
 			end
@@ -709,7 +726,7 @@ function FPSLibrary:BootWindow(windowsettings)
 	end)
 	if not suc then
 		FPSLibrary:Notify({
-			Type = "id0x1";
+			Type = "error";
 			Message = "An Unexpected Error Occurred While Loading Configurations";
 		})
 	end
@@ -901,7 +918,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			if typeof(buttonsettings.TipDuration) ~= "number" then return end
 			-- Button
 			local ButtonElement = FPSLibraryAssets:WaitForChild("Button"):Clone()
-			local InactiveSymbol = ButtonElement:WaitForChild("InactiveSymbol")
+			local ElementIcon = ButtonElement:WaitForChild("Icon")
 			local ButtonNameLabel = ButtonElement:WaitForChild("NameTextLabel")
 			local ButtonModule = {}
 			local mt = {}
@@ -949,10 +966,10 @@ function FPSLibrary:BootWindow(windowsettings)
 					buttonsettings.Active = value
 					ButtonElement.Interactable = buttonsettings.Active
 					if buttonsettings.Active then
-						InactiveSymbol.Visible = false
+						ElementIcon.Image = Icons.ButtonIcon
 						ButtonElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
-						InactiveSymbol.Visible = true
+						ElementIcon.Image = Icons.DisabledElementIcon
 						ButtonElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
@@ -971,19 +988,6 @@ function FPSLibrary:BootWindow(windowsettings)
 					return
 				end
 				UpdateCanvasSize()
-				local size
-				local pos
-				if not buttonsettings.Active then
-					size = UDim2.new(1,-10,1,0)
-					pos = UDim2.new(0,10,0,0)
-				else
-					size = UDim2.new(1,0,1,0)
-					pos = UDim2.new(0,0,0,0)
-				end
-				if size and pos then
-					ButtonNameLabel.Size = size
-					ButtonNameLabel.Position = pos
-				end
 			end
 			-- Button Main
 			RippleEffects(ButtonElement)
@@ -1037,7 +1041,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			if typeof(togglesettings.TipDuration) ~= "number" then return end
 			-- Toggle
 			local ToggleElement = FPSLibraryAssets:WaitForChild("Toggle"):Clone()
-			local InactiveSymbol = ToggleElement:WaitForChild("InactiveSymbol")
+			local ElementIcon = ToggleElement:WaitForChild("Icon")
 			local ToggleNameLabel = ToggleElement:WaitForChild("NameTextLabel")
 			local StatusFrame = ToggleElement:WaitForChild("StatusFrame")
 			local Glow = StatusFrame:WaitForChild("Glow")
@@ -1120,10 +1124,10 @@ function FPSLibrary:BootWindow(windowsettings)
 					togglesettings.Active = value
 					ToggleElement.Interactable = togglesettings.Active
 					if togglesettings.Active then
-						InactiveSymbol.Visible = false
+						ElementIcon.Image = Icons.ToggleIcon
 						ToggleElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
-						InactiveSymbol.Visible = true
+						ElementIcon.Image = Icons.DisabledElementIcon
 						ToggleElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
@@ -1142,19 +1146,6 @@ function FPSLibrary:BootWindow(windowsettings)
 					return
 				end
 				UpdateCanvasSize()
-				local size
-				local pos
-				if not togglesettings.Active then
-					size = UDim2.new(1,-10,1,0)
-					pos = UDim2.new(0,10,0,0)
-				else
-					size = UDim2.new(1,0,1,0)
-					pos = UDim2.new(0,0,0,0)
-				end
-				if size and pos then
-					ToggleNameLabel.Size = size
-					ToggleNameLabel.Position = pos
-				end
 				if togglesettings.Flag then
 					UpdateFlags(togglesettings)
 				end
@@ -1239,7 +1230,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			if slidersettings.Increment <= 0 then return end
 			-- Slider
 			local SliderElement = FPSLibraryAssets:WaitForChild("Slider"):Clone()
-			local InactiveSymbol = SliderElement:WaitForChild("InactiveSymbol")
+			local ElementIcon = SliderElement:WaitForChild("Icon")
 			local SliderNameLabel = SliderElement:WaitForChild("NameTextLabel")
 			local SliderBackground = SliderElement:WaitForChild("SliderSection"):WaitForChild("SliderBackground")
 			local Slider = SliderBackground:WaitForChild("Slider")
@@ -1383,10 +1374,10 @@ function FPSLibrary:BootWindow(windowsettings)
 					slidersettings.Active = value
 					SliderElement.Interactable = slidersettings.Active
 					if slidersettings.Active then
-						InactiveSymbol.Visible = false
+						ElementIcon.Image = Icons.SliderIcon
 						SliderElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
-						InactiveSymbol.Visible = true
+						ElementIcon.Image = Icons.DisabledElementIcon
 						SliderElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
@@ -1403,19 +1394,6 @@ function FPSLibrary:BootWindow(windowsettings)
 					UpdateElementTip(slidersettings.Tip ~= nil,SliderElement,slidersettings.Tip,slidersettings.TipDuration)
 				else
 					return
-				end
-				local size
-				local pos
-				if not slidersettings.Active then
-					size = UDim2.new(1,-10,0.5,0)
-					pos = UDim2.new(0,10,0,0)
-				else
-					size = UDim2.new(1,0,0.5,0)
-					pos = UDim2.new(0,0,0,0)
-				end
-				if size and pos then
-					SliderNameLabel.Size = size
-					SliderNameLabel.Position = pos
 				end
 				if slidersettings.Flag then
 					UpdateFlags(slidersettings)
@@ -1506,7 +1484,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			if typeof(dropdownsettings.TipDuration) ~= "number" then return end
 			-- Dropdown
 			local DropdownElement = FPSLibraryAssets:WaitForChild("Dropdown"):Clone()
-			local InactiveSymbol = DropdownElement:WaitForChild("InactiveSymbol")
+			local ElementIcon = DropdownElement:WaitForChild("Icon")
 			local DropdownNameLabel = DropdownElement:WaitForChild("NameTextLabel")
 			local CurrentOptionLabel = DropdownElement:WaitForChild("CurrentOptionTextLabel")
 			local DropdownModule = {}
@@ -1602,10 +1580,10 @@ function FPSLibrary:BootWindow(windowsettings)
 					dropdownsettings.Active = value
 					DropdownElement.Interactable = dropdownsettings.Active
 					if dropdownsettings.Active then
-						InactiveSymbol.Visible = false
+						ElementIcon.Image = Icons.DropdownIcon
 						DropdownElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
-						InactiveSymbol.Visible = true
+						ElementIcon.Image = Icons.DisabledElementIcon
 						DropdownElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
@@ -1624,19 +1602,6 @@ function FPSLibrary:BootWindow(windowsettings)
 					return
 				end
 				UpdateCanvasSize()
-				local size
-				local pos
-				if not dropdownsettings.Active then
-					size = UDim2.new(0,58,0.5,0)
-					pos = UDim2.new(0,10,0,0)
-				else
-					size = UDim2.new(0,68,0.5,0)
-					pos = UDim2.new(0,0,0,0)
-				end
-				if size and pos then
-					DropdownNameLabel.Size = size
-					DropdownNameLabel.Position = pos
-				end
 				if dropdownsettings.Flag then
 					UpdateFlags(dropdownsettings)
 				end
@@ -1773,7 +1738,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			-- Input
 			local TextBoxElement = FPSLibraryAssets:WaitForChild("TextBox"):Clone()
 			local TextBox = TextBoxElement:WaitForChild("TextBox")
-			local InactiveSymbol = TextBox:WaitForChild("InactiveSymbol")
+			local ElementIcon = TextBox:WaitForChild("Icon")
 			local TextBoxNameLabel = TextBoxElement:WaitForChild("NameTextLabel")
 			local TextBoxModule = {}
 			local mt = {}
@@ -1861,11 +1826,12 @@ function FPSLibrary:BootWindow(windowsettings)
 					TextBox.Interactable = textboxsettings.Active
 					if textboxsettings.Active then
 						TextBox.PlaceholderText = textboxsettings.PlaceholderText
-						InactiveSymbol.Visible = false
+						ElementIcon.ImageTransparency = 1
 						TextBoxElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
 						TextBox.PlaceholderText = ""
-						InactiveSymbol.Visible = true
+                        ElementIcon.ImageTransparency = 0
+						ElementIcon.Image = Icons.DisabledElementIcon
 						TextBoxElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
@@ -1966,7 +1932,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			if typeof(colorpickersettings.TipDuration) ~= "number" then return end
 			-- Variables
 			local ColorPickerElement = FPSLibraryAssets:WaitForChild("ColorPicker"):Clone()
-			local InactiveSymbol = ColorPickerElement:WaitForChild("InactiveSymbol")
+			local ElementIcon = ColorPickerElement:WaitForChild("Icon")
 			local ColorPickerNameLabel = ColorPickerElement:WaitForChild("NameTextLabel")
 			local ColorFrame = ColorPickerElement:WaitForChild("ColorFrame")
 			local Glow = ColorFrame:WaitForChild("Glow")
@@ -2076,10 +2042,10 @@ function FPSLibrary:BootWindow(windowsettings)
 					colorpickersettings.Active = value
 					ColorPickerElement.Interactable = colorpickersettings.Active
 					if colorpickersettings.Active then
-						InactiveSymbol.Visible = false
+						ElementIcon.Image = Icons.ColorPalleteIcon
 						ColorPickerElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
-						InactiveSymbol.Visible = true
+						ElementIcon.Image = Icons.DisabledElementIcon
 						ColorPickerElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
@@ -2098,19 +2064,6 @@ function FPSLibrary:BootWindow(windowsettings)
 					return
 				end
 				UpdateCanvasSize()
-				local size
-				local pos
-				if not colorpickersettings.Active then
-					size = UDim2.new(1,-10,1,0)
-					pos = UDim2.new(0,10,0,0)
-				else
-					size = UDim2.new(1,0,1,0)
-					pos = UDim2.new(0,0,0,0)
-				end
-				if size and pos then
-					ColorPickerNameLabel.Size = size
-					ColorPickerNameLabel.Position = pos
-				end
 				if colorpickersettings.Flag then
 					UpdateFlags(colorpickersettings)
 				end
@@ -2283,7 +2236,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			if typeof(keybindsettings.TipDuration) ~= "number" then return end
 			-- Variables
 			local KeybindElement = FPSLibraryAssets:WaitForChild("Keybind"):Clone()
-			local InactiveSymbol = KeybindElement:WaitForChild("InactiveSymbol")
+			local ElementIcon = KeybindElement:WaitForChild("Icon")
 			local KeybindNameLabel = KeybindElement:WaitForChild("NameTextLabel")
 			local KeybindFrame = KeybindElement:WaitForChild("KeybindFrame")
 			local KeybindText = KeybindFrame:WaitForChild("Keybind")
@@ -2347,10 +2300,10 @@ function FPSLibrary:BootWindow(windowsettings)
 					keybindsettings.Active = value
 					KeybindElement.Interactable = keybindsettings.Active
 					if keybindsettings.Active then
-						InactiveSymbol.Visible = false
+						ElementIcon.Image = Icons.KeybindIcon
 						KeybindElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
-						InactiveSymbol.Visible = true
+						ElementIcon.Image = Icons.DisabledElementIcon
 						KeybindElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
@@ -2369,19 +2322,6 @@ function FPSLibrary:BootWindow(windowsettings)
 					return
 				end
 				UpdateCanvasSize()
-				local size
-				local pos
-				if not keybindsettings.Active then
-					size = UDim2.new(1,-10,1,0)
-					pos = UDim2.new(0,10,0,0)
-				else
-					size = UDim2.new(1,0,1,0)
-					pos = UDim2.new(0,0,0,0)
-				end
-				if size and pos then
-					KeybindNameLabel.Size = size
-					KeybindNameLabel.Position = pos
-				end
 				if keybindsettings.Flag then
 					UpdateFlags(keybindsettings)
 				end
