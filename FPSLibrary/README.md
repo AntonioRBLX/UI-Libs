@@ -109,6 +109,13 @@ Library:LoadConfiguration("Configuration #1", true) -- 2nd argument is to callba
 Library:ListConfigurationFiles() -- returns a table of configurations from the local folder
 ```
 
+### Auto Load Configuration File
+```lua
+-- To do hhis, you must copy the command 'AutoLoadFileOnBoot' with the filename as the argument, then use the 'LoadConfiguration' command where 1st argument is nil, and paste it at the very bottom of all of your FPSLibrary elements.
+Library:AutoLoadFileOnBoot(true,"Configuration #1") -- 1st argument is to tell if you want to 'autoload' on boot or 'un-autoload' on boot. if 1st argument is false, you won't need to worry about the filename.
+Library:LoadConfiguration(nil,true) -- 2nd argument is still to callback elements once loaded
+```
+
 ### Prompt Discord Invite
 
 ```lua
@@ -206,7 +213,8 @@ local Dropdown = Tab:CreateDropdown({
 	Options = {"Option #1","Option #2","Option #3"};
 	CurrentOption = {"Option #1"};
 	SelectedColor = Color3.fromRGB(121, 152, 255); -- Color of the slider bar
-	MultiSelect = false; -- Select More Than One Option
+	MinOptions = 0; -- Minimum amount of options the user can select
+	MaxOptions = 1; -- Maximum amount of options the user can select
 	CallbackOnSelect = true; -- Callback anytime an option is selected
 	SectionParent = nil; -- The SectionTab the element is parented to
 	Flag = ""; -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
