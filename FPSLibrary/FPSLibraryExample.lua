@@ -163,19 +163,6 @@ local Input = Tab:CreateInput({
 	CurrentValue = ""; -- The text of the textbox
 	Flag = "INPUTFLAG"; -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
 	Callback = function(value) -- The function that is called after toggle is pressed
-		if value == 512 then
-			Library:Notify({
-				Type = "success";
-				Message = "Correct!";
-				Duration = 3;
-			})
-		else
-			Library:Notify({
-				Type = "error";
-				Message = "Try Again!";
-				Duration = 3;
-			})
-		end
 	end
 })
 Window:AddElementTip(Input,"This is an adaptive input.",5)
@@ -189,7 +176,7 @@ local PassCodeInput = Tab:CreateInput({
 	ClearTextOnFocus = true;
 	SectionParent = nil; -- The SectionTab the button is parented to
 	CurrentValue = ""; -- The text of the textbox
-	Flag = ""; -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
+	Flag = "PASSCODEFLAG"; -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
 	Callback = function(value) -- The function that is called after toggle is pressed
 		if value == 512 then
 			Library:Notify({
