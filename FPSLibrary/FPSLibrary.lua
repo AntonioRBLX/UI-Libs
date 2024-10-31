@@ -95,6 +95,12 @@ function GenerateRandomString()
 	end
 	return str
 end
+function PlaySound(id)
+	local sound = Instance.new("Sound", workspace)
+	sound.SoundId = "rbxassetid://"..tostring(id)
+	sound.PlayOnRemove = true
+	sound:Destroy()
+end
 function UpdateNotificationLayout()
 	local yoffset = 0
 	for i, v in Notifications do
@@ -129,8 +135,8 @@ function MakeDraggable(draggable,Frame)
 					local inputchanged
 					inputchanged = input.Changed:Connect(function()
 						if input.UserInputState == Enum.UserInputState.End then
-							inputchanged:Disconnect()
 							dragging = false
+							inputchanged:Disconnect()
 						end
 					end)
 				end
@@ -206,7 +212,7 @@ function ToggleTabVisibility()
 	if KeySystemContainer then
 		TweenService:Create(KeySystemContainer,TweenOut50Sine,{Size = WindowVisible and UDim2.new(0,274,0,199) or UDim2.new(0,274,0,0)}):Play()
 	end
-	if not WindowVisible then
+	if not WindowVisible and ToggleGUIKeybind then
 		FPSLibrary:Notify({
 			Type = "info";
 			Message = "You can press '"..ToggleGUIKeybind.Name.."' to Toggle GUI";
@@ -248,11 +254,9 @@ function RippleEffects(Button)
 		rippleeffect.ImageColor3 = Color3.fromRGB(0, 0, 0)
 		rippleeffect.ImageTransparency = 0.8
 		tweenInRipple(rippleeffect)
-		button1up = Button.MouseButton1Up:Connect(function()
-			if not done then
-				done = true
-				fadeOutRipple(rippleeffect)
-			end
+		button1up = Button.MouseButton1Up:Once(function()
+			done = true
+			fadeOutRipple(rippleeffect)
 		end)
 		task.wait(4)
 		button1up:Disconnect()
@@ -275,7 +279,6 @@ function UpdateElementTip(enabled,element,tip,duration)
 			tipobject = FPSLibraryAssets:WaitForChild("Tip"):Clone()
 			tipobject.Parent = Interface
 			local renderstepped
-			local mouseleave
 			renderstepped = RunService.RenderStepped:Connect(function()
 				tipobject.Text = tip
 				tipobject.Size = UDim2.new(0,tipobject.TextBounds.X + 4,0,tipobject.TextBounds.Y + 2)
@@ -283,15 +286,13 @@ function UpdateElementTip(enabled,element,tip,duration)
 				if spawn + duration < tick() then
 					tipobject:Destroy()
 					renderstepped:Disconnect()
-					mouseleave:Disconnect()
 				end
 			end)
-			mouseleave = element.MouseLeave:Connect(function()
+			element.MouseLeave:Once(function()
 				if tipobject then
 					tipobject:Destroy()
-					renderstepped:Disconnect()
-					mouseleave:Disconnect()
 				end
+				renderstepped:Disconnect()
 			end)
 		end)}
 	end
@@ -435,10 +436,7 @@ function FPSLibrary:Notify(settings)
 			end
 		end
 		if settings.Type then
-			local sound = Instance.new("Sound", workspace)
-			sound.SoundId = settings.Type == "error" and "rbxassetid://2865228021" or settings.Type == "info" and "rbxassetid://3398620867" or settings.Type == "success" and "rbxassetid://3450794184"
-			sound.PlayOnRemove = true
-			sound:Destroy()
+			PlaySound(settings.Type == "error" and 2865228021 or settings.Type == "info" and 3398620867 or settings.Type == "success" and 3450794184)
 		end
 		if settings.Image then
 			NotificationExample.Position = UDim2.new(1,0,1,-225)
@@ -591,17 +589,15 @@ function FPSLibrary:BootWindow(windowsettings)
 			ToggleTabVisibility()
 		end)
 	end
-	if windowsettings.ToggleGUIKeybind and typeof() then
+	if windowsettings.ToggleGUIKeybind and typeof(windowsettings.ToggleGUIKeybind) == "EnumItem" and windowsettings.ToggleGUIKeybind.EnumType == Enum.KeyCode then
 		ToggleGUIKeybind = windowsettings.ToggleGUIKeybind
-		UserInputService.InputBegan:Connect(function(input, processed)
-			if not processed and input.KeyCode == ToggleGUIKeybind then
-				WindowVisible = not WindowVisible
-				ToggleTabVisibility()
-			end
-		end)
-	else
-		ToggleGUIKeybind = nil
 	end
+	UserInputService.InputBegan:Connect(function(input, processed)
+		if not processed and input.KeyCode == ToggleGUIKeybind then
+			WindowVisible = not WindowVisible
+			ToggleTabVisibility()
+		end
+	end)
 	if windowsettings.KeySystem and typeof(windowsettings.KeySystem) == "table" and windowsettings.KeySystem.Enabled and typeof(windowsettings.KeySystem.Enabled) == "boolean" then
 		local keyverified = false
 		KeySystemContainer = FPSLibraryAssets:WaitForChild("KeySystem"):Clone()
@@ -1515,7 +1511,8 @@ function FPSLibrary:BootWindow(windowsettings)
 			SliderElement.LayoutOrder = layoutorder
 			SliderElement.InputBegan:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-					local renderstepped 
+					local renderstepped
+					local inputchanged
 					renderstepped = RunService.RenderStepped:Connect(function()
 						local startpos = SliderBackground.AbsolutePosition.X
 						local endpos = startpos + SliderBackground.AbsoluteSize.X
@@ -1525,7 +1522,6 @@ function FPSLibrary:BootWindow(windowsettings)
 							Callback(slidersettings.Callback,slidersettings.CurrentValue)
 						end
 					end)
-					local inputchanged
 					inputchanged = input.Changed:Connect(function()
 						if input.UserInputState == Enum.UserInputState.End then
 							task.spawn(Callback,slidersettings.Callback,slidersettings.CurrentValue)
@@ -1574,7 +1570,8 @@ function FPSLibrary:BootWindow(windowsettings)
 			dropdownsettings.Options = dropdownsettings.Options or {}
 			dropdownsettings.CurrentOption = dropdownsettings.CurrentOption or {}
 			dropdownsettings.SelectedColor = dropdownsettings.SelectedColor or Color3.fromRGB(121, 152, 255)
-			dropdownsettings.MultiSelect = dropdownsettings.MultiSelect or false
+			dropdownsettings.MinOptions = dropdownsettings.MinOptions or 0
+			dropdownsettings.MaxOptions = dropdownsettings.MaxOptions or 1
 			dropdownsettings.SectionParent = dropdownsettings.SectionParent or nil
 			dropdownsettings.Flag = dropdownsettings.Flag ~= "" and dropdownsettings.Flag or nil
 			dropdownsettings.Callback = dropdownsettings.Callback or function() end
@@ -1588,7 +1585,14 @@ function FPSLibrary:BootWindow(windowsettings)
 			if typeof(dropdownsettings.Options) ~= "table" then return end
 			if typeof(dropdownsettings.CurrentOption) ~= "table" then return end
 			if typeof(dropdownsettings.SelectedColor) ~= "Color3" then return end
-			if typeof(dropdownsettings.MultiSelect) ~= "boolean" then return end
+			if typeof(dropdownsettings.MinOptions) ~= "number" then return end
+			if dropdownsettings.MinOptions < 0 then return end
+			dropdownsettings.MinOptions = math.floor(dropdownsettings.MinOptions)
+			if typeof(dropdownsettings.SelectedColor) ~= "Color3" then return end
+			if typeof(dropdownsettings.MaxOptions) ~= "number" then return end
+			if dropdownsettings.MaxOptions < 1 then return end
+			dropdownsettings.MaxOptions = math.ceil(dropdownsettings.MaxOptions)
+			if dropdownsettings.MinOptions > dropdownsettings.MaxOptions then return end
 			if (typeof(dropdownsettings.SectionParent) ~= "table" or dropdownsettings.SectionParent.ClassName ~= "SectionParent") and dropdownsettings.SectionParent ~= nil then return end
 			if dropdownsettings.Flag ~= nil and typeof(dropdownsettings.Flag) ~= "string" then return end
 			if typeof(dropdownsettings.Callback) ~= "function" then return end
@@ -1618,8 +1622,8 @@ function FPSLibrary:BootWindow(windowsettings)
 					return dropdownsettings.CurrentOption
 				elseif idx == "SelectedColor" then
 					return dropdownsettings.SelectedColor
-				elseif idx == "MultiSelect" then
-					return dropdownsettings.MultiSelect
+				elseif idx == "MaxOptions" then
+					return dropdownsettings.MaxOptions
 				elseif idx == "CallbackOnSelect" then
 					return dropdownsettings.CallbackOnSelect
 				elseif idx == "SectionParent" then
@@ -1677,9 +1681,9 @@ function FPSLibrary:BootWindow(windowsettings)
 				elseif idx == "SelectedColor" then
 					if typeof(value) ~= "Color3" then return end
 					dropdownsettings.SelectedColor = value
-				elseif idx == "MultiSelect" then
+				elseif idx == "MaxOptions" then
 					if typeof(value) ~= "boolean" then return end
-					dropdownsettings.MultiSelect = value
+					dropdownsettings.MaxOptions = value
 				elseif idx == "CallbackOnSelect" then
 					if typeof(value) ~= "boolean" then return end
 					dropdownsettings.CallbackOnSelect = value
@@ -1750,6 +1754,15 @@ function FPSLibrary:BootWindow(windowsettings)
 					DropdownModule.CurrentOption = currentoptions
 					task.spawn(Callback,dropdownsettings.Callback,dropdownsettings.CurrentOption)
 				end
+				local function CountEnabledOptions()
+					local count = 0
+					for i, v in options do
+						if v[2] then
+							count += 1
+						end
+					end
+					return count
+				end
 				local function Close()
 					UpdateCurrentOptions()
 					mousedown:Disconnect()
@@ -1772,7 +1785,16 @@ function FPSLibrary:BootWindow(windowsettings)
 						if not opened then return end
 						value = not value
 						options[v] = {Option,value}
-						if not dropdownsettings.MultiSelect then
+						local enabledoptions = CountEnabledOptions()
+						if dropdownsettings.MaxOptions ~= 1 and enabledoptions > dropdownsettings.MaxOptions then
+							value = false
+							PlaySound(138090596)
+						elseif enabledoptions < dropdownsettings.MinOptions then
+							value = true
+							PlaySound(138090596)
+						end
+						options[v] = {Option,value}
+						if dropdownsettings.MaxOptions == 1 then
 							for i2 in options do
 								if i2 ~= v then
 									options[i2][2] = false
@@ -2458,13 +2480,11 @@ function FPSLibrary:BootWindow(windowsettings)
 				local dots = 0
 				local renderstepped
 				local mousedown
-				local mouseup
 				local inputbegan
 				local function Disconnect()
 					renderstepped:Disconnect()
 					inputbegan:Disconnect()
 					mousedown:Disconnect()
-					mouseup:Disconnect()
 					task.wait()
 					CheckingForKey = false
 				end
@@ -2492,7 +2512,7 @@ function FPSLibrary:BootWindow(windowsettings)
 						Disconnect()
 					end
 				end)
-				mouseup = KeybindElement.MouseButton1Up:Connect(function()
+				KeybindElement.MouseButton1Up:Once(function()
 					if keybindsettings.HoldToInteract then
 						KeybindModule.CurrentKeybind = nil
 						Disconnect()
