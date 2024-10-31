@@ -32,7 +32,7 @@ local Icons = {
     ColorPalleteIcon = "rbxassetid://130634872600990";
     KeybindIcon = "rbxassetid://133055602281232";
     DisabledElementIcon = "rbxassetid://5248916036";
-    ErrorIcon = "rbxassetid://76316461447556";
+    ErrorIcon = "rbxassetid://102649569795605";
     InfoIcon = "rbxassetid://76316461447556";
     SuccessIcon = "rbxassetid://111469034555385";
     ColorBackgrundIcon = "rbxassetid://132069784511686";
@@ -74,6 +74,7 @@ Interface.Parent = CoreGui
 local Tween32Linear = TweenInfo.new(0.32,Enum.EasingStyle.Linear,Enum.EasingDirection.InOut,0,false,0)
 local TweenIn75Sine = TweenInfo.new(0.75,Enum.EasingStyle.Sine,Enum.EasingDirection.In,0,false,0)
 local TweenOut32Sine = TweenInfo.new(0.32,Enum.EasingStyle.Sine,Enum.EasingDirection.Out,0,false,0)
+local TweenOut20Sine = TweenInfo.new(0.2,Enum.EasingStyle.Sine,Enum.EasingDirection.Out,0,false,0)
 local TweenOut50Sine = TweenInfo.new(0.5,Enum.EasingStyle.Sine,Enum.EasingDirection.Out,0,false,0)
 local TweenOut75Sine = TweenInfo.new(0.75,Enum.EasingStyle.Sine,Enum.EasingDirection.Out,0,false,0)
 -- Functions
@@ -415,6 +416,35 @@ end
 function FPSLibrary:SaveConfiguration(filename)
 	if typeof(filename) == "string" and LocalConfigurationFolderName and LocalConfigurationSubFolderName and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) then
 		local suc, err = pcall(function()
+			local spawn = tick()
+			local canwritefile = true
+			if isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) then
+				canwritefile = false
+				FPSLibrary:Notify({
+					Type = "info";
+					Message = "There is already a file named '"..filename.."'. Do you wish to overwrite it?";
+					Duration = 5;
+					Actions = {
+						Yes = {
+							Name = "Yes";
+							CloseOnClick = true;
+							Callback = function()
+								canwritefile = true
+							end
+						};
+						No = {
+							Name = "No";
+							CloseOnClick = true;
+							Callback = function()
+							end
+						}
+					}
+				})
+			end
+			if not canwritefile then
+				repeat task.wait() until canwritefile or spawn + 5 < tick()
+				if not canwritefile then return end
+			end
 			writefile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename,HttpService:JSONEncode(FPSLibrary.Flags))
 		end)
 		if not suc and err then
@@ -1367,7 +1397,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					local val = math.clamp(tonumber(string.format("%."..dp.."f",value)),slidersettings.MinValue,slidersettings.MaxValue)
 					ValueTextLabel.Text = slidersettings.FormatString ~= "" and string.format(slidersettings.FormatString,val) or tostring(val)
 					slidersettings.CurrentValue = val
-					TweenService:Create(Slider,TweenOut32Sine,{Size = UDim2.new(slidersettings.CurrentValue / slidersettings.MaxValue,0,1,0)}):Play()
+					TweenService:Create(Slider,TweenOut20Sine,{Size = UDim2.new(slidersettings.CurrentValue / slidersettings.MaxValue,0,1,0)}):Play()
 					Glow.ImageTransparency = slidersettings.CurrentValue == 0 and 1 or 0
 					if slidersettings.BlendColors then
 						SliderBlendColors()
@@ -1419,23 +1449,27 @@ function FPSLibrary:BootWindow(windowsettings)
 			-- Slider Main
 			layoutorder += 2
 			SliderElement.LayoutOrder = layoutorder
-			SliderElement.MouseButton1Down:Connect(function()
-				local renderstepped 
-				renderstepped = RunService.RenderStepped:Connect(function()
-					local startpos = SliderBackground.AbsolutePosition.X
-					local endpos = startpos + SliderBackground.AbsoluteSize.X
-					local proportion = math.clamp((mouse.X - startpos)/(endpos - startpos),0,1)
-					SliderModule.CurrentValue = math.floor((slidersettings.MaxValue * proportion) / slidersettings.Increment) * slidersettings.Increment + slidersettings.MinValue
-					if not slidersettings.CallbackOnRelease then
-						Callback(slidersettings.Callback,slidersettings.CurrentValue)
-					end
-				end)
-				local mouse1up
-				mouse1up = mouse.Button1Up:Connect(function()
-					task.spawn(Callback,slidersettings.Callback,slidersettings.CurrentValue)
-					renderstepped:Disconnect()
-					mouse1up:Disconnect()
-				end)
+			SliderElement.InputBegan:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+					local renderstepped 
+					renderstepped = RunService.RenderStepped:Connect(function()
+						local startpos = SliderBackground.AbsolutePosition.X
+						local endpos = startpos + SliderBackground.AbsoluteSize.X
+						local proportion = math.clamp((mouse.X - startpos)/(endpos - startpos),0,1)
+						SliderModule.CurrentValue = math.floor((slidersettings.MaxValue * proportion) / slidersettings.Increment) * slidersettings.Increment + slidersettings.MinValue
+						if not slidersettings.CallbackOnRelease then
+							Callback(slidersettings.Callback,slidersettings.CurrentValue)
+						end
+					end)
+					local inputchanged
+					inputchanged = input.Changed:Connect(function()
+						if input.UserInputState == Enum.UserInputState.End then
+							task.spawn(Callback,slidersettings.Callback,slidersettings.CurrentValue)
+							renderstepped:Disconnect()
+							inputchanged:Disconnect()
+						end
+					end)
+				end
 			end)
 			if slidersettings.Flag then
 				FPSLibrary.Flags[slidersettings.Flag] = {}
