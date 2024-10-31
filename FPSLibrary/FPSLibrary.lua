@@ -17,6 +17,7 @@ repeat task.wait() until Players.LocalPlayer
 local LocalPlayer = Players.LocalPlayer
 local mouse = LocalPlayer:GetMouse()
 local IsStudio = RunService:IsStudio()
+local ToggleGUIKeybind = Enum.KeyCode.RightShift
 local KeyboardEnabled = UserInputService.KeyboardEnabled
 local KeySystemContainer
 local connections = {}
@@ -208,7 +209,7 @@ function ToggleTabVisibility()
 	if not WindowVisible then
 		FPSLibrary:Notify({
 			Type = "info";
-			Message = "You can press 'RightShift' to Toggle GUI";
+			Message = "You can press '"..ToggleGUIKeybind.Name.."' to Toggle GUI";
 			Duration = 3;
 		})
 	end
@@ -327,6 +328,45 @@ function isHoveringOverObj(obj)
 		return true
 	end
 	return false
+end
+function LoadFile(destination,callback)
+	local suc, res = pcall(function()
+		local contents = HttpService:JSONDecode(readfile(destination))
+		for idx in FPSLibrary.Elements do
+			local flagName = FPSLibrary.Elements[idx].Flag
+			if flagName then
+				if contents[flagName] then
+					for property, value in contents[flagName] do
+						FPSLibrary.Elements[idx][property] = value
+					end
+					if callback and FPSLibrary.Elements[idx].Callback then
+						local args = {}
+						if FPSLibrary.Elements[idx].CurrentValue then
+							args = {FPSLibrary.Elements[idx].CurrentValue}
+						elseif FPSLibrary.Elements[idx].CurrentColor then
+							args = {FPSLibrary.Elements[idx].CurrentColor}
+						elseif FPSLibrary.Elements[idx].CurrentOption then
+							args = {FPSLibrary.Elements[idx].CurrentOption}
+						elseif FPSLibrary.Elements[idx].CurrentKeybind then
+							args = {FPSLibrary.Elements[idx].CurrentKeybind}
+						end
+						task.spawn(FPSLibrary.Elements[idx].Callback,table.unpack(args))
+					end
+				else
+					FPSLibrary:Notify({
+						Type = "error";
+						Message = "Unable to find '"..flagName.. "' in the current configuration file";
+					})
+				end
+			end
+		end
+	end)
+	if not suc then
+		FPSLibrary:Notify({
+			Type = "error";
+			Message = "This configuration file is corrupted or lost.";
+		})
+	end
 end
 -- Module Functions
 function FPSLibrary:Notify(settings)
@@ -456,43 +496,26 @@ function FPSLibrary:SaveConfiguration(filename)
 	end
 end
 function FPSLibrary:LoadConfiguration(filename,callback)
-	if typeof(filename) == "string" and (callback == nil or typeof(callback) == "boolean") and LocalConfigurationFolderName and LocalConfigurationSubFolderName and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) and isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) then
-		local suc, res = pcall(function()
-			local contents = HttpService:JSONDecode(readfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename))
-			for idx in FPSLibrary.Elements do
-				local flagName = FPSLibrary.Elements[idx].Flag
-				if flagName then
-					if contents[flagName] then
-						for property, value in contents[flagName] do
-							FPSLibrary.Elements[idx][property] = value
-						end
-						if callback and FPSLibrary.Elements[idx].Callback then
-							local args = {}
-							if FPSLibrary.Elements[idx].CurrentValue then
-								args = {FPSLibrary.Elements[idx].CurrentValue}
-							elseif FPSLibrary.Elements[idx].CurrentColor then
-								args = {FPSLibrary.Elements[idx].CurrentColor}
-							elseif FPSLibrary.Elements[idx].CurrentOption then
-								args = {FPSLibrary.Elements[idx].CurrentOption}
-							elseif FPSLibrary.Elements[idx].CurrentKeybind then
-								args = {FPSLibrary.Elements[idx].CurrentKeybind}
-							end
-							task.spawn(FPSLibrary.Elements[idx].Callback,table.unpack(args))
-						end
-					else
-						FPSLibrary:Notify({
-							Type = "error";
-							Message = "Unable to find '"..flagName.. "' in the current configuration file";
-						})
-					end
+	if callback ~= nil and typeof(callback) ~= "boolean" then return end
+	if typeof(filename) == "string" then
+		if LocalConfigurationFolderName and LocalConfigurationSubFolderName and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) and isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) then
+			LoadFile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename,callback)
+		end
+	elseif filename == nil then
+		local metafolder = ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName..".meta"
+		if isfile(metafolder) then
+			local suc = pcall(function()
+				local contents = HttpService:JSONDecode(readfile(metafolder))
+				if contents.AutoLoad and isfile(contents.AutoLoad) then
+					LoadFile(contents.AutoLoad,callback)
 				end
+			end)
+			if not suc then
+				FPSLibrary:Notify({
+					Type = "error";
+					Message = "Unable to boot load the configuration file. The metafolder file is corrupted or lost.";
+				})
 			end
-		end)
-		if not suc then
-			FPSLibrary:Notify({
-				Type = "error";
-				Message = "This configuration file is corrupted.";
-			})
 		end
 	end
 end
@@ -520,6 +543,40 @@ function FPSLibrary:ListConfigurationFiles()
 	end
 	return {}
 end
+function FPSLibrary:AutoLoadFileOnBoot(autoloadfile,filename)
+	if LocalConfigurationFolderName and LocalConfigurationSubFolderName and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) then
+		local suc, res = pcall(function()
+			local contents = {}
+			local metafolder = ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName..".meta"
+			if isfile(metafolder) then
+				pcall(function()
+					contents = HttpService:JSONDecode(readfile(metafolder))
+				end)
+			end
+			if autoloadfile then
+				if typeof(filename) == "string" then
+					if isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) then
+						contents.AutoLoad = ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename
+					else
+						FPSLibrary:Notify({
+							Type = "error";
+							Message = "This configuration file doesn't exist.";
+						})
+					end
+				end
+			else
+				contents.AutoLoad = nil
+			end
+			writefile(metafolder,HttpService:JSONEncode(contents))
+		end)
+		if not suc then
+			FPSLibrary:Notify({
+				Type = "error";
+				Message = "This configuration file is corrupted.";
+			})
+		end
+	end
+end
 function FPSLibrary:BootWindow(windowsettings)
 	local Window = {}
 	if not KeyboardEnabled then
@@ -534,15 +591,18 @@ function FPSLibrary:BootWindow(windowsettings)
 			ToggleTabVisibility()
 		end)
 	end
-	if windowsettings.ToggleGUIKeybind then
+	if windowsettings.ToggleGUIKeybind and typeof() then
+		ToggleGUIKeybind = windowsettings.ToggleGUIKeybind
 		UserInputService.InputBegan:Connect(function(input, processed)
-			if not processed and input.KeyCode == windowsettings.ToggleGUIKeybind then
+			if not processed and input.KeyCode == ToggleGUIKeybind then
 				WindowVisible = not WindowVisible
 				ToggleTabVisibility()
 			end
 		end)
+	else
+		ToggleGUIKeybind = nil
 	end
-	if windowsettings.KeySystem and windowsettings.KeySystem.Enabled then
+	if windowsettings.KeySystem and typeof(windowsettings.KeySystem) == "table" and windowsettings.KeySystem.Enabled and typeof(windowsettings.KeySystem.Enabled) == "boolean" then
 		local keyverified = false
 		KeySystemContainer = FPSLibraryAssets:WaitForChild("KeySystem"):Clone()
 		KeySystemContainer.Parent = Interface
@@ -562,6 +622,8 @@ function FPSLibrary:BootWindow(windowsettings)
 		CheckKeyButton.Size = UDim2.new(0, 75, 0, 20)
 		CheckKeyName.Text = "Authenticate"
 		CheckKeyName.Size = UDim2.new(1,0,1,0)
+		CheckKeyName.Position = UDim2.new(0,0,0,0)
+		CheckKeyName.TextScaled = false
 		CheckKeyButton:WaitForChild("Icon"):Destroy()
 		if windowsettings.KeySystem.GrabKeyFromSite and windowsettings.KeySystem.WebsiteURL then
 			local GetKeyButton = FPSLibraryAssets:WaitForChild("Button"):Clone()
@@ -573,6 +635,8 @@ function FPSLibrary:BootWindow(windowsettings)
 			GetKeyButton.Position = UDim2.new(0.5, 0, 0.5, 51)
 			GetKeyButton.Size = UDim2.new(0, 75, 0, 20)
 			GetKeyButton.BackgroundColor3 = Color3.fromRGB(149, 119, 54)
+			GetKeyButton.Position = UDim2.new(0,0,0,0)
+			GetKeyButton.TextScaled = false
 			GetKeyButtonOutline.BackgroundColor3 = Color3.fromRGB(83, 66, 30)
 			GetKeyName.Text = "Get Key"
 			GetKeyName.Size = UDim2.new(1,0,1,0)
@@ -2342,7 +2406,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					keybindsettings.RichText = value
 					KeybindNameLabel.RichText = keybindsettings.RichText
 				elseif idx == "CurrentKeybind" then
-					if value ~= nil or typeof(value) ~= "EnumItem" or value.EnumType ~= Enum.KeyCode then return end
+					if value ~= nil and (typeof(value) ~= "EnumItem" or value.EnumType ~= Enum.KeyCode) then return end
 					keybindsettings.CurrentKeybind = value
 					KeybindText.Text = value and value.Name or ""
 				elseif idx == "HoldToInteract" then
@@ -2416,7 +2480,7 @@ function FPSLibrary:BootWindow(windowsettings)
 				end)
 				inputbegan = UserInputService.InputBegan:Connect(function(input, processed)
 					if not processed then
-						if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= windowsettings.ToggleGUIKeybind then
+						if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= ToggleGUIKeybind then
 							KeybindModule.CurrentKeybind = input.KeyCode
 							Disconnect()
 						end
