@@ -972,13 +972,18 @@ function FPSLibrary:BootWindow(windowsettings)
 					buttonsettings.Active = value
 					ButtonElement.Interactable = buttonsettings.Active
 					if buttonsettings.Active then
-						ElementIcon.Image = Icons.ButtonIcon
+						ElementIcon.ImageTransparency = 1
 						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
 						ButtonElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
+						ButtonNameLabel.Size = UDim2.new(1,0,1,0)
+						ButtonNameLabel.Position = UDim2.new(0,0,0,0)
 					else
+						ElementIcon.ImageTransparency = 0
 						ElementIcon.Image = Icons.DisabledElementIcon
 						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						ButtonElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
+						ButtonNameLabel.Size = UDim2.new(1,-10,1,0)
+						ButtonNameLabel.Position = UDim2.new(0,10,0,0)
 					end
 				elseif idx == "Visible" then
 					if typeof(value) ~= "boolean" then return end
