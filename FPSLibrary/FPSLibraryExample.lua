@@ -1,7 +1,8 @@
 local cloneref = cloneref or function(o) return o end
 local ConfigsDropdown
+local AutoLoadFile
 getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY512/UI-Libs/refs/heads/main/FPSLibrary/FPSLibrary.lua"))()
+local Library = loadstring(game:HttpGet("https://pastebin.com/raw/Qk4SFr7i"))()
 ------------------------------------------------------------------------------------------
 function UpdateConfigsDropdown()
 	ConfigsDropdown.Options = Library:ListConfigurationFiles()
@@ -248,6 +249,7 @@ ConfigsDropdown = Tab2:CreateDropdown({
 	Flag = ""; -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
 	Callback = function(options) -- options will always return a table
 		print("Options Selected:",table.unpack(options))
+		Library:AutoLoadFileOnBoot(AutoLoadFile.CurrentValue,options[1])
 	end
 })
 local FileNameTextBox = Tab2:CreateInput({
@@ -293,6 +295,18 @@ Tab2:CreateButton({
 		end
 	end
 })
+AutoLoadFile = Tab2:CreateToggle({
+	Name = "Auto Load File";
+	RichText = false; -- Enables RichText for the Name
+	ActivatedColor = Color3.fromRGB(255, 206, 92); -- Color of the slider bar
+	SectionParent = ConfigsSection; -- The SectionTab the button is parented to
+	CurrentValue = false; -- If the toggle is on/off
+	Flag = "AUTOLOADFILEFLAG"; -- Identifier for the configuration file. Recommended to keep it unique otherwise other elements can override.
+	Callback = function(value) -- The function that is called after toggle is pressed
+		Library:AutoLoadFileOnBoot(value,ConfigsDropdown.CurrentOption[1])
+	end
+})
+Library:LoadConfiguration(nil,true)
 UpdateConfigsDropdown()
 task.spawn(function()
 	while task.wait(10) do
@@ -305,7 +319,7 @@ task.wait(1.25)
 Library:Notify({
 	Type = "info";
     Message = "FPSLibrary v1.0. First official release. Go to github website to learn more.";
-	Image = Library.Icons.PreviewIcon;
+	Image = Library.Icons.PreviewImage;
 	Duration = 10;
 	Actions = {
 		Close = {
