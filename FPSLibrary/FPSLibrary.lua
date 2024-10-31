@@ -168,7 +168,7 @@ function CallbackErrorMessage(err)
 			};
 		}
 	})
-	warn("FPSLibrary: "..err)
+	warn(err)
 end
 function UpdateCanvasSize()
 	for i, v in FPSLibrary.Elements do
