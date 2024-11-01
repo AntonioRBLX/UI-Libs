@@ -1777,7 +1777,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					Option.Name = "Option #"..i
 					Option.Parent = OptionsLayout
 					Option.Visible = true
-					Option.Text = v
+					Option.Text = tostring(v)
 					local value = false
 					if table.find(dropdownsettings.CurrentOption,v) then value = true end
 					options[v] = {Option,value}
