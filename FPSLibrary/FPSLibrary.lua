@@ -1669,9 +1669,9 @@ function FPSLibrary:BootWindow(windowsettings)
 					local len = #dropdownsettings.CurrentOption
 					for i, v in dropdownsettings.CurrentOption do
 						if i < len then
-							str = str..v..", "
+							str = str..tostring(v)..", "
 						else
-							str = str..v
+							str = str..tostring(v)
 						end
 					end
 					if len <= 0 then
