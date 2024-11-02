@@ -273,10 +273,9 @@ function UpdateElementTip(enabled,element,tip,duration)
 	if enabled and tip then
 		a += 1
 		local b = a
-		local tipobject
 		connections[b] = {"Tip",element,element.MouseEnter:Connect(function()
 			local spawn = tick()
-			tipobject = FPSLibraryAssets:WaitForChild("Tip"):Clone()
+			local tipobject = FPSLibraryAssets:WaitForChild("Tip"):Clone()
 			tipobject.Parent = Interface
 			local renderstepped
 			renderstepped = RunService.RenderStepped:Connect(function()
@@ -289,9 +288,7 @@ function UpdateElementTip(enabled,element,tip,duration)
 				end
 			end)
 			element.MouseLeave:Once(function()
-				if tipobject then
-					tipobject:Destroy()
-				end
+				tipobject:Destroy()
 				renderstepped:Disconnect()
 			end)
 		end)}
