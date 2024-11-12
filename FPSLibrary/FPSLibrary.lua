@@ -1266,9 +1266,6 @@ function FPSLibrary:BootWindow(windowsettings)
 					Callback(togglesettings.Callback,togglesettings.CurrentValue)
 				end
 			end)
-			if togglesettings.Flag then
-				FPSLibrary.Flags[togglesettings.Flag] = {}
-			end
 			-- Set Metatable
 			setmetatable(ToggleModule,mt)
 			-- Elements Table
@@ -1286,8 +1283,11 @@ function FPSLibrary:BootWindow(windowsettings)
 			ToggleModule.Tip = togglesettings.Tip
 			ToggleModule.TipDuration = togglesettings.TipDuration
 			-- Update Flags
-			canupdateflags = true
-			UpdateFlags(togglesettings)
+			if togglesettings.Flag then
+				FPSLibrary.Flags[togglesettings.Flag] = {}
+				canupdateflags = true
+				UpdateFlags(togglesettings)
+			end
 			-- Return Module
 			return ToggleModule
 		end
@@ -1539,9 +1539,6 @@ function FPSLibrary:BootWindow(windowsettings)
 					end)
 				end
 			end)
-			if slidersettings.Flag then
-				FPSLibrary.Flags[slidersettings.Flag] = {}
-			end
 			-- Set Metatable
 			setmetatable(SliderModule,mt)
 			-- Elements Table
@@ -1569,8 +1566,11 @@ function FPSLibrary:BootWindow(windowsettings)
 			SliderModule.Tip = slidersettings.Tip
 			SliderModule.TipDuration = slidersettings.TipDuration
 			-- Update Flags
-			canupdateflags = true
-			UpdateFlags(slidersettings)
+			if slidersettings.Flag then
+				FPSLibrary.Flags[slidersettings.Flag] = {}
+				canupdateflags = true
+				UpdateFlags(slidersettings)
+			end
 			-- Return Module
 			return SliderModule
 		end
@@ -1835,9 +1835,6 @@ function FPSLibrary:BootWindow(windowsettings)
 					end
 				end)
 			end)
-			if dropdownsettings.Flag then
-				FPSLibrary.Flags[dropdownsettings.Flag] = {}
-			end
 			-- Set Metatable
 			setmetatable(DropdownModule,mt)
 			-- Elements Table
@@ -1856,8 +1853,11 @@ function FPSLibrary:BootWindow(windowsettings)
 			DropdownModule.Tip = dropdownsettings.Tip
 			DropdownModule.TipDuration = dropdownsettings.TipDuration
 			-- Update Flags
-			canupdateflags = true
-			UpdateFlags(dropdownsettings)
+			if dropdownsettings.Flag then
+				FPSLibrary.Flags[dropdownsettings.Flag] = {}
+				canupdateflags = true
+				UpdateFlags(dropdownsettings)
+			end
 			-- Return Module
 			return DropdownModule
 		end
@@ -2030,9 +2030,6 @@ function FPSLibrary:BootWindow(windowsettings)
 					TextBox.Text = TextBox.Text:sub(1,textboxsettings.CharacterLimit)
 				end
 			end)
-			if textboxsettings.Flag then
-				FPSLibrary.Flags[textboxsettings.Flag] = {}
-			end
 			-- Set Metatable
 			setmetatable(TextBoxModule,mt)
 			-- Elements Table
@@ -2052,8 +2049,11 @@ function FPSLibrary:BootWindow(windowsettings)
 			TextBoxModule.Tip = textboxsettings.Tip
 			TextBoxModule.TipDuration = textboxsettings.TipDuration
 			-- Update Flags
-			canupdateflags = true
-			UpdateFlags(textboxsettings)
+			if textboxsettings.Flag then
+				FPSLibrary.Flags[textboxsettings.Flag] = {}
+				canupdateflags = true
+				UpdateFlags(textboxsettings)
+			end
 			-- Return Module
 			return TextBoxModule
 		end
@@ -2349,9 +2349,6 @@ function FPSLibrary:BootWindow(windowsettings)
 			end)
 			layoutorder += 2
 			ColorPickerElement.LayoutOrder = layoutorder
-			if colorpickersettings.Flag then
-				FPSLibrary.Flags[colorpickersettings.Flag] = {}
-			end
 			-- Set Metatable
 			setmetatable(ColorPickerModule,mt)
 			-- Elements Table
@@ -2375,8 +2372,11 @@ function FPSLibrary:BootWindow(windowsettings)
 			ColorPickerModule.Tip = colorpickersettings.Tip
 			ColorPickerModule.TipDuration = colorpickersettings.TipDuration
 			-- Update Flags
-			canupdateflags = true
-			UpdateFlags(colorpickersettings)
+			if colorpickersettings.Flag then
+				FPSLibrary.Flags[colorpickersettings.Flag] = {}
+				canupdateflags = true
+				UpdateFlags(colorpickersettings)
+			end
 			-- Return Module
 			return ColorPickerModule
 		end
@@ -2555,9 +2555,6 @@ function FPSLibrary:BootWindow(windowsettings)
 			end)
 			layoutorder += 2
 			KeybindElement.LayoutOrder = layoutorder
-			if keybindsettings.Flag then
-				FPSLibrary.Flags[keybindsettings.Flag] = {}
-			end
 			-- Set Metatable
 			setmetatable(KeybindModule,mt)
 			-- Elements Table
@@ -2572,8 +2569,11 @@ function FPSLibrary:BootWindow(windowsettings)
 			KeybindModule.Tip = keybindsettings.Tip
 			KeybindModule.TipDuration = keybindsettings.TipDuration
 			-- Update Flags
-			canupdateflags = true
-			UpdateFlags(keybindsettings)
+			if keybindsettings.Flag then
+				FPSLibrary.Flags[keybindsettings.Flag] = {}
+				canupdateflags = true
+				UpdateFlags(keybindsettings)
+			end
 			-- Return Module
 			return KeybindModule
 		end
@@ -2786,9 +2786,6 @@ function FPSLibrary:BootWindow(windowsettings)
 			-- Return Module
 			return ParagraphModule
 		end
-		if tabsettings.Flag then
-			FPSLibrary.Flags[tabsettings.Flag] = {}
-		end
 		-- Set Metatable
 		setmetatable(TabModule,mt)
 		-- Elements Table
@@ -2807,8 +2804,11 @@ function FPSLibrary:BootWindow(windowsettings)
 		TabModule.Flag = tabsettings.Flag
 		TabModule.IgnoreList = tabsettings.IgnoreList
 		-- Update Flags
-		canupdateflags = true
-		UpdateFlags(tabsettings)
+		if tabsettings.Flag then
+			FPSLibrary.Flags[tabsettings.Flag] = {}
+			canupdateflags = true
+			UpdateFlags(tabsettings)
+		end
 		-- Return Module
 		return TabModule
 	end
