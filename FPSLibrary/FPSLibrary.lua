@@ -857,6 +857,7 @@ function FPSLibrary:BootWindow(windowsettings)
 		local mt = {}
 		-- Variables
 		local layoutorder = 0
+		local canupdateflags = false
 		-- Tab
 		local TabContainer = FPSLibraryAssets:WaitForChild("Tab"):Clone()
 		TabContainer.Parent = Interface
@@ -948,8 +949,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			else
 				return
 			end
-			UpdateCanvasSize()
-			if tabsettings.Flag then
+			if tabsettings.Flag and canupdateflags then
 				UpdateFlags(tabsettings)
 			end
 		end
@@ -1054,6 +1054,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
 					buttonsettings.SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
 					ButtonElement.Parent = buttonsettings.SectionParent
+					UpdateCanvasSize()
 				elseif idx == "Active" then
 					if typeof(value) ~= "boolean" then return end
 					buttonsettings.Active = value
@@ -1076,6 +1077,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if typeof(value) ~= "boolean" then return end
 					buttonsettings.Visible = value
 					ButtonElement.Visible = buttonsettings.Visible
+					UpdateCanvasSize()
 				elseif idx == "Tip" then
 					if typeof(value) ~= "string" and value ~= nil then return end
 					buttonsettings.Tip = value ~= nil and tostring(value) or value
@@ -1087,7 +1089,6 @@ function FPSLibrary:BootWindow(windowsettings)
 				else
 					return
 				end
-				UpdateCanvasSize()
 			end
 			-- Button Main
 			RippleEffects(ButtonElement)
@@ -1147,6 +1148,8 @@ function FPSLibrary:BootWindow(windowsettings)
 			local Glow = StatusFrame:WaitForChild("Glow")
 			local ToggleModule = {}
 			local mt = {}
+			-- Variables
+			local canupdateflags = false
 			-- Metatable Functions
 			function mt.__index(self,idx)
 				if idx == "Name" then
@@ -1201,6 +1204,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
 					togglesettings.SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
 					ToggleElement.Parent = togglesettings.SectionParent
+					UpdateCanvasSize()
 				elseif idx == "CurrentValue" then
 					if typeof(value) ~= "boolean" then return end
 					togglesettings.CurrentValue = value
@@ -1236,6 +1240,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if typeof(value) ~= "boolean" then return end
 					togglesettings.Visible = value
 					ToggleElement.Visible = togglesettings.Visible
+					UpdateCanvasSize()
 				elseif idx == "Tip" then
 					if typeof(value) ~= "string" and value ~= nil then return end
 					togglesettings.Tip = value ~= nil and tostring(value) or value
@@ -1247,8 +1252,7 @@ function FPSLibrary:BootWindow(windowsettings)
 				else
 					return
 				end
-				UpdateCanvasSize()
-				if togglesettings.Flag then
+				if togglesettings.Flag and canupdateflags then
 					UpdateFlags(togglesettings)
 				end
 			end
@@ -1281,6 +1285,9 @@ function FPSLibrary:BootWindow(windowsettings)
 			ToggleModule.Visible = togglesettings.Visible
 			ToggleModule.Tip = togglesettings.Tip
 			ToggleModule.TipDuration = togglesettings.TipDuration
+			-- Update Flags
+			canupdateflags = true
+			UpdateFlags(togglesettings)
 			-- Return Module
 			return ToggleModule
 		end
@@ -1340,6 +1347,8 @@ function FPSLibrary:BootWindow(windowsettings)
 			local ValueTextLabel = SliderBackground:WaitForChild("Value")
 			local SliderModule = {}
 			local mt = {}
+			-- Variables
+			local canupdateflags = false
 			-- Functions
 			local function SliderBlendColors()
 				SliderModule.SliderColor = BlendColors(
@@ -1441,6 +1450,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
 					slidersettings.SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
 					SliderElement.Parent = slidersettings.SectionParent
+					UpdateCanvasSize()
 				elseif idx == "MinValue" then
 					if typeof(value) ~= "number" then return end
 					slidersettings.MinValue = slidersettings.MinValue <= slidersettings.MaxValue and slidersettings.MinValue or slidersettings.MaxValue
@@ -1488,6 +1498,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if typeof(value) ~= "boolean" then return end
 					slidersettings.Visible = value
 					SliderElement.Visible = slidersettings.Visible
+					UpdateCanvasSize()
 				elseif idx == "Tip" then
 					if typeof(value) ~= "string" and value ~= nil then return end
 					slidersettings.Tip = value ~= nil and tostring(value) or value
@@ -1499,7 +1510,7 @@ function FPSLibrary:BootWindow(windowsettings)
 				else
 					return
 				end
-				if slidersettings.Flag then
+				if slidersettings.Flag and canupdateflags then
 					UpdateFlags(slidersettings)
 				end
 			end
@@ -1557,6 +1568,9 @@ function FPSLibrary:BootWindow(windowsettings)
 			SliderModule.Visible = slidersettings.Visible
 			SliderModule.Tip = slidersettings.Tip
 			SliderModule.TipDuration = slidersettings.TipDuration
+			-- Update Flags
+			canupdateflags = true
+			UpdateFlags(slidersettings)
 			-- Return Module
 			return SliderModule
 		end
@@ -1607,6 +1621,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			local mt = {}
 			-- Variables
 			local opened = false
+			local canupdateflags = false
 			-- Metatable Functions
 			function mt.__index(self,idx)
 				if idx == "Name" then
@@ -1688,6 +1703,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
 					dropdownsettings.SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
 					DropdownElement.Parent = dropdownsettings.SectionParent
+					UpdateCanvasSize()
 				elseif idx == "IgnoreList" then
 					if typeof(value) ~= "table" then return end
 					dropdownsettings.IgnoreList = value
@@ -1708,6 +1724,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if typeof(value) ~= "boolean" then return end
 					dropdownsettings.Visible = value
 					DropdownElement.Visible = dropdownsettings.Visible
+					UpdateCanvasSize()
 				elseif idx == "Tip" then
 					if typeof(value) ~= "string" and value ~= nil then return end
 					dropdownsettings.Tip = value ~= nil and tostring(value) or value
@@ -1719,8 +1736,7 @@ function FPSLibrary:BootWindow(windowsettings)
 				else
 					return
 				end
-				UpdateCanvasSize()
-				if dropdownsettings.Flag then
+				if dropdownsettings.Flag and canupdateflags then
 					UpdateFlags(dropdownsettings)
 				end
 			end
@@ -1839,6 +1855,9 @@ function FPSLibrary:BootWindow(windowsettings)
 			DropdownModule.Visible = dropdownsettings.Visible
 			DropdownModule.Tip = dropdownsettings.Tip
 			DropdownModule.TipDuration = dropdownsettings.TipDuration
+			-- Update Flags
+			canupdateflags = true
+			UpdateFlags(dropdownsettings)
 			-- Return Module
 			return DropdownModule
 		end
@@ -1878,6 +1897,8 @@ function FPSLibrary:BootWindow(windowsettings)
 			local TextBoxNameLabel = TextBoxElement:WaitForChild("NameTextLabel")
 			local TextBoxModule = {}
 			local mt = {}
+			-- Variables
+			local canupdateflags = false
 			-- Functions
 			local function TextBoxCallback()
 				local text = textboxsettings.CurrentValue
@@ -1949,6 +1970,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
 					textboxsettings.SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
 					TextBoxElement.Parent = textboxsettings.SectionParent
+					UpdateCanvasSize()
 				elseif idx == "CurrentValue" then
 					if typeof(value) ~= "string" then return end
 					textboxsettings.CurrentValue = value
@@ -1976,6 +1998,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if typeof(value) ~= "boolean" then return end
 					textboxsettings.Visible = value
 					TextBoxElement.Visible = textboxsettings.Visible
+					UpdateCanvasSize()
 				elseif idx == "Tip" then
 					if typeof(value) ~= "string" and value ~= nil then return end
 					textboxsettings.Tip = value ~= nil and tostring(value) or value
@@ -1987,8 +2010,7 @@ function FPSLibrary:BootWindow(windowsettings)
 				else
 					return
 				end
-				UpdateCanvasSize()
-				if textboxsettings.Flag then
+				if textboxsettings.Flag and canupdateflags then
 					UpdateFlags(textboxsettings)
 				end
 			end
@@ -2029,6 +2051,9 @@ function FPSLibrary:BootWindow(windowsettings)
 			TextBoxModule.Visible = textboxsettings.Visible
 			TextBoxModule.Tip = textboxsettings.Tip
 			TextBoxModule.TipDuration = textboxsettings.TipDuration
+			-- Update Flags
+			canupdateflags = true
+			UpdateFlags(textboxsettings)
 			-- Return Module
 			return TextBoxModule
 		end
@@ -2076,6 +2101,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			local Glow = ColorFrame:WaitForChild("Glow")
 			Glow.ImageTransparency = 0
 			local opened = false
+			local canupdateflags = false
 			local ColorPickerModule = {}
 			local renderstepped
 			local mt = {}
@@ -2175,6 +2201,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
 					colorpickersettings.SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
 					ColorPickerElement.Parent = colorpickersettings.SectionParent
+					UpdateCanvasSize()
 				elseif idx == "Active" then
 					if typeof(value) ~= "boolean" then return end
 					colorpickersettings.Active = value
@@ -2192,6 +2219,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if typeof(value) ~= "boolean" then return end
 					colorpickersettings.Visible = value
 					ColorPickerElement.Visible = colorpickersettings.Visible
+					UpdateCanvasSize()
 				elseif idx == "Tip" then
 					if typeof(value) ~= "string" and value ~= nil then return end
 					colorpickersettings.Tip = value ~= nil and tostring(value) or value
@@ -2203,8 +2231,7 @@ function FPSLibrary:BootWindow(windowsettings)
 				else
 					return
 				end
-				UpdateCanvasSize()
-				if colorpickersettings.Flag then
+				if colorpickersettings.Flag and canupdateflags then
 					UpdateFlags(colorpickersettings)
 				end
 			end
@@ -2347,6 +2374,9 @@ function FPSLibrary:BootWindow(windowsettings)
 			ColorPickerModule.Visible = colorpickersettings.Visible
 			ColorPickerModule.Tip = colorpickersettings.Tip
 			ColorPickerModule.TipDuration = colorpickersettings.TipDuration
+			-- Update Flags
+			canupdateflags = true
+			UpdateFlags(colorpickersettings)
 			-- Return Module
 			return ColorPickerModule
 		end
@@ -2381,6 +2411,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			local KeybindFrame = KeybindElement:WaitForChild("KeybindFrame")
 			local KeybindText = KeybindFrame:WaitForChild("Keybind")
 			local CheckingForKey = false
+			local canupdateflags = false
 			local KeybindModule = {}
 			local mt = {}
 			-- Metatable Functions
@@ -2435,6 +2466,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
 					keybindsettings.SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
 					KeybindElement.Parent = keybindsettings.SectionParent
+					UpdateCanvasSize()
 				elseif idx == "Active" then
 					if typeof(value) ~= "boolean" then return end
 					keybindsettings.Active = value
@@ -2452,6 +2484,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if typeof(value) ~= "boolean" then return end
 					keybindsettings.Visible = value
 					KeybindElement.Visible = keybindsettings.Visible
+					UpdateCanvasSize()
 				elseif idx == "Tip" then
 					if typeof(value) ~= "string" and value ~= nil then return end
 					keybindsettings.Tip = value ~= nil and tostring(value) or value
@@ -2463,8 +2496,7 @@ function FPSLibrary:BootWindow(windowsettings)
 				else
 					return
 				end
-				UpdateCanvasSize()
-				if keybindsettings.Flag then
+				if keybindsettings.Flag and canupdateflags then
 					UpdateFlags(keybindsettings)
 				end
 			end
@@ -2539,6 +2571,9 @@ function FPSLibrary:BootWindow(windowsettings)
 			KeybindModule.Visible = keybindsettings.Visible
 			KeybindModule.Tip = keybindsettings.Tip
 			KeybindModule.TipDuration = keybindsettings.TipDuration
+			-- Update Flags
+			canupdateflags = true
+			UpdateFlags(keybindsettings)
 			-- Return Module
 			return KeybindModule
 		end
@@ -2599,12 +2634,13 @@ function FPSLibrary:BootWindow(windowsettings)
 						TweenService:Create(Spacing,TweenOut50Sine,{Size = UDim2.new(1,0,0,0)}):Play()
 						TweenService:Create(SectionMinimizeButton,TweenOut32Sine,{Rotation = 180}):Play()
 					end
+					UpdateCanvasSize()
 				elseif idx == "Visible" then
 					if typeof(value) ~= "boolean" then return end
 					Visible = value
 					SectionContainer.Visible = Visible
+					UpdateCanvasSize()
 				end
-				UpdateCanvasSize()
 			end
 			-- Section Main
 			SectionMinimizeButton.MouseButton1Click:Connect(function()
@@ -2658,12 +2694,13 @@ function FPSLibrary:BootWindow(windowsettings)
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
 					SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
 					Separator.Parent = SectionParent
+					UpdateCanvasSize()
 				elseif idx == "Visible" then
 					if typeof(value) ~= "boolean" then return end
 					Visible = value
 					Separator.Visible = Visible
+					UpdateCanvasSize()
 				end
-				UpdateCanvasSize()
 			end
 			-- Section Main
 			layoutorder += 2
@@ -2726,12 +2763,13 @@ function FPSLibrary:BootWindow(windowsettings)
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
 					SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
 					Paragraph.Parent = SectionParent
+					UpdateCanvasSize()
 				elseif idx == "Visible" then
 					if typeof(value) ~= "boolean" then return end
 					Visible = value
 					Paragraph.Visible = Visible
+					UpdateCanvasSize()
 				end
-				UpdateCanvasSize()
 			end
 			-- Section Main
 			layoutorder += 2
@@ -2768,6 +2806,9 @@ function FPSLibrary:BootWindow(windowsettings)
 		TabModule.Position = tabsettings.Position
 		TabModule.Flag = tabsettings.Flag
 		TabModule.IgnoreList = tabsettings.IgnoreList
+		-- Update Flags
+		canupdateflags = true
+		UpdateFlags(tabsettings)
 		-- Return Module
 		return TabModule
 	end
