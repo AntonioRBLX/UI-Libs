@@ -15,9 +15,13 @@ ROBLOX User Interface Library Created By CITY512.
 - FPSLibrary Custom Notification Popup
 - Changed Tween Effects
 - ColorPicker Rainbow Mode
-- Fixed Config Saving Bugs
+- Bug Fixes (configurations crashing executors)
 - Mobile Supported Tab Minimizer
 - Roblox Studio Support (for interface beta testing)
+- ### [v1.1.1] 11/12/2024
+- Lag Issues Fixed
+- Bug Fixes (dropdown issues with non-string elements)
+- Fixed Key System Close Button
 
 ## Interface Preview
 
