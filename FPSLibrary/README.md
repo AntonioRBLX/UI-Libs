@@ -13,7 +13,7 @@ ROBLOX User Interface Library Created By CITY512.
 - ### [v1.1] 10/23/24
 - Improved GUI Appearance
 - FPSLibrary Custom Notification Popup
-- Changed Tween Effects
+- Added New Elements (keybinds and paragraphs)
 - ColorPicker Rainbow Mode
 - Bug Fixes (configurations crashing executors)
 - Mobile Supported Tab Minimizer
