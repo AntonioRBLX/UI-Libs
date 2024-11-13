@@ -1086,12 +1086,14 @@ function FPSLibrary:BootWindow(windowsettings)
 					if buttonsettings.Active then
 						Fade.Transparency = 1
 						ElementIcon.ImageTransparency = 1
+						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
 						ButtonNameLabel.Size = UDim2.new(1,0,1,0)
 						ButtonNameLabel.Position = UDim2.new(0,0,0,0)
 					else
 						Fade.Transparency = 0.75
 						ElementIcon.ImageTransparency = 0
 						ElementIcon.Image = Icons.DisabledElementIcon
+						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						ButtonNameLabel.Size = UDim2.new(1,-10,1,0)
 						ButtonNameLabel.Position = UDim2.new(0,10,0,0)
 					end
@@ -1252,9 +1254,11 @@ function FPSLibrary:BootWindow(windowsettings)
 					ToggleElement.Interactable = togglesettings.Active
 					if togglesettings.Active then
 						Fade.Transparency = 1
+						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
 						ElementIcon.Image = Icons.ToggleIcon
 					else
 						Fade.Transparency = 0.75
+						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						ElementIcon.Image = Icons.DisabledElementIcon
 					end
 				elseif idx == "Visible" then
@@ -1509,9 +1513,11 @@ function FPSLibrary:BootWindow(windowsettings)
 					SliderElement.Interactable = slidersettings.Active
 					if slidersettings.Active then
 						Fade.Transparency = 1
-						ElementIcon.Image = Icons.SliderIcon
+						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
+						ElementIcon.Image = Icons.ToggleIcon
 					else
 						Fade.Transparency = 0.75
+						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						ElementIcon.Image = Icons.DisabledElementIcon
 					end
 				elseif idx == "Visible" then
@@ -1734,9 +1740,11 @@ function FPSLibrary:BootWindow(windowsettings)
 					DropdownElement.Interactable = dropdownsettings.Active
 					if dropdownsettings.Active then
 						Fade.Transparency = 1
-						ElementIcon.Image = Icons.DropdownIcon
+						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
+						ElementIcon.Image = Icons.ToggleIcon
 					else
 						Fade.Transparency = 0.75
+						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						ElementIcon.Image = Icons.DisabledElementIcon
 					end
 				elseif idx == "Visible" then
@@ -2005,11 +2013,13 @@ function FPSLibrary:BootWindow(windowsettings)
 					if textboxsettings.Active then
 						Fade.Transparency = 1
 						TextBox.PlaceholderText = textboxsettings.PlaceholderText
+						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
 						ElementIcon.ImageTransparency = 1
 					else
 						Fade.Transparency = 0.75
 						TextBox.PlaceholderText = ""
                         ElementIcon.ImageTransparency = 0
+						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						ElementIcon.Image = Icons.DisabledElementIcon
 					end
 				elseif idx == "Visible" then
@@ -2227,9 +2237,11 @@ function FPSLibrary:BootWindow(windowsettings)
 					ColorPickerElement.Interactable = colorpickersettings.Active
 					if colorpickersettings.Active then
 						Fade.Transparency = 1
+						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
 						ElementIcon.Image = Icons.ColorPalleteIcon
 					else
 						Fade.Transparency = 0.75
+						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						ElementIcon.Image = Icons.DisabledElementIcon
 					end
 				elseif idx == "Visible" then
@@ -2491,9 +2503,11 @@ function FPSLibrary:BootWindow(windowsettings)
 					KeybindElement.Interactable = keybindsettings.Active
 					if keybindsettings.Active then
 						Fade.Transparency = 1
+						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
 						ElementIcon.Image = Icons.KeybindIcon
 					else
 						Fade.Transparency = 0.75
+						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						ElementIcon.Image = Icons.DisabledElementIcon
 					end
 				elseif idx == "Visible" then
