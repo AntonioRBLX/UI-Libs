@@ -1921,7 +1921,6 @@ function FPSLibrary:BootWindow(windowsettings)
 			-- Input
 			local TextBoxElement = FPSLibraryAssets:WaitForChild("TextBox"):Clone()
 			local TextBox = TextBoxElement:WaitForChild("TextBox")
-			local Fade = TextBoxElement:WaitForChild("Fade")
 			local ElementIcon = TextBox:WaitForChild("Icon")
 			local TextBoxNameLabel = TextBoxElement:WaitForChild("NameTextLabel")
 			local TextBoxModule = {}
@@ -2012,12 +2011,10 @@ function FPSLibrary:BootWindow(windowsettings)
 					textboxsettings.Active = value
 					TextBox.Interactable = textboxsettings.Active
 					if textboxsettings.Active then
-						Fade.Transparency = 1
 						TextBox.PlaceholderText = textboxsettings.PlaceholderText
 						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
 						ElementIcon.ImageTransparency = 1
 					else
-						Fade.Transparency = 0.75
 						TextBox.PlaceholderText = ""
                         ElementIcon.ImageTransparency = 0
 						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
