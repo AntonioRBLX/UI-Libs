@@ -198,6 +198,7 @@ function UpdateCanvasSize(Tab)
 			end
 		end
 	end
+	ElementsContainer.CanvasSize = UDim2.new(0,0,0,tabyoffset)
 	--[[
 	for i, v in FPSLibrary.Elements do
 		if v.ClassName == "Tab" then
