@@ -1486,7 +1486,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					ValueTextLabel.Text = slidersettings.FormatString ~= "" and string.format(slidersettings.FormatString,val) or tostring(val)
 					slidersettings.CurrentValue = val
 					TweenService:Create(Slider,TweenOut20Sine,{Size = UDim2.new(slidersettings.CurrentValue / slidersettings.MaxValue,0,1,0)}):Play()
-					Glow.ImageTransparency = slidersettings.CurrentValue == 0 and 1 or 0
+					Glow.ImageTransparency = slidersettings.CurrentValue == slidersettings.MinValue and 1 or 0
 					if slidersettings.BlendColors then
 						SliderBlendColors()
 					end
