@@ -97,7 +97,7 @@ function GenerateRandomString()
 end
 function PlaySound(id)
 	local sound = Instance.new("Sound", workspace)
-	sound.SoundId = "rbxassetid://"..tostring(id)
+	sound.SoundId = id
 	sound.PlayOnRemove = true
 	sound:Destroy()
 end
@@ -396,7 +396,8 @@ function FPSLibrary:Notify(settings)
 		settings.Message = settings.Message or "Notification Request"
 		settings.Button1 = settings.Button1 ~= "" and settings.Button1 or nil
 		settings.Button2 = settings.Button2 ~= "" and settings.Button2 or nil
-		settings.Icon = settings.Type == "error" and Icons.ErrorIcon or settings.Type == "info" and Icons.InfoIcon or settings.Type == "success" and Icons.SuccessIcon or settings.Icon or "rbxassetid://0"
+		settings.Icon = settings.Icon or settings.Type == "error" and Icons.ErrorIcon or settings.Type == "info" and Icons.InfoIcon or settings.Type == "success" and Icons.SuccessIcon or settings.Icon or "rbxassetid://0"
+		settings.Sound = settings.Type == "error" and "rbxassetid://2865228021" or settings.Type == "info" and "rbxassetid://3398620867" or settings.Type == "success" and "rbxassetid://3450794184"
 		settings.Duration = settings.Duration or 5
 		local NotificationExample = FPSLibraryAssets:WaitForChild("NotificationExample"):Clone()
 		NotificationExample.Parent = Interface
@@ -455,7 +456,7 @@ function FPSLibrary:Notify(settings)
 			end
 		end
 		if settings.Type then
-			PlaySound(settings.Type == "error" and 2865228021 or settings.Type == "info" and 3398620867 or settings.Type == "success" and 3450794184)
+			PlaySound(settings.Sound)
 		end
 		if settings.Image then
 			NotificationExample.Position = UDim2.new(1,0,1,-225)
@@ -1819,10 +1820,10 @@ function FPSLibrary:BootWindow(windowsettings)
 						local enabledoptions = CountEnabledOptions()
 						if dropdownsettings.MaxOptions ~= 1 and enabledoptions > dropdownsettings.MaxOptions then
 							value = false
-							PlaySound(138090596)
+							PlaySound("rbxassetid://138090596")
 						elseif enabledoptions < dropdownsettings.MinOptions then
 							value = true
-							PlaySound(138090596)
+							PlaySound("rbxassetid://138090596")
 						end
 						options[v] = {Option,value}
 						if dropdownsettings.MaxOptions == 1 then
