@@ -177,13 +177,34 @@ function CallbackErrorMessage(err)
 	})
 	warn(err)
 end
-function UpdateCanvasSize()
+function UpdateCanvasSize(Tab)
+	local ElementsContainer = Tab.Instance.Elements.Container
+	local tabyoffset = 0
+	for i, v in FPSLibrary.Elements do
+		if v.Instance.Parent == ElementsContainer then
+			tabyoffset += v.Instance.Size.Y.Offset + 6
+			if v.ClassName == "SectionParent" then
+				local sectionyoffset = 0
+				local SectionElementContainer = v.Instance.Dropdown.Container
+				for i, v in SectionElementContainer:GetChildren() do
+					if v.ClassName ~= "UIListLayout" then
+						sectionyoffset += v.Size.Y.Offset + 3
+					end
+				end
+				SectionElementContainer.CanvasSize = UDim2.new(0,0,0,sectionyoffset)
+				if v.Opened then
+					tabyoffset += v.DropdownSizeY - 4
+				end
+			end
+		end
+	end
+	--[[
 	for i, v in FPSLibrary.Elements do
 		if v.ClassName == "Tab" then
 			local yoffset = 0
 			local ElementsContainer = v.Instance.Elements.Container
 			for i, v in FPSLibrary.Elements do
-				if v.SectionParent == ElementsContainer or v.Instance.Parent == ElementsContainer then
+				if v.Instance.Parent == ElementsContainer or v.Instance.Parent == ElementsContainer then
 					yoffset += v.Instance.Size.Y.Offset + 6
 					if v.ClassName == "SectionParent" and v.Opened then
 						yoffset += v.DropdownSizeY - 4
@@ -195,13 +216,14 @@ function UpdateCanvasSize()
 			local yoffset = 0
 			local SectionElementContainer = v.Instance.Dropdown.Container
 			for i, v in FPSLibrary.Elements do
-				if v.SectionParent == SectionElementContainer then
+				if v.Instance.Parent == SectionElementContainer then
 					yoffset += v.Instance.Size.Y.Offset + 3
 				end
 			end
 			SectionElementContainer.CanvasSize = UDim2.new(0,0,0,yoffset)
 		end
 	end
+	]]
 end
 function ToggleTabVisibility()
 	for i, v in FPSLibrary.Elements do
@@ -1012,6 +1034,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			-- Button
 			local ButtonElement = FPSLibraryAssets:WaitForChild("Button"):Clone()
 			local ElementIcon = ButtonElement:WaitForChild("Icon")
+			local Fade = ButtonElement:WaitForChild("Fade")
 			local ButtonNameLabel = ButtonElement:WaitForChild("NameTextLabel")
 			local ButtonModule = {}
 			local mt = {}
@@ -1052,24 +1075,22 @@ function FPSLibrary:BootWindow(windowsettings)
 					ButtonNameLabel.RichText = buttonsettings.RichText
 				elseif idx == "SectionParent" then
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
-					buttonsettings.SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
-					ButtonElement.Parent = buttonsettings.SectionParent
-					UpdateCanvasSize()
+					buttonsettings.SectionParent = value and value.ClassName == "SectionParent" and value or TabModule
+					ButtonElement.Parent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
+					UpdateCanvasSize(TabModule)
 				elseif idx == "Active" then
 					if typeof(value) ~= "boolean" then return end
 					buttonsettings.Active = value
 					ButtonElement.Interactable = buttonsettings.Active
 					if buttonsettings.Active then
+						Fade.Transparency = 1
 						ElementIcon.ImageTransparency = 1
-						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
-						ButtonElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 						ButtonNameLabel.Size = UDim2.new(1,0,1,0)
 						ButtonNameLabel.Position = UDim2.new(0,0,0,0)
 					else
+						Fade.Transparency = 0.75
 						ElementIcon.ImageTransparency = 0
 						ElementIcon.Image = Icons.DisabledElementIcon
-						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
-						ButtonElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 						ButtonNameLabel.Size = UDim2.new(1,-10,1,0)
 						ButtonNameLabel.Position = UDim2.new(0,10,0,0)
 					end
@@ -1077,7 +1098,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if typeof(value) ~= "boolean" then return end
 					buttonsettings.Visible = value
 					ButtonElement.Visible = buttonsettings.Visible
-					UpdateCanvasSize()
+					UpdateCanvasSize(TabModule)
 				elseif idx == "Tip" then
 					if typeof(value) ~= "string" and value ~= nil then return end
 					buttonsettings.Tip = value ~= nil and tostring(value) or value
@@ -1143,6 +1164,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			-- Toggle
 			local ToggleElement = FPSLibraryAssets:WaitForChild("Toggle"):Clone()
 			local ElementIcon = ToggleElement:WaitForChild("Icon")
+			local Fade = ToggleElement:WaitForChild("Fade")
 			local ToggleNameLabel = ToggleElement:WaitForChild("NameTextLabel")
 			local StatusFrame = ToggleElement:WaitForChild("StatusFrame")
 			local Glow = StatusFrame:WaitForChild("Glow")
@@ -1202,9 +1224,9 @@ function FPSLibrary:BootWindow(windowsettings)
 					end
 				elseif idx == "SectionParent" then
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
-					togglesettings.SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
-					ToggleElement.Parent = togglesettings.SectionParent
-					UpdateCanvasSize()
+					togglesettings.SectionParent = value and value.ClassName == "SectionParent" and value or TabModule
+					ToggleElement.Parent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
+					UpdateCanvasSize(TabModule)
 				elseif idx == "CurrentValue" then
 					if typeof(value) ~= "boolean" then return end
 					togglesettings.CurrentValue = value
@@ -1228,19 +1250,17 @@ function FPSLibrary:BootWindow(windowsettings)
 					togglesettings.Active = value
 					ToggleElement.Interactable = togglesettings.Active
 					if togglesettings.Active then
+						Fade.Transparency = 1
 						ElementIcon.Image = Icons.ToggleIcon
-						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
-						ToggleElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
+						Fade.Transparency = 0.75
 						ElementIcon.Image = Icons.DisabledElementIcon
-						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
-						ToggleElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
 					if typeof(value) ~= "boolean" then return end
 					togglesettings.Visible = value
 					ToggleElement.Visible = togglesettings.Visible
-					UpdateCanvasSize()
+					UpdateCanvasSize(TabModule)
 				elseif idx == "Tip" then
 					if typeof(value) ~= "string" and value ~= nil then return end
 					togglesettings.Tip = value ~= nil and tostring(value) or value
@@ -1340,6 +1360,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			-- Slider
 			local SliderElement = FPSLibraryAssets:WaitForChild("Slider"):Clone()
 			local ElementIcon = SliderElement:WaitForChild("Icon")
+			local Fade = SliderElement:WaitForChild("Fade")
 			local SliderNameLabel = SliderElement:WaitForChild("NameTextLabel")
 			local SliderBackground = SliderElement:WaitForChild("SliderSection"):WaitForChild("SliderBackground")
 			local Slider = SliderBackground:WaitForChild("Slider")
@@ -1448,9 +1469,9 @@ function FPSLibrary:BootWindow(windowsettings)
 					end
 				elseif idx == "SectionParent" then
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
-					slidersettings.SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
-					SliderElement.Parent = slidersettings.SectionParent
-					UpdateCanvasSize()
+					slidersettings.SectionParent = value and value.ClassName == "SectionParent" and value or TabModule
+					SliderElement.Parent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
+					UpdateCanvasSize(TabModule)
 				elseif idx == "MinValue" then
 					if typeof(value) ~= "number" then return end
 					slidersettings.MinValue = slidersettings.MinValue <= slidersettings.MaxValue and slidersettings.MinValue or slidersettings.MaxValue
@@ -1486,19 +1507,17 @@ function FPSLibrary:BootWindow(windowsettings)
 					slidersettings.Active = value
 					SliderElement.Interactable = slidersettings.Active
 					if slidersettings.Active then
+						Fade.Transparency = 1
 						ElementIcon.Image = Icons.SliderIcon
-						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
-						SliderElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
+						Fade.Transparency = 0.75
 						ElementIcon.Image = Icons.DisabledElementIcon
-						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
-						SliderElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
 					if typeof(value) ~= "boolean" then return end
 					slidersettings.Visible = value
 					SliderElement.Visible = slidersettings.Visible
-					UpdateCanvasSize()
+					UpdateCanvasSize(TabModule)
 				elseif idx == "Tip" then
 					if typeof(value) ~= "string" and value ~= nil then return end
 					slidersettings.Tip = value ~= nil and tostring(value) or value
@@ -1615,6 +1634,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			-- Dropdown
 			local DropdownElement = FPSLibraryAssets:WaitForChild("Dropdown"):Clone()
 			local ElementIcon = DropdownElement:WaitForChild("Icon")
+			local Fade = DropdownElement:WaitForChild("Fade")
 			local DropdownNameLabel = DropdownElement:WaitForChild("NameTextLabel")
 			local CurrentOptionLabel = DropdownElement:WaitForChild("CurrentOptionTextLabel")
 			local DropdownModule = {}
@@ -1701,9 +1721,9 @@ function FPSLibrary:BootWindow(windowsettings)
 					dropdownsettings.CallbackOnSelect = value
 				elseif idx == "SectionParent" then
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
-					dropdownsettings.SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
-					DropdownElement.Parent = dropdownsettings.SectionParent
-					UpdateCanvasSize()
+					dropdownsettings.SectionParent = value and value.ClassName == "SectionParent" and value or TabModule
+					DropdownElement.Parent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
+					UpdateCanvasSize(TabModule)
 				elseif idx == "IgnoreList" then
 					if typeof(value) ~= "table" then return end
 					dropdownsettings.IgnoreList = value
@@ -1712,19 +1732,17 @@ function FPSLibrary:BootWindow(windowsettings)
 					dropdownsettings.Active = value
 					DropdownElement.Interactable = dropdownsettings.Active
 					if dropdownsettings.Active then
+						Fade.Transparency = 1
 						ElementIcon.Image = Icons.DropdownIcon
-						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
-						DropdownElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
+						Fade.Transparency = 0.75
 						ElementIcon.Image = Icons.DisabledElementIcon
-						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
-						DropdownElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
 					if typeof(value) ~= "boolean" then return end
 					dropdownsettings.Visible = value
 					DropdownElement.Visible = dropdownsettings.Visible
-					UpdateCanvasSize()
+					UpdateCanvasSize(TabModule)
 				elseif idx == "Tip" then
 					if typeof(value) ~= "string" and value ~= nil then return end
 					dropdownsettings.Tip = value ~= nil and tostring(value) or value
@@ -1893,6 +1911,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			-- Input
 			local TextBoxElement = FPSLibraryAssets:WaitForChild("TextBox"):Clone()
 			local TextBox = TextBoxElement:WaitForChild("TextBox")
+			local Fade = TextBoxElement:WaitForChild("Fade")
 			local ElementIcon = TextBox:WaitForChild("Icon")
 			local TextBoxNameLabel = TextBoxElement:WaitForChild("NameTextLabel")
 			local TextBoxModule = {}
@@ -1968,9 +1987,9 @@ function FPSLibrary:BootWindow(windowsettings)
 					TextBox.ClearTextOnFocus = textboxsettings.ClearTextOnFocus
 				elseif idx == "SectionParent" then
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
-					textboxsettings.SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
-					TextBoxElement.Parent = textboxsettings.SectionParent
-					UpdateCanvasSize()
+					textboxsettings.SectionParent = value and value.ClassName == "SectionParent" and value or TabModule
+					TextBoxElement.Parent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
+					UpdateCanvasSize(TabModule)
 				elseif idx == "CurrentValue" then
 					if typeof(value) ~= "string" then return end
 					textboxsettings.CurrentValue = value
@@ -1983,22 +2002,20 @@ function FPSLibrary:BootWindow(windowsettings)
 					textboxsettings.Active = value
 					TextBox.Interactable = textboxsettings.Active
 					if textboxsettings.Active then
+						Fade.Transparency = 1
 						TextBox.PlaceholderText = textboxsettings.PlaceholderText
 						ElementIcon.ImageTransparency = 1
-						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
-						TextBoxElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
+						Fade.Transparency = 0.75
 						TextBox.PlaceholderText = ""
                         ElementIcon.ImageTransparency = 0
 						ElementIcon.Image = Icons.DisabledElementIcon
-						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
-						TextBoxElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
 					if typeof(value) ~= "boolean" then return end
 					textboxsettings.Visible = value
 					TextBoxElement.Visible = textboxsettings.Visible
-					UpdateCanvasSize()
+					UpdateCanvasSize(TabModule)
 				elseif idx == "Tip" then
 					if typeof(value) ~= "string" and value ~= nil then return end
 					textboxsettings.Tip = value ~= nil and tostring(value) or value
@@ -2096,6 +2113,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			-- Variables
 			local ColorPickerElement = FPSLibraryAssets:WaitForChild("ColorPicker"):Clone()
 			local ElementIcon = ColorPickerElement:WaitForChild("Icon")
+			local Fade = ColorPickerElement:WaitForChild("Fade")
 			local ColorPickerNameLabel = ColorPickerElement:WaitForChild("NameTextLabel")
 			local ColorFrame = ColorPickerElement:WaitForChild("ColorFrame")
 			local Glow = ColorFrame:WaitForChild("Glow")
@@ -2199,27 +2217,25 @@ function FPSLibrary:BootWindow(windowsettings)
 					colorpickersettings.RainbowCallback = value
 				elseif idx == "SectionParent" then
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
-					colorpickersettings.SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
-					ColorPickerElement.Parent = colorpickersettings.SectionParent
-					UpdateCanvasSize()
+					colorpickersettings.SectionParent = value and value.ClassName == "SectionParent" and value or TabModule
+					ColorPickerElement.Parent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
+					UpdateCanvasSize(TabModule)
 				elseif idx == "Active" then
 					if typeof(value) ~= "boolean" then return end
 					colorpickersettings.Active = value
 					ColorPickerElement.Interactable = colorpickersettings.Active
 					if colorpickersettings.Active then
+						Fade.Transparency = 1
 						ElementIcon.Image = Icons.ColorPalleteIcon
-						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
-						ColorPickerElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
+						Fade.Transparency = 0.75
 						ElementIcon.Image = Icons.DisabledElementIcon
-						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
-						ColorPickerElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
 					if typeof(value) ~= "boolean" then return end
 					colorpickersettings.Visible = value
 					ColorPickerElement.Visible = colorpickersettings.Visible
-					UpdateCanvasSize()
+					UpdateCanvasSize(TabModule)
 				elseif idx == "Tip" then
 					if typeof(value) ~= "string" and value ~= nil then return end
 					colorpickersettings.Tip = value ~= nil and tostring(value) or value
@@ -2407,6 +2423,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			-- Variables
 			local KeybindElement = FPSLibraryAssets:WaitForChild("Keybind"):Clone()
 			local ElementIcon = KeybindElement:WaitForChild("Icon")
+			local Fade = KeybindElement:WaitForChild("Fade")
 			local KeybindNameLabel = KeybindElement:WaitForChild("NameTextLabel")
 			local KeybindFrame = KeybindElement:WaitForChild("KeybindFrame")
 			local KeybindText = KeybindFrame:WaitForChild("Keybind")
@@ -2464,27 +2481,25 @@ function FPSLibrary:BootWindow(windowsettings)
 					keybindsettings.HoldToInteract = value
 				elseif idx == "SectionParent" then
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
-					keybindsettings.SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
-					KeybindElement.Parent = keybindsettings.SectionParent
-					UpdateCanvasSize()
+					keybindsettings.SectionParent = value and value.ClassName == "SectionParent" and value or TabModule
+					KeybindElement.Parent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
+					UpdateCanvasSize(TabModule)
 				elseif idx == "Active" then
 					if typeof(value) ~= "boolean" then return end
 					keybindsettings.Active = value
 					KeybindElement.Interactable = keybindsettings.Active
 					if keybindsettings.Active then
+						Fade.Transparency = 1
 						ElementIcon.Image = Icons.KeybindIcon
-						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
-						KeybindElement.BackgroundColor3 = Color3.fromRGB(97,97,97)
 					else
+						Fade.Transparency = 0.75
 						ElementIcon.Image = Icons.DisabledElementIcon
-						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
-						KeybindElement.BackgroundColor3 = Color3.fromRGB(69,69,69)
 					end
 				elseif idx == "Visible" then
 					if typeof(value) ~= "boolean" then return end
 					keybindsettings.Visible = value
 					KeybindElement.Visible = keybindsettings.Visible
-					UpdateCanvasSize()
+					UpdateCanvasSize(TabModule)
 				elseif idx == "Tip" then
 					if typeof(value) ~= "string" and value ~= nil then return end
 					keybindsettings.Tip = value ~= nil and tostring(value) or value
@@ -2634,12 +2649,12 @@ function FPSLibrary:BootWindow(windowsettings)
 						TweenService:Create(Spacing,TweenOut50Sine,{Size = UDim2.new(1,0,0,0)}):Play()
 						TweenService:Create(SectionMinimizeButton,TweenOut32Sine,{Rotation = 180}):Play()
 					end
-					UpdateCanvasSize()
+					UpdateCanvasSize(TabModule)
 				elseif idx == "Visible" then
 					if typeof(value) ~= "boolean" then return end
 					Visible = value
 					SectionContainer.Visible = Visible
-					UpdateCanvasSize()
+					UpdateCanvasSize(TabModule)
 				end
 			end
 			-- Section Main
@@ -2692,14 +2707,14 @@ function FPSLibrary:BootWindow(windowsettings)
 					Separator.Text = Text
 				elseif idx == "SectionParent" then
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
-					SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
-					Separator.Parent = SectionParent
-					UpdateCanvasSize()
+					SectionParent = value and value.ClassName == "SectionParent" and value or TabModule
+					Separator.Parent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
+					UpdateCanvasSize(TabModule)
 				elseif idx == "Visible" then
 					if typeof(value) ~= "boolean" then return end
 					Visible = value
 					Separator.Visible = Visible
-					UpdateCanvasSize()
+					UpdateCanvasSize(TabModule)
 				end
 			end
 			-- Section Main
@@ -2755,20 +2770,21 @@ function FPSLibrary:BootWindow(windowsettings)
 				elseif idx == "Content" then
 					if typeof(value) ~= "string" then return end
 					Content = value
+					ContentLabel.TextWrapped = false
 					ContentLabel.Text = Content
 					ContentLabel.Size = UDim2.new(0,80,100,0)
-					Paragraph.Size = UDim2.new(0,80,0,12 + ContentLabel.TextBounds.Y)
-					ContentLabel.Size = UDim2.new(0,80,1,-ContentLabel.TextBounds.Y)
+					Paragraph.Size = UDim2.new(0,80,0,12 * math.ceil(ContentLabel.TextBounds.X/80))
+					ContentLabel.TextWrapped = true
 				elseif idx == "SectionParent" then
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
-					SectionParent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
-					Paragraph.Parent = SectionParent
-					UpdateCanvasSize()
+					SectionParent = value and value.ClassName == "SectionParent" and value or TabModule
+					Paragraph.Parent = value and value.ClassName == "SectionParent" and value.Instance.Dropdown.Container or ElementsContainer
+					UpdateCanvasSize(TabModule)
 				elseif idx == "Visible" then
 					if typeof(value) ~= "boolean" then return end
 					Visible = value
 					Paragraph.Visible = Visible
-					UpdateCanvasSize()
+					UpdateCanvasSize(TabModule)
 				end
 			end
 			-- Section Main
