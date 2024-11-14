@@ -1170,8 +1170,9 @@ function FPSLibrary:BootWindow(windowsettings)
 			local ElementIcon = ToggleElement:WaitForChild("Icon")
 			local Fade = ToggleElement:WaitForChild("Fade")
 			local ToggleNameLabel = ToggleElement:WaitForChild("NameTextLabel")
-			local StatusFrame = ToggleElement:WaitForChild("StatusFrame")
-			local Glow = StatusFrame:WaitForChild("Glow")
+			local SwitchBackground = ToggleElement:WaitForChild("Switch")
+			local SwitchCircle = SwitchBackground:WaitForChild("Circle")
+			local SwitchGlow = SwitchBackground:WaitForChild("Glow")
 			local ToggleModule = {}
 			local mt = {}
 			-- Variables
@@ -1223,8 +1224,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if typeof(value) ~= "Color3" then return end
 					togglesettings.ActivatedColor = value
 					if togglesettings.CurrentValue then
-						TweenService:Create(Glow,Tween32Linear,{ImageColor3 = togglesettings.ActivatedColor}):Play()
-						TweenService:Create(StatusFrame,Tween32Linear,{BackgroundColor3 = togglesettings.ActivatedColor}):Play()
+						TweenService:Create(SwitchBackground,TweenOut32Sine,{BackgroundColor3 = togglesettings.ActivatedColor}):Play()
 					end
 				elseif idx == "SectionParent" then
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
@@ -1235,16 +1235,13 @@ function FPSLibrary:BootWindow(windowsettings)
 					if typeof(value) ~= "boolean" then return end
 					togglesettings.CurrentValue = value
 					if togglesettings.CurrentValue then
-						if Glow.ImageTransparency == 1 then
-							Glow.ImageColor3 = togglesettings.ActivatedColor
-						else
-							TweenService:Create(Glow,Tween32Linear,{ImageColor3 = togglesettings.ActivatedColor}):Play()
-						end
-						TweenService:Create(StatusFrame,Tween32Linear,{BackgroundColor3 = togglesettings.ActivatedColor}):Play()
-						TweenService:Create(Glow,Tween32Linear,{ImageTransparency = 0}):Play()
+						TweenService:Create(SwitchCircle,TweenOut32Sine,{Position = UDim2.new(0,16,0.5,0)}):Play()
+						TweenService:Create(SwitchGlow,TweenOut32Sine,{ImageTransparency = 0}):Play()
+						TweenService:Create(SwitchBackground,TweenOut32Sine,{BackgroundColor3 = togglesettings.ActivatedColor}):Play()
 					else
-						TweenService:Create(StatusFrame,Tween32Linear,{BackgroundColor3 = Color3.fromRGB(58,58,58)}):Play()
-						TweenService:Create(Glow,Tween32Linear,{ImageTransparency = 1}):Play()
+						TweenService:Create(SwitchCircle,TweenOut32Sine,{Position = UDim2.new(0,3,0.5,0)}):Play()
+						TweenService:Create(SwitchGlow,TweenOut32Sine,{ImageTransparency = 1}):Play()
+						TweenService:Create(SwitchBackground,TweenOut32Sine,{BackgroundColor3 = Color3.fromRGB(54, 54, 54)}):Play()
 					end
 				elseif idx == "IgnoreList" then
 					if typeof(value) ~= "table" then return end
@@ -1257,10 +1254,14 @@ function FPSLibrary:BootWindow(windowsettings)
 						Fade.Transparency = 1
 						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
 						ElementIcon.Image = Icons.ToggleIcon
+						ToggleNameLabel.Size = UDim2.new(1,-26,1,0)
+						ToggleNameLabel.Position = UDim2.new(0,0,0,0)
 					else
 						Fade.Transparency = 0.75
 						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						ElementIcon.Image = Icons.DisabledElementIcon
+						ToggleNameLabel.Size = UDim2.new(1,-36,1,0)
+						ToggleNameLabel.Position = UDim2.new(0,10,0,0)
 					end
 				elseif idx == "Visible" then
 					if typeof(value) ~= "boolean" then return end
@@ -2282,9 +2283,9 @@ function FPSLibrary:BootWindow(windowsettings)
 				local ValueSliderArrow = ValueSlider:WaitForChild("Arrow")
 				local ColorCodeTextbox = Container:WaitForChild("ColorCode")
 				local RainbowToggle = Container:WaitForChild("RainbowToggle")
-				local SwitchContainer = RainbowToggle:WaitForChild("Switch")
-				local SwitchCircle = SwitchContainer:WaitForChild("Circle")
-				local SwitchGlow = SwitchContainer:WaitForChild("Glow")
+				local SwitchBackground = RainbowToggle:WaitForChild("Switch")
+				local SwitchCircle = SwitchBackground:WaitForChild("Circle")
+				local SwitchGlow = SwitchBackground:WaitForChild("Glow")
 				ColorSelectionCursor.Position = UDim2.new(1-hue,0,1-sat,0)
 				ValueSliderArrow.Position = UDim2.new(0,4,1-val,0)
 				local function ChangeColor()
@@ -2298,7 +2299,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					end
 				end
 				if colorpickersettings.Rainbow then
-					SwitchContainer.BackgroundColor3 = Color3.fromRGB(255, 107, 107)
+					SwitchBackground.BackgroundColor3 = Color3.fromRGB(255, 107, 107)
 					SwitchCircle.Position = UDim2.new(0,16,0.5,0)
 					SwitchGlow.ImageTransparency = 0
 				end
@@ -2342,12 +2343,12 @@ function FPSLibrary:BootWindow(windowsettings)
 					if colorpickersettings.Rainbow then
 						TweenService:Create(SwitchCircle,TweenOut32Sine,{Position = UDim2.new(0,16,0.5,0)}):Play()
 						TweenService:Create(SwitchGlow,TweenOut32Sine,{ImageTransparency = 0}):Play()
-						TweenService:Create(SwitchContainer,TweenOut32Sine,{BackgroundColor3 = Color3.fromRGB(255, 107, 107)}):Play()
+						TweenService:Create(SwitchBackground,TweenOut32Sine,{BackgroundColor3 = Color3.fromRGB(255, 107, 107)}):Play()
 					else
 						ColorPickerModule.CurrentColor = Color3.fromHSV(hue,sat,val)
 						TweenService:Create(SwitchCircle,TweenOut32Sine,{Position = UDim2.new(0,3,0.5,0)}):Play()
 						TweenService:Create(SwitchGlow,TweenOut32Sine,{ImageTransparency = 1}):Play()
-						TweenService:Create(SwitchContainer,TweenOut32Sine,{BackgroundColor3 = Color3.fromRGB(31, 31, 31)}):Play()
+						TweenService:Create(SwitchBackground,TweenOut32Sine,{BackgroundColor3 = Color3.fromRGB(31, 31, 31)}):Play()
 					end
 				end)
 				local function Close()
@@ -2362,8 +2363,8 @@ function FPSLibrary:BootWindow(windowsettings)
 					if colorpickersettings.Rainbow then
 						local time = tick() - executespawn
 						local hue = time * colorpickersettings.RainbowSpeed - math.floor(time * colorpickersettings.RainbowSpeed)
-						local _,_,val = SwitchContainer.BackgroundColor3:ToHSV()
-						SwitchContainer.BackgroundColor3 = Color3.fromHSV(hue,163/255,val)
+						local _,_,val = SwitchBackground.BackgroundColor3:ToHSV()
+						SwitchBackground.BackgroundColor3 = Color3.fromHSV(hue,163/255,val)
 						SwitchGlow.ImageColor3 = Color3.fromHSV(hue,163/255,1)
 					end
 					ColorPicker.Position = UDim2.new(0,ColorPickerElement.AbsolutePosition.X,0,ColorPickerElement.AbsolutePosition.Y + 12)
