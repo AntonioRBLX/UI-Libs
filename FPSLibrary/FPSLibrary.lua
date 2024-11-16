@@ -888,6 +888,7 @@ function FPSLibrary:BootWindow(windowsettings)
 		TabContainer.Size = UDim2.new(0,112,0,0)
 		TabContainer.Position = tabsettings.Position - UDim2.new(0,2,0,2)
 		TweenService:Create(TabContainer,TweenOut50Sine,{Size = UDim2.new(0,112,0,tabsettings.Opened and tabsettings.SizeY + 37 or 37)}):Play()
+		local DropShadow = TabContainer:WaitForChild("DropShadow")
 		local Tab = TabContainer:WaitForChild("Frame")
 		local Title = Tab:WaitForChild("Title")
 		local Subtitle = Tab:WaitForChild("Subtitle")
@@ -943,10 +944,12 @@ function FPSLibrary:BootWindow(windowsettings)
 				if tabsettings.Opened then
 					TweenService:Create(ElementsFrame,TweenOut75Sine,{Size = UDim2.new(1,0,0,tabsettings.SizeY + 10)}):Play()
 					TweenService:Create(TabContainer,TweenOut75Sine,{Size = UDim2.new(0,112,0,tabsettings.SizeY + 37)}):Play()
+					TweenService:Create(DropShadow,TweenOut75Sine,{Size = UDim2.new(0,112,0,tabsettings.SizeY + 37)}):Play()
 					TweenService:Create(MinimizeButton,TweenOut32Sine,{Rotation = 0}):Play()
 				else
 					TweenService:Create(ElementsFrame,TweenOut75Sine,{Size = UDim2.new(1,0,0,10)}):Play()
 					TweenService:Create(TabContainer,TweenOut75Sine,{Size = UDim2.new(0,112,0,37)}):Play()
+					TweenService:Create(DropShadow,TweenOut75Sine,{Size = UDim2.new(0,112,0,37)}):Play()
 					TweenService:Create(MinimizeButton,TweenOut32Sine,{Rotation = 180}):Play()
 				end
 			elseif idx == "CanvasSizeY" then
