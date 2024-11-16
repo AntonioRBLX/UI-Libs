@@ -49,8 +49,10 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY5
 ```lua
 Library:Notify({
 	Type = "error"; -- (Required) types: error, info, success, set to nil for normal notification
-    	Message = "This is an example message."; -- (Required)
-	Image = "rbxassetid://97207553955899"; -- (Optional) delete this line or set to nil for no image
+	Message = "This is an example message."; -- (Required)
+	Icon = "rbxassetid://76316461447556"; -- (Optional) delete this line or set to nil for no image / custom notification type icon.
+	Image = "rbxassetid://97207553955899"; -- (Optional) Shows a giant image at the center of the notification interface. Delete this line or set to nil for no image
+	Sound = "rbxassetid://3398620867"; -- (Optional) delete this line or set to nil for no image / custom notification type icon.
 	Duration = 10; -- (Required)
 	Actions = { -- (Optional) remove for no action button
 		Action1 = {
