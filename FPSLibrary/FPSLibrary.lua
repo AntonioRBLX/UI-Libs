@@ -2356,13 +2356,14 @@ function FPSLibrary:BootWindow(windowsettings)
 					end
 				end)
 				RainbowToggle.MouseButton1Click:Connect(function()
+					oldcolor = colorpickersettings.CurrentColor
 					ColorPickerModule.Rainbow = not colorpickersettings.Rainbow
 					if colorpickersettings.Rainbow then
 						TweenService:Create(SwitchCircle,TweenOut32Sine,{Position = UDim2.new(0,16,0.5,0)}):Play()
 						TweenService:Create(SwitchGlow,TweenOut32Sine,{ImageTransparency = 0}):Play()
 						TweenService:Create(SwitchBackground,TweenOut32Sine,{BackgroundColor3 = Color3.fromRGB(255, 107, 107)}):Play()
 					else
-						ColorPickerModule.CurrentColor = Color3.fromHSV(hue,sat,val)
+						ColorPickerModule.CurrentColor = oldcolor
 						TweenService:Create(SwitchCircle,TweenOut32Sine,{Position = UDim2.new(0,3,0.5,0)}):Play()
 						TweenService:Create(SwitchGlow,TweenOut32Sine,{ImageTransparency = 1}):Play()
 						TweenService:Create(SwitchBackground,TweenOut32Sine,{BackgroundColor3 = Color3.fromRGB(31, 31, 31)}):Play()
