@@ -473,7 +473,7 @@ function FPSLibrary:Notify(settings)
 	end)
 end
 function FPSLibrary:SaveConfiguration(filename)
-	if typeof(filename) == "string" and LocalConfigurationFolderName and LocalConfigurationSubFolderName and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) then
+	if typeof(filename) == "string" and filename ~= "" and LocalConfigurationFolderName and LocalConfigurationSubFolderName and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) then
 		local suc, err = pcall(function()
 			local spawn = tick()
 			local canwritefile = true
@@ -516,7 +516,7 @@ function FPSLibrary:SaveConfiguration(filename)
 end
 function FPSLibrary:LoadConfiguration(filename,callback)
 	if callback ~= nil and typeof(callback) ~= "boolean" then return end
-	if typeof(filename) == "string" then
+	if typeof(filename) == "string" and filename ~= "" then
 		if LocalConfigurationFolderName and LocalConfigurationSubFolderName and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) and isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) then
 			LoadFile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename,callback)
 		end
@@ -539,7 +539,7 @@ function FPSLibrary:LoadConfiguration(filename,callback)
 	end
 end
 function FPSLibrary:DeleteConfiguration(filename)
-	if typeof(filename) == "string" and LocalConfigurationFolderName and LocalConfigurationSubFolderName and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) and isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) then
+	if typeof(filename) == "string" and filename ~= "" and LocalConfigurationFolderName and LocalConfigurationSubFolderName and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) and isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) then
 		local suc, res = pcall(function()
 			delfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename)
 		end)
