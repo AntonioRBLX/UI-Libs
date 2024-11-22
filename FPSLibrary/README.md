@@ -127,13 +127,6 @@ Library:LoadConfiguration(nil,true) -- 2nd argument is still to callback element
 ```lua
 Window:PromptDiscordInvite() -- If you want to prompt invite on boot, put it right under the BootWindow
 ```
-
-### Organize Tabs
-
-```lua
-Window:OrganizeTabs(25,25,0) -- x, y, padding
-```
-
 > ## Elements
 
 ### Create Tab
