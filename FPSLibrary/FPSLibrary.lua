@@ -1238,12 +1238,12 @@ function FPSLibrary:BootWindow(windowsettings)
 					if typeof(value) ~= "boolean" then return end
 					togglesettings.CurrentValue = value
 					if togglesettings.CurrentValue then
-						TweenService:Create(SwitchCircle,TweenOut32Sine,{Position = UDim2.new(0,13,0.5,0)}):Play()
+						TweenService:Create(SwitchCircle,TweenOut32Sine,{Position = UDim2.new(0,14,0.5,0)}):Play()
 						TweenService:Create(SwitchGlow,TweenOut32Sine,{ImageTransparency = 0}):Play()
 						TweenService:Create(SwitchGlow,TweenOut32Sine,{ImageColor3 = togglesettings.ActivatedColor}):Play()
 						TweenService:Create(SwitchBackground,TweenOut32Sine,{BackgroundColor3 = togglesettings.ActivatedColor}):Play()
 					else
-						TweenService:Create(SwitchCircle,TweenOut32Sine,{Position = UDim2.new(0,3,0.5,0)}):Play()
+						TweenService:Create(SwitchCircle,TweenOut32Sine,{Position = UDim2.new(0,2,0.5,0)}):Play()
 						TweenService:Create(SwitchGlow,TweenOut32Sine,{ImageTransparency = 1}):Play()
 						TweenService:Create(SwitchGlow,TweenOut32Sine,{ImageColor3 = Color3.fromRGB(54, 54, 54)}):Play()
 						TweenService:Create(SwitchBackground,TweenOut32Sine,{BackgroundColor3 = Color3.fromRGB(54, 54, 54)}):Play()
