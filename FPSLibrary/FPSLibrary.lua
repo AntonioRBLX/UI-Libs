@@ -398,7 +398,7 @@ function FPSLibrary:Notify(settings)
 		settings.Button1 = settings.Button1 ~= "" and settings.Button1 or nil
 		settings.Button2 = settings.Button2 ~= "" and settings.Button2 or nil
 		settings.Icon = settings.Icon or settings.Type == "error" and Icons.ErrorIcon or settings.Type == "info" and Icons.InfoIcon or settings.Type == "success" and Icons.SuccessIcon or settings.Icon or "rbxassetid://0"
-		settings.Sound = settings.Type == "error" and "rbxassetid://2865228021" or settings.Type == "info" and "rbxassetid://3398620867" or settings.Type == "success" and "rbxassetid://3450794184"
+		settings.Sound = settings.Sound or settings.Type == "error" and "rbxassetid://2865228021" or settings.Type == "info" and "rbxassetid://3398620867" or settings.Type == "success" and "rbxassetid://3450794184"
 		settings.Duration = settings.Duration or 5
 		local NotificationExample = FPSLibraryAssets:WaitForChild("NotificationExample"):Clone()
 		NotificationExample.Parent = Interface
@@ -456,7 +456,7 @@ function FPSLibrary:Notify(settings)
 				end)
 			end
 		end
-		if settings.Type then
+		if settings.Sound then
 			PlaySound(settings.Sound)
 		end
 		if settings.Image then
