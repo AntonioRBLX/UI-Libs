@@ -392,28 +392,36 @@ end
 -- Module Functions
 function FPSLibrary:Notify(settings)
 	task.spawn(function()
-		local Spawn = tick()
-		settings.Title = settings.Type == "error" and "Error" or settings.Type == "info" and "Info" or settings.Type == "success" and "Success" or settings.Title or "Info";
+		settings.Title = settings.Title or "Info";
 		settings.Message = settings.Message or "Notification Request"
 		settings.Button1 = settings.Button1 ~= "" and settings.Button1 or nil
 		settings.Button2 = settings.Button2 ~= "" and settings.Button2 or nil
-		settings.Icon = settings.Icon or settings.Type == "error" and Icons.ErrorIcon or settings.Type == "info" and Icons.InfoIcon or settings.Type == "success" and Icons.SuccessIcon or settings.Icon or "rbxassetid://0"
 		settings.Sound = settings.Sound or settings.Type == "error" and "rbxassetid://2865228021" or settings.Type == "info" and "rbxassetid://3398620867" or settings.Type == "success" and "rbxassetid://3450794184"
 		settings.Duration = settings.Duration or 5
 		local NotificationExample = FPSLibraryAssets:WaitForChild("NotificationExample"):Clone()
-		NotificationExample.Parent = Interface
-		NotificationExample.Position = UDim2.new(1,0,1,-95)
 		local Container = NotificationExample:WaitForChild("Container")
 		local Title = Container:WaitForChild("Title")
 		local Message = Container:WaitForChild("Message")
+		local TopIcon = Container:WaitForChild("TopIcon")
 		local ImageIcon = Container:WaitForChild("NotificationImage")
 		local Image = Container:WaitForChild("Image")
 		local ActionButtonsContainer = Container:WaitForChild("ActionButtons"):WaitForChild("Container")
-		local DurationTimer = Container:WaitForChild("SliderFrame"):WaitForChild("Slider"):WaitForChild("Frame")
-		local TweenInPosition = UDim2.new(1,-220,1,-95)
+		local DurationTimerBackground = Container:WaitForChild("SliderFrame"):WaitForChild("Slider")
+		local DurationTimer = DurationTimerBackground:WaitForChild("Frame")
+		local TweenInPosition = settings.Image and UDim2.new(1,-260,1,-225) or UDim2.new(1,-220,1,-95)
+		NotificationExample.Parent = Interface
+		NotificationExample.Position = settings.Image and UDim2.new(1,0,1,-225) or UDim2.new(1,0,1,-95)
+		NotificationExample.Size = settings.Image and UDim2.new(0,240,0,210) or UDim2.new(0,200,0,75)
+		Container.BackgroundColor3 = settings.Type == "error" and Color3.fromRGB(81, 49, 49) or settings.Type == "info" and Color3.fromRGB(49, 49, 81) or settings.Type == "success" and Color3.fromRGB(49, 81, 49) or Color3.fromRGB(81, 81, 81)
+		TopIcon.Image = settings.Type == "error" and "rbxassetid://102649569795605" or settings.Type == "info" and "rbxassetid://76316461447556" or settings.Type == "success" and "rbxassetid://111469034555385" or "rbxassetid://0"
 		Title.Text = settings.Title
 		Message.Text = settings.Message
-		ImageIcon.Image = settings.Icon
+		Message.Size = settings.Icon and UDim2.new(0,114,0,36) or UDim2.new(0,160,0,36)
+		ImageIcon.Image = settings.Icon or "rbxassetid://0"
+		Image.Size = settings.Image and UDim2.new(0,130,0,130) or UDim2.new(0,130,0,0)
+		Image.Image = settings.Image or "rbxassetid://0"
+		DurationTimerBackground.BackgroundColor3 = settings.Type == "error" and Color3.fromRGB(58, 35, 35) or settings.Type == "info" and Color3.fromRGB(35, 35, 58) or settings.Type == "success" and Color3.fromRGB(35, 58, 35) or Color3.fromRGB(58, 58, 58)
+		local Spawn = tick()
 		local closing = false
 		a += 1
 		local b = a
@@ -458,13 +466,6 @@ function FPSLibrary:Notify(settings)
 		end
 		if settings.Sound then
 			PlaySound(settings.Sound)
-		end
-		if settings.Image then
-			NotificationExample.Position = UDim2.new(1,0,1,-225)
-			NotificationExample.Size = UDim2.new(0,240,0,210)
-			TweenInPosition =  UDim2.new(1,-260,1,-225)
-			Image.Size = UDim2.new(0,130,0,130)
-			Image.Image = settings.Image
 		end
 		TweenService:Create(NotificationExample,TweenOut75Sine,{Position = TweenInPosition}):Play()
 		table.insert(Notifications,1,NotificationExample)
@@ -1337,7 +1338,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			slidersettings.MaxValue = slidersettings.MaxValue or 100
 			slidersettings.CurrentValue = slidersettings.CurrentValue or 0
 			slidersettings.Increment = slidersettings.Increment or 1
-			slidersettings.FormatString = slidersettings.FormatString or ""
+			slidersettings.FormatString = slidersettings.FormatString ~= "" and slidersettings.FormatString or "%d"
 			slidersettings.CallbackOnRelease = slidersettings.CallbackOnRelease or false
 			slidersettings.Flag = slidersettings.Flag ~= "" and slidersettings.Flag or nil
 			slidersettings.IgnoreList = slidersettings.IgnoreList or {}
