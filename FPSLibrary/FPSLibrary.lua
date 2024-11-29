@@ -1,10 +1,10 @@
 -- Exploit Variables
 local cloneref = cloneref or function(o) return o end
-local protectgui = protectgui or syn and syn.protect_gui
-local request = request or http_request or syn and syn.request or http and http.request or fluxus and fluxus.request
-local setclipboard = setclipboard or toclipboard or set_clipboard or syn and syn.write_clipboard or Clipboard and Clipboard.set
-local encrypt = syn and syn.crypt and syn.crypt.encrypt or crypt and crypt.encrypt
-local decrypt = syn and syn.crypt and syn.crypt.decrypt or crypt and crypt.decrypt
+local protectgui = protectgui or syn and syn.protect_gui or function() end
+local request = request or http_request or syn and syn.request or http and http.request or fluxus and fluxus.request or function() end
+local setclipboard = setclipboard or toclipboard or set_clipboard or syn and syn.write_clipboard or Clipboard and Clipboard.set or function() end
+local encrypt = syn and syn.crypt and syn.crypt.encrypt or crypt and crypt.encrypt or function() end
+local decrypt = syn and syn.crypt and syn.crypt.decrypt or crypt and crypt.decrypt or function() end
 -- Services
 local CoreGui = cloneref(game:GetService("CoreGui"))
 local RunService = cloneref(game:GetService("RunService"))
@@ -413,10 +413,16 @@ function FPSLibrary:Notify(settings)
 		NotificationExample.Position = settings.Image and UDim2.new(1,0,1,-225) or UDim2.new(1,0,1,-95)
 		NotificationExample.Size = settings.Image and UDim2.new(0,240,0,210) or UDim2.new(0,200,0,75)
 		Container.BackgroundColor3 = settings.Type == "error" and Color3.fromRGB(81, 49, 49) or settings.Type == "info" and Color3.fromRGB(49, 49, 81) or settings.Type == "success" and Color3.fromRGB(49, 81, 49) or Color3.fromRGB(81, 81, 81)
-		TopIcon.Image = settings.Type == "error" and "rbxassetid://102649569795605" or settings.Type == "info" and "rbxassetid://76316461447556" or settings.Type == "success" and "rbxassetid://111469034555385" or "rbxassetid://0"
 		Title.Text = settings.Title
 		Message.Text = settings.Message
-		Message.Size = settings.Icon and UDim2.new(0,114,0,36) or UDim2.new(0,160,0,36)
+		Message.TextWrapped = false
+		Message.TextScaled = false
+		local messagesizex = settings.Icon and 114 or 160
+		local messagesizey = 12 + 12 * math.ceil(Message.TextBounds.X/messagesizex)
+		Message.TextWrapped = true
+		Message.TextScaled = messagesizey > 36
+		Message.Size = UDim2.new(0,messagesizex,0,math.clamp(messagesizey,0,36))
+		TopIcon.Image = settings.Type == "error" and "rbxassetid://102649569795605" or settings.Type == "info" and "rbxassetid://76316461447556" or settings.Type == "success" and "rbxassetid://111469034555385" or "rbxassetid://0"
 		ImageIcon.Image = settings.Icon or "rbxassetid://0"
 		Image.Size = settings.Image and UDim2.new(0,130,0,130) or UDim2.new(0,130,0,0)
 		Image.Image = settings.Image or "rbxassetid://0"
@@ -2805,9 +2811,9 @@ function FPSLibrary:BootWindow(windowsettings)
 					if typeof(value) ~= "string" then return end
 					Content = value
 					ContentLabel.TextWrapped = false
+					ContentLabel.TextScaled = false
 					ContentLabel.Text = Content
-					ContentLabel.Size = UDim2.new(0,80,100,0)
-					Paragraph.Size = UDim2.new(0,80,0,12 * math.ceil(ContentLabel.TextBounds.X/80))
+					Paragraph.Size = UDim2.new(0,80,0,24 + 12 * math.ceil(ContentLabel.TextBounds.X/80))
 					ContentLabel.TextWrapped = true
 				elseif idx == "SectionParent" then
 					if (typeof(value) ~= "table" or value.ClassName ~= "SectionParent") and value ~= nil then return end
