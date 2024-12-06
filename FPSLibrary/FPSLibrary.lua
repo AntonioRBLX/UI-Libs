@@ -65,7 +65,7 @@ local DiscordInvitesFileName = FPSLibraryFolder.."/Discord"
 local LocalConfigurationFolderName = nil
 local LocalConfigurationSubFolderName = nil
 -- Library Interface
-local FPSLibraryAssets = game:GetObjects("rbxassetid://85069246672248")[1]
+local FPSLibraryAssets = game:GetObjects("rbxassetid://123286401328821")[1]
 local Interface = FPSLibraryAssets:WaitForChild("Interface"):Clone()
 if protectgui and FPSLibraryProtectGui then
 	protectgui(Interface)
@@ -163,6 +163,7 @@ end
 function CallbackErrorMessage(err)
 	FPSLibrary:Notify({
 		Type = "error";
+		Title = "Error";
 		Message = "Callback Error!";
 		Duration = 3;
 		Actions = {
@@ -238,6 +239,7 @@ function ToggleTabVisibility()
 	if not WindowVisible and ToggleGUIKeybind then
 		FPSLibrary:Notify({
 			Type = "info";
+			Title = "Info";
 			Message = "You can press '"..ToggleGUIKeybind.Name.."' to Toggle GUI";
 			Duration = 3;
 		})
@@ -301,7 +303,7 @@ function UpdateElementTip(enabled,element,tip,duration)
 			local tipobject = FPSLibraryAssets:WaitForChild("Tip"):Clone()
 			tipobject.Parent = Interface
 			local renderstepped
-			renderstepped = RunService.RenderStepped:Connect(function()
+			local function UpdateTipPosition()
 				tipobject.Text = tip
 				tipobject.Size = UDim2.new(0,tipobject.TextBounds.X + 4,0,tipobject.TextBounds.Y + 2)
 				tipobject.Position = UDim2.new(0,mouse.X,0,mouse.Y)
@@ -309,7 +311,9 @@ function UpdateElementTip(enabled,element,tip,duration)
 					tipobject:Destroy()
 					renderstepped:Disconnect()
 				end
-			end)
+			end
+			UpdateTipPosition()
+			renderstepped = RunService.RenderStepped:Connect(UpdateTipPosition)
 			element.MouseLeave:Once(function()
 				tipobject:Destroy()
 				renderstepped:Disconnect()
@@ -376,6 +380,7 @@ function LoadFile(destination,callback)
 				else
 					FPSLibrary:Notify({
 						Type = "error";
+						Title = "Error";
 						Message = "Unable to find '"..flagName.. "' in the current configuration file";
 					})
 				end
@@ -385,6 +390,7 @@ function LoadFile(destination,callback)
 	if not suc then
 		FPSLibrary:Notify({
 			Type = "error";
+			Title = "Error";
 			Message = "This configuration file is corrupted or lost.";
 		})
 	end
@@ -488,6 +494,7 @@ function FPSLibrary:SaveConfiguration(filename)
 				canwritefile = false
 				FPSLibrary:Notify({
 					Type = "info";
+					Title = "Info";
 					Message = "There is already a file named '"..filename.."'. Do you wish to overwrite it?";
 					Duration = 5;
 					Actions = {
@@ -516,6 +523,7 @@ function FPSLibrary:SaveConfiguration(filename)
 		if not suc and err then
 			FPSLibrary:Notify({
 				Type = "error";
+				Title = "Error";
 				Message = "An unexpected error occured while saving configuration. Please try again.";
 			})
 		end
@@ -539,6 +547,7 @@ function FPSLibrary:LoadConfiguration(filename,callback)
 			if not suc then
 				FPSLibrary:Notify({
 					Type = "error";
+					Title = "Error";
 					Message = "Unable to boot load the configuration file. The metafolder file is corrupted or lost.";
 				})
 			end
@@ -553,6 +562,7 @@ function FPSLibrary:DeleteConfiguration(filename)
 		if not suc and res then
 			FPSLibrary:Notify({
 				Type = "error";
+				Title = "Error";
 				Message = "Failed to find Configuration File";
 			})
 		end
@@ -586,6 +596,7 @@ function FPSLibrary:AutoLoadFileOnBoot(autoloadfile,filename)
 					else
 						FPSLibrary:Notify({
 							Type = "error";
+							Title = "Error";
 							Message = "This configuration file doesn't exist.";
 						})
 					end
@@ -598,6 +609,7 @@ function FPSLibrary:AutoLoadFileOnBoot(autoloadfile,filename)
 		if not suc then
 			FPSLibrary:Notify({
 				Type = "error";
+				Title = "Error";
 				Message = "This configuration file is corrupted.";
 			})
 		end
@@ -671,12 +683,14 @@ function FPSLibrary:BootWindow(windowsettings)
 					setclipboard(windowsettings.KeySystem.WebsiteURL)
 					FPSLibrary:Notify({
 						Type = "success";
+						Title = "Success";
 						Message = "Link copied to clipboard!";
 						Duration = 3;
 					})
 				else
 					FPSLibrary:Notify({
 						Type = "info";
+						Title = "Info";
 						Message = 'URL: "'..windowsettings.KeySystem.WebsiteURL..'"';
 						Duration = 60;
 						Actions = {
@@ -709,6 +723,7 @@ function FPSLibrary:BootWindow(windowsettings)
 				keyverified = true
 				FPSLibrary:Notify({
 					Type = "success";
+					Title = "Success";
 					Message = "Correct Key!";
 					Duration = 3;
 				})
@@ -719,12 +734,14 @@ function FPSLibrary:BootWindow(windowsettings)
 						if #windowsettings.KeySystem.CypherKey < 16 then
 							return FPSLibrary:Notify({
 								Type = "info";
+								Title = "Info";
 								Message = "Cypher Key Length Must Be 16 Or More";
 								Duration = 3;
 							})
 						elseif not encrypt then
 							return FPSLibrary:Notify({
 								Type = "info";
+								Title = "Info";
 								Message = "Your executor is unsupported. Missing function 'encrypt'. Your key has not been saved.";
 								Duration = 3;
 							})
@@ -744,6 +761,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			else
 				FPSLibrary:Notify({
 					Type = "error";
+					Title = "Error";
 					Message = "Invalid Key!";
 					Duration = 3;
 				})
@@ -762,12 +780,14 @@ function FPSLibrary:BootWindow(windowsettings)
 						if #windowsettings.KeySystem.CypherKey < 16 then
 							return FPSLibrary:Notify({
 								Type = "info";
+								Title = "Info";
 								Message = "Cypher Key Length Must Be 16 Or More";
 								Duration = 3;
 							})
 						elseif not decrypt then
 							return FPSLibrary:Notify({
 								Type = "info";
+								Title = "Info";
 								Message = "Your executor is unsupported. Missing function 'decrypt'. Please re-enter your key";
 								Duration = 3;
 							})
@@ -784,6 +804,7 @@ function FPSLibrary:BootWindow(windowsettings)
 							else
 								FPSLibrary:Notify({
 									Type = "error";
+									Title = "Error";
 									Message = "Key not authenticated. Try again.";
 									Duration = 3;
 								})
@@ -791,6 +812,7 @@ function FPSLibrary:BootWindow(windowsettings)
 						else
 							FPSLibrary:Notify({
 								Type = "info";
+								Title = "Info";
 								Message = "Your key has expired. Please re-enter your key.";
 								Duration = 3;
 							})
@@ -798,6 +820,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					else
 						FPSLibrary:Notify({
 							Type = "error";
+							Title = "Error";
 							Message = "Unable to verify key. Your key system file is corrupted.";
 							Duration = 3;
 						})
@@ -807,6 +830,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			if not suc then
 				FPSLibrary:Notify({
 					Type = "error";
+					Title = "Error";
 					Message = "An Unexpected Error Occurred While Checking Key.";
 				})
 			end
@@ -851,6 +875,7 @@ function FPSLibrary:BootWindow(windowsettings)
 	if not suc then
 		FPSLibrary:Notify({
 			Type = "error";
+			Title = "Error";
 			Message = "An Unexpected Error Occurred While Loading Configurations";
 		})
 	end
