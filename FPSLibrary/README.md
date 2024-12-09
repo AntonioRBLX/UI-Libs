@@ -22,6 +22,9 @@ ROBLOX User Interface Library Created By CITY512.
 - Lag Issues Fixed
 - Bug Fixes (dropdown issues with non-string elements)
 - Fixed Key System Close Button
+- ### [v1.1.2] 12/7/2024
+- Bug Fixes (colorpicker issues, and key system not closing)
+- Notification Appearance Improvements
 
 ## Interface Preview
 
@@ -51,9 +54,9 @@ Library:Notify({
 	Type = "info"; -- (Optional) types: error, info, success, (case-sensitive) delete this line or set to nil for normal notification
 	Title = "This is a title" -- (Required)
 	Message = "This is an example message."; -- (Required)
-	Icon = ""; -- (Optional) delete this line or set to nil for no icon
-	Image = "rbxassetid://97207553955899"; -- (Optional) Shows a giant image at the center of the notification. Delete this line or set to nil for no image
-	Sound = "rbxassetid://3398620867"; -- (Optional) delete this line or set to nil for no sound / custom notification type sound.
+	Icon = nil; -- (Optional) delete this line or set to nil for no icon
+	Image = 97207553955899; -- (Optional) Shows a giant image at the center of the notification. Delete this line or set to nil for no image
+	Sound = 3398620867; -- (Optional) delete this line or set to nil for no sound / custom notification type sound.
 	Duration = 10; -- (Required)
 	Actions = { -- (Optional) Delete this line or set to nil for no action buttons
 		Action1 = {
@@ -78,32 +81,45 @@ Library:Notify({
 
 ```lua
 local Window = Library:BootWindow({
-	Name = "FPSLibrary";
 	LoadingTitle = "FPSLibrary Interface Suite";
 	WindowVisible = true;
 	ToggleGUIKeybind = Enum.KeyCode.RightShift;
+	AsynchronousLoad = false;
 	ConfigurationSaving = {
 		Enabled = false;
-		FolderName = "configs"; -- Must keep it unique, otherwise other scripts using FPSLibrary may overwrite your file
-		PlaceId = false -- Only saves configs for a certain PlaceId
+		FolderName = "configs"; -- (Required) Must keep it unique, otherwise other scripts using FPSLibrary may overwrite your file
+		PlaceId = false -- (Optional) Only saves configs for a certain PlaceId
 	};
 	Discord = {
         Enabled = false;
-		InviteLink = ""; -- discord invite link (eg. discord.gg/ABCD)
-		RememberJoins = true
+		InviteLink = ""; -- (Required) discord invite link (eg. discord.gg/ABCD)
+		RememberJoins = true -- (Optional)
+	};
+	ToggleInterface = {
+		Enabled = false;
+		KeyboardCheck = false; -- (Required) Automatically Hides Button When Keyboard is Enabled
+		Title = "Toggle GUI"; -- (Required) only required when UseIcon is false
+		UseIcon = false; -- (Optional)
+		Icon = nil; -- (Required) Shows a small icon that toggles GUI appearance.
+		BackgroundColor = Color3.new(0,0,0); -- (Required)
+		Position = UDim2.new(0.5,0,0,18); -- (Required)
+		AnchorPoint = Vector2.new(0.5,0.5); -- (Required)
+		Draggable = true; -- (Optional)
+		ShowAfterKeySystem = false; -- (Optional)
 	};
 	KeySystem = {
 		Enabled = false; -- The thread will yield until key is validated
-		Keys = {"key1","key2","key3"}; -- An array of valid keys. Will not apply if GrabKeyFromSite is true
-		EncryptKey = false; -- Applies AES-256 encryption to key file (currently not working)
-		CypherKey = ""; -- cypher key length must be 16 or more. https://catonmat.net/tools/generate-random-ascii
-		FileName = "Key"; -- Must keep it unique, otherwise other scripts using FPSLibrary may overwrite your file
-		RememberKey = false; -- Will not ask for the key unless key has changed or expired
-		KeyTimeLimit = 86400; -- in seconds
-		GrabKeyFromSite = false; -- Gets key from a website
-		WebsiteURL = ""; -- website you will be directed to for the key (eg. https://linkvertise.com/<link>)
-		KeyRAWURL = ""; -- website where the RAW key is checked for (eg. https://raw.githubusercontent.com/<username>/<directory> or https://pastebin.com/raw/<paste>)
-		JSONDecode = false; -- If RAW key is in json format (eg. ["key1","key2","key3"])
+		Title = "Key System"; -- (Required)
+		Keys = {"key1","key2","key3"}; -- (Required) An array of valid keys. Will not apply if GrabKeyFromSite is true
+		EncryptKey = false; -- (Optional) Applies AES-256 encryption to key file (currently not working)
+		CypherKey = ""; -- (Required) cypher key length must be 16 or more. https://catonmat.net/tools/generate-random-ascii
+		RememberKey = false; -- (Optional) Will not ask for the key unless key has changed or expired
+		FileName = "Key"; -- (Required) The file the key is saved to.
+		KeyTimeLimit = 86400;  -- (Required) in seconds
+		GrabKeyFromSite = false;  -- (Optional) Gets key from a website
+		WebsiteURL = ""; -- (Required) website you will be directed to for the key (eg. https://linkvertise.com/<link>)
+		KeyRAWURL = ""; -- (Required) website where the RAW key is checked for (eg. https://raw.githubusercontent.com/<username>/<directory> or https://pastebin.com/raw/<paste>)
+		JSONDecode = false; -- (Optional) If RAW key is in json format (eg. ["key1","key2","key3"])
 	}
 })
 ```
@@ -134,17 +150,17 @@ Window:PromptDiscordInvite() -- If you want to prompt invite on boot, put it rig
 
 ```lua
 local Tab = Window:CreateTab({
-	Title = "Title"; -- Title of the Tab
-	Subtitle = "Subtitle"; -- Second title under the title
-	Opened = false; -- If the tab is open
-	TitleRichText = false; -- Enables RichText for the Title
-	SubtitleRichText = false; -- Enables RichText for the Subtitle
-	Image = "rbxassetid://97207553955899"
-	SizeY = 250; -- Length of the tab dropdown, SizeY must be 100 or more
-	MaxSizeY = 250; -- Maximum length of the tab dropdown, SizeY must be 100 or more
-	Position = UDim2.new(0,20,0,20); -- Position of the Tab on Window
-	Flag = ""; -- Identifier for the configuration file (cannot be changed)
-	IgnoreList = {} -- The properties the flag will blacklist/not saved
+	Title = "Title"; -- (Required) Title of the Tab
+	Subtitle = "Subtitle"; -- (Required) Second title under the title
+	Opened = false; -- (Required) If the tab is open
+	TitleRichText = false; -- (Optional) Enables RichText for the Title
+	SubtitleRichText = false; -- (Optional) Enables RichText for the Subtitle
+	Image = 97207553955899 -- (Optional)
+	SizeY = 250; -- (Required) Length of the tab dropdown, SizeY must be 100 or more
+	MaxSizeY = 250; -- (Required) Maximum length of the tab dropdown, SizeY must be 100 or more
+	Position = UDim2.new(0,20,0,20); -- (Required) Position of the Tab on Window
+	Flag = ""; -- (Optional) Identifier for the configuration file (cannot be changed)
+	IgnoreList = {} -- (Optional) The properties the flag will blacklist/not saved
 })
 ```
 
