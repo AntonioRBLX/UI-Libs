@@ -24,7 +24,8 @@ ROBLOX User Interface Library Created By CITY512.
 - Fixed Key System Close Button
 - ### [v1.1.2] 12/7/2024
 - Bug Fixes (colorpicker issues, and key system not closing)
-- Notification Appearance Improvements
+- Changed Notification Appearance
+- Changed Toggle Appearance
 - Added Icon Styled Tab Minimizer
 
 ## Interface Preview
