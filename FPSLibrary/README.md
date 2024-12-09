@@ -22,7 +22,7 @@ ROBLOX User Interface Library Created By CITY512.
 - Lag Issues Fixed
 - Bug Fixes (dropdown issues with non-string elements)
 - Fixed Key System Close Button
-- ### [v1.1.2] 12/7/2024
+- ### [v1.1.2] 12/8/2024
 - Bug Fixes (colorpicker issues, and key system not closing)
 - Changed Notification Appearance
 - Changed Toggle Appearance
