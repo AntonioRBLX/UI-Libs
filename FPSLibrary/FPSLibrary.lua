@@ -1,10 +1,10 @@
 -- Exploit Variables
 local cloneref = cloneref or function(o) return o end
 local protectgui = protectgui or syn and syn.protect_gui or function() end
-local request = request or http_request or syn and syn.request or http and http.request or fluxus and fluxus.request or function() end
-local setclipboard = setclipboard or toclipboard or set_clipboard or syn and syn.write_clipboard or Clipboard and Clipboard.set or function() end
-local encrypt = syn and syn.crypt and syn.crypt.encrypt or crypt and crypt.encrypt or function() end
-local decrypt = syn and syn.crypt and syn.crypt.decrypt or crypt and crypt.decrypt or function() end
+local request = request or http_request or syn and syn.request or http and http.request or fluxus and fluxus.request
+local setclipboard = setclipboard or toclipboard or set_clipboard or syn and syn.write_clipboard or Clipboard and Clipboard.set
+local encrypt = syn and syn.crypt and syn.crypt.encrypt or crypt and crypt.encrypt
+local decrypt = syn and syn.crypt and syn.crypt.decrypt or crypt and crypt.decrypt
 -- Services
 local CoreGui = cloneref(game:GetService("CoreGui"))
 local RunService = cloneref(game:GetService("RunService"))
@@ -18,33 +18,33 @@ local LocalPlayer = Players.LocalPlayer
 local mouse = LocalPlayer:GetMouse()
 local IsStudio = RunService:IsStudio()
 local ToggleGUIKeybind = Enum.KeyCode.RightShift
-local KeyboardEnabled = UserInputService.KeyboardEnabled
 local KeySystemContainer
+local KeyVerified = false
 local connections = {}
 local a = 0
 local Notifications = {}
 local WindowVisible = false
 local executespawn = tick()
 local Icons = {
-    ButtonIcon = "rbxassetid://81603729114653";
-    ToggleIcon = "rbxassetid://99237563194670";
-    SliderIcon = "rbxassetid://79793934273507";
-    DropdownIcon = "rbxassetid://109783026993824";
-    ColorPalleteIcon = "rbxassetid://130634872600990";
-    KeybindIcon = "rbxassetid://133055602281232";
-    DisabledElementIcon = "rbxassetid://5248916036";
-    ErrorIcon = "rbxassetid://102649569795605";
-    InfoIcon = "rbxassetid://76316461447556";
-    SuccessIcon = "rbxassetid://111469034555385";
-    ColorBackgrundIcon = "rbxassetid://132069784511686";
-    PreviewImage = "rbxassetid://132267442786910";
-    ValueSliderIcon = "rbxassetid://124175884994313";
-    ExampleImageIcon = "rbxassetid://111469034555385";
+	ButtonIcon = "rbxassetid://81603729114653";
+	ToggleIcon = "rbxassetid://99237563194670";
+	SliderIcon = "rbxassetid://79793934273507";
+	DropdownIcon = "rbxassetid://109783026993824";
+	ColorPalleteIcon = "rbxassetid://130634872600990";
+	KeybindIcon = "rbxassetid://133055602281232";
+	DisabledElementIcon = "rbxassetid://5248916036";
+	ErrorIcon = "rbxassetid://102649569795605";
+	InfoIcon = "rbxassetid://76316461447556";
+	SuccessIcon = "rbxassetid://111469034555385";
+	ColorBackgrundIcon = "rbxassetid://132069784511686";
+	PreviewImage = "rbxassetid://132267442786910";
+	ValueSliderIcon = "rbxassetid://124175884994313";
+	ExampleImageIcon = "rbxassetid://111469034555385";
 }
 local FPSLibrary = {
 	Flags = {};
 	Elements = {};
-    Icons = Icons
+	Icons = Icons
 }
 if IsStudio then
 	writefile = function() end
@@ -67,7 +67,7 @@ local LocalConfigurationSubFolderName = nil
 -- Library Interface
 local FPSLibraryAssets = game:GetObjects("rbxassetid://85069246672248")[1]
 local Interface = FPSLibraryAssets:WaitForChild("Interface"):Clone()
-if protectgui and FPSLibraryProtectGui then
+if protectgui and FPSLibraryProtectGui == true then
 	protectgui(Interface)
 end
 Interface.Parent = CoreGui
@@ -97,7 +97,7 @@ function GenerateRandomString()
 end
 function PlaySound(id)
 	local sound = Instance.new("Sound", workspace)
-	sound.SoundId = id
+	sound.SoundId = "rbxassetid://"..tostring(id)
 	sound.PlayOnRemove = true
 	sound:Destroy()
 end
@@ -116,7 +116,7 @@ function MakeDraggable(draggable,Frame)
 			v[4]:Disconnect()
 		end
 	end
-	if draggable then
+	if draggable == true then
 		a += 1
 		local b = a
 		local dragging
@@ -169,6 +169,7 @@ function CallbackErrorMessage(err)
 		Actions = {
 			ViewConsole = {
 				Name = "View Console";
+				CloseOnClick = true;
 				Callback = function()
 					keypress(0x78)
 					keyrelease(0x78)
@@ -193,7 +194,7 @@ function UpdateCanvasSize(Tab)
 					end
 				end
 				SectionElementContainer.CanvasSize = UDim2.new(0,0,0,sectionyoffset)
-				if v.Opened then
+				if v.Opened == true then
 					tabyoffset += v.DropdownSizeY - 4
 				end
 			end
@@ -228,6 +229,7 @@ function UpdateCanvasSize(Tab)
 	]]
 end
 function ToggleTabVisibility()
+	WindowVisible = not WindowVisible
 	for i, v in FPSLibrary.Elements do
 		if v.ClassName == "Tab" then
 			v.Visible = WindowVisible
@@ -236,10 +238,10 @@ function ToggleTabVisibility()
 	if KeySystemContainer then
 		TweenService:Create(KeySystemContainer,TweenOut50Sine,{Size = WindowVisible and UDim2.new(0,274,0,199) or UDim2.new(0,274,0,0)}):Play()
 	end
-	if not WindowVisible and ToggleGUIKeybind then
+	if WindowVisible == false then
 		FPSLibrary:Notify({
 			Type = "info";
-			Title = "Info";
+			Title = "Interface Suite";
 			Message = "You can press '"..ToggleGUIKeybind.Name.."' to Toggle GUI";
 			Duration = 3;
 		})
@@ -267,7 +269,6 @@ function RippleEffects(Button)
 	end
 	Button.MouseButton1Down:Connect(function()
 		local button1up
-		local done = false
 		local rippleeffect = Instance.new("ImageLabel", ripplecontainer)
 		rippleeffect.Name = "RippleEffect"
 		rippleeffect.Position = UDim2.new(0,mouse.X - Button.AbsolutePosition.X,0,mouse.Y - Button.AbsolutePosition.Y)
@@ -280,12 +281,10 @@ function RippleEffects(Button)
 		rippleeffect.ImageTransparency = 0.8
 		tweenInRipple(rippleeffect)
 		button1up = Button.MouseButton1Up:Once(function()
-			done = true
 			fadeOutRipple(rippleeffect)
 		end)
 		task.wait(4)
 		button1up:Disconnect()
-		done = true
 		fadeOutRipple(rippleeffect)
 	end)
 end
@@ -295,7 +294,7 @@ function UpdateElementTip(enabled,element,tip,duration)
 			v[3]:Disconnect()
 		end
 	end
-	if enabled and tip then
+	if enabled == true and tip and typeof(tip) == "string" then
 		a += 1
 		local b = a
 		connections[b] = {"Tip",element,element.MouseEnter:Connect(function()
@@ -323,7 +322,7 @@ function UpdateElementTip(enabled,element,tip,duration)
 end
 function Callback(f,...)
 	local suc, err = pcall(f,...)
-	if not suc then
+	if suc == false then
 		CallbackErrorMessage(err)
 	end
 end
@@ -355,7 +354,7 @@ function isHoveringOverObj(obj)
 	return false
 end
 function LoadFile(destination,callback)
-	local suc, res = pcall(function()
+	local suc = pcall(function()
 		local contents = HttpService:JSONDecode(readfile(destination))
 		for idx in FPSLibrary.Elements do
 			local flagName = FPSLibrary.Elements[idx].Flag
@@ -364,7 +363,7 @@ function LoadFile(destination,callback)
 					for property, value in contents[flagName] do
 						FPSLibrary.Elements[idx][property] = value
 					end
-					if callback and FPSLibrary.Elements[idx].Callback then
+					if callback == true and FPSLibrary.Elements[idx].Callback then
 						local args = {}
 						if FPSLibrary.Elements[idx].CurrentValue then
 							args = {FPSLibrary.Elements[idx].CurrentValue}
@@ -387,7 +386,7 @@ function LoadFile(destination,callback)
 			end
 		end
 	end)
-	if not suc then
+	if suc == false then
 		FPSLibrary:Notify({
 			Type = "error";
 			Title = "Error";
@@ -398,12 +397,18 @@ end
 -- Module Functions
 function FPSLibrary:Notify(settings)
 	task.spawn(function()
-		settings.Title = settings.Title or "Info";
-		settings.Message = settings.Message or "Notification Request"
-		settings.Button1 = settings.Button1 ~= "" and settings.Button1 or nil
-		settings.Button2 = settings.Button2 ~= "" and settings.Button2 or nil
-		settings.Sound = settings.Sound or settings.Type == "error" and "rbxassetid://2865228021" or settings.Type == "info" and "rbxassetid://3398620867" or settings.Type == "success" and "rbxassetid://3450794184"
-		settings.Duration = settings.Duration or 5
+		if typeof(settings.Title) ~= "string" then return warn("Title is required and must be a string") end
+		if typeof(settings.Message) ~= "string" then return warn("Message is required and must be a string") end
+		if settings.Type ~= nil and settings.Type ~= "error" and settings.Type ~= "info" and settings.Type ~= "success" then return warn('Notification Type must be: "error","info","success"') end
+		if settings.Icon ~= nil and typeof(settings.Icon) ~= "number" then return warn("IconId must be a number") end
+		if settings.Image ~= nil and typeof(settings.Image) ~= "number" then return warn("ImageId must be a number") end
+		if settings.Sound ~= nil and typeof(settings.Sound) ~= "number" then return warn("SoundId must be a number") end
+		if typeof(settings.Duration) ~= "number" then return warn("Duration is required and must be a number") end
+		if settings.Action and typeof(settings.Actions) ~= "table" then return warn("Actions must be a table") end
+		settings.Title = settings.Title
+		settings.Message = settings.Message
+		settings.Sound = settings.Sound ~= nil and settings.Sound or settings.Type == "error" and 2865228021 or settings.Type == "info" and 3398620867 or settings.Type == "success" and 3450794184
+		settings.Duration = settings.Duration
 		local NotificationExample = FPSLibraryAssets:WaitForChild("NotificationExample"):Clone()
 		local Container = NotificationExample:WaitForChild("Container")
 		local Title = Container:WaitForChild("Title")
@@ -412,7 +417,8 @@ function FPSLibrary:Notify(settings)
 		local ImageIcon = Container:WaitForChild("NotificationImage")
 		local Image = Container:WaitForChild("Image")
 		local ActionButtonsContainer = Container:WaitForChild("ActionButtons"):WaitForChild("Container")
-		local DurationTimerBackground = Container:WaitForChild("SliderFrame"):WaitForChild("Slider")
+		local DurationTimerContainer = Container:WaitForChild("SliderFrame")
+		local DurationTimerBackground = DurationTimerContainer:WaitForChild("Slider")
 		local DurationTimer = DurationTimerBackground:WaitForChild("Frame")
 		local TweenInPosition = settings.Image and UDim2.new(1,-260,1,-225) or UDim2.new(1,-220,1,-95)
 		NotificationExample.Parent = Interface
@@ -432,26 +438,23 @@ function FPSLibrary:Notify(settings)
 		ImageIcon.Image = settings.Icon or "rbxassetid://0"
 		Image.Size = settings.Image and UDim2.new(0,130,0,130) or UDim2.new(0,130,0,0)
 		Image.Image = settings.Image or "rbxassetid://0"
+		DurationTimerContainer.Visible = settings.Duration ~= math.huge
 		DurationTimerBackground.BackgroundColor3 = settings.Type == "error" and Color3.fromRGB(58, 35, 35) or settings.Type == "info" and Color3.fromRGB(35, 35, 58) or settings.Type == "success" and Color3.fromRGB(35, 58, 35) or Color3.fromRGB(58, 58, 58)
 		local Spawn = tick()
 		local closing = false
-		a += 1
-		local b = a
-		connections[b] = RunService.RenderStepped:Connect(function()
+		local heartbeat = RunService.RenderStepped:Connect(function()
 			DurationTimer.Size = UDim2.new(1 - (tick() - Spawn) / settings.Duration,0,1,0)
 		end)
 		local function CloseNotification()
 			task.spawn(function()
-				if not closing then
+				if closing == false then
 					closing = true
 					table.remove(Notifications,table.find(Notifications,NotificationExample))
 					UpdateNotificationLayout()
 					TweenService:Create(NotificationExample,TweenIn75Sine,{Position = UDim2.new(1,0,1,NotificationExample.Position.Y.Offset)}):Play()
 					task.wait(0.75)
 					NotificationExample:Destroy()
-					if connections[b] then
-						connections[b]:Disconnect()
-					end
+					heartbeat:Disconnect()
 				end
 			end)
 		end
@@ -465,18 +468,18 @@ function FPSLibrary:Notify(settings)
 				Button:WaitForChild("Icon"):Destroy()
 				RippleEffects(Button)
 				Button.MouseButton1Click:Connect(function()
-					if not closing then
-						if actionsettings.CloseOnClick then
+					if closing == false then
+						if actionsettings.CloseOnClick == true then
 							CloseNotification()
 						end
-						if actionsettings.Callback then
+						if actionsettings.Callback and typeof(actionsettings.Callback) == "function" then
 							Callback(actionsettings.Callback)
 						end
 					end
 				end)
 			end
 		end
-		if settings.Sound then
+		if settings.Sound ~= nil then
 			PlaySound(settings.Sound)
 		end
 		TweenService:Create(NotificationExample,TweenOut75Sine,{Position = TweenInPosition}):Play()
@@ -486,15 +489,15 @@ function FPSLibrary:Notify(settings)
 	end)
 end
 function FPSLibrary:SaveConfiguration(filename)
-	if typeof(filename) == "string" and filename ~= "" and LocalConfigurationFolderName and LocalConfigurationSubFolderName and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) then
+	if typeof(filename) == "string" and filename ~= "" and LocalConfigurationFolderName ~= nil and LocalConfigurationSubFolderName ~= nil and isfolder(ConfigurationFolderName) == true and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) == true and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) == true then
 		local suc, err = pcall(function()
 			local spawn = tick()
 			local canwritefile = true
-			if isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) then
+			if isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) == true then
 				canwritefile = false
 				FPSLibrary:Notify({
 					Type = "info";
-					Title = "Info";
+					Title = "Configuration";
 					Message = "There is already a file named '"..filename.."'. Do you wish to overwrite it?";
 					Duration = 5;
 					Actions = {
@@ -514,13 +517,13 @@ function FPSLibrary:SaveConfiguration(filename)
 					}
 				})
 			end
-			if not canwritefile then
+			if canwritefile == false then
 				repeat task.wait() until canwritefile or spawn + 5 < tick()
-				if not canwritefile then return end
+				if canwritefile == false then return end
 			end
 			writefile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename,HttpService:JSONEncode(FPSLibrary.Flags))
 		end)
-		if not suc and err then
+		if suc == false then
 			FPSLibrary:Notify({
 				Type = "error";
 				Title = "Error";
@@ -530,21 +533,21 @@ function FPSLibrary:SaveConfiguration(filename)
 	end
 end
 function FPSLibrary:LoadConfiguration(filename,callback)
-	if callback ~= nil and typeof(callback) ~= "boolean" then return end
+	if callback ~= nil and typeof(callback) ~= "boolean" then return warn("Argument #2 must be a boolean") end
 	if typeof(filename) == "string" and filename ~= "" then
-		if LocalConfigurationFolderName and LocalConfigurationSubFolderName and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) and isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) then
+		if LocalConfigurationFolderName ~= nil and LocalConfigurationSubFolderName ~= nil and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) and isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) then
 			LoadFile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename,callback)
 		end
 	elseif filename == nil then
 		local metafolder = ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName..".meta"
-		if isfile(metafolder) then
+		if isfile(metafolder) == true then
 			local suc = pcall(function()
 				local contents = HttpService:JSONDecode(readfile(metafolder))
-				if contents.AutoLoad and isfile(contents.AutoLoad) then
+				if contents.AutoLoad == true and isfile(contents.AutoLoad) == true then
 					LoadFile(contents.AutoLoad,callback)
 				end
 			end)
-			if not suc then
+			if suc == false then
 				FPSLibrary:Notify({
 					Type = "error";
 					Title = "Error";
@@ -555,11 +558,11 @@ function FPSLibrary:LoadConfiguration(filename,callback)
 	end
 end
 function FPSLibrary:DeleteConfiguration(filename)
-	if typeof(filename) == "string" and filename ~= "" and LocalConfigurationFolderName and LocalConfigurationSubFolderName and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) and isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) then
-		local suc, res = pcall(function()
+	if typeof(filename) == "string" and filename ~= "" and LocalConfigurationFolderName ~= nil and LocalConfigurationSubFolderName ~= nil and isfolder(ConfigurationFolderName) == true and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) == true and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) == true and isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) == true then
+		local suc = pcall(function()
 			delfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename)
 		end)
-		if not suc and res then
+		if suc == false then
 			FPSLibrary:Notify({
 				Type = "error";
 				Title = "Error";
@@ -569,7 +572,7 @@ function FPSLibrary:DeleteConfiguration(filename)
 	end
 end
 function FPSLibrary:ListConfigurationFiles()
-	if LocalConfigurationFolderName and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) then
+	if LocalConfigurationFolderName ~= nil and isfolder(ConfigurationFolderName) == true and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) == true and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) == true then
 		local files = listfiles(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName)
 		for i, v in files do
 			local split = v:split("/")
@@ -580,18 +583,18 @@ function FPSLibrary:ListConfigurationFiles()
 	return {}
 end
 function FPSLibrary:AutoLoadFileOnBoot(autoloadfile,filename)
-	if LocalConfigurationFolderName and LocalConfigurationSubFolderName and isfolder(ConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) then
-		local suc, res = pcall(function()
+	if LocalConfigurationFolderName ~= nil and LocalConfigurationSubFolderName ~= nil and isfolder(ConfigurationFolderName) == true and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName) == true and isfolder(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName) == true then
+		local suc = pcall(function()
 			local contents = {}
 			local metafolder = ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName..".meta"
-			if isfile(metafolder) then
+			if isfile(metafolder) == true then
 				pcall(function()
 					contents = HttpService:JSONDecode(readfile(metafolder))
 				end)
 			end
-			if autoloadfile then
+			if autoloadfile == true then
 				if typeof(filename) == "string" then
-					if isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) then
+					if isfile(ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename) == true then
 						contents.AutoLoad = ConfigurationFolderName.."/"..LocalConfigurationFolderName.."/"..LocalConfigurationSubFolderName.."/"..filename
 					else
 						FPSLibrary:Notify({
@@ -606,7 +609,7 @@ function FPSLibrary:AutoLoadFileOnBoot(autoloadfile,filename)
 			end
 			writefile(metafolder,HttpService:JSONEncode(contents))
 		end)
-		if not suc then
+		if suc == false then
 			FPSLibrary:Notify({
 				Type = "error";
 				Title = "Error";
@@ -616,30 +619,71 @@ function FPSLibrary:AutoLoadFileOnBoot(autoloadfile,filename)
 	end
 end
 function FPSLibrary:BootWindow(windowsettings)
+	if windowsettings.KeySystem.LoadingTitle and typeof(windowsettings.KeySystem.LoadingTitle) ~= "string" then return warn("LoadingTitle must be a string") end
+	if windowsettings.KeySystem.WindowVisible and typeof(windowsettings.KeySystem.WindowVisible) ~= "boolean" then return warn("WindowVisible must be a boolean") end
 	local Window = {}
-	if not KeyboardEnabled then
-		local MenuToggleButton = FPSLibraryAssets:WaitForChild("MobileMenuToggle"):Clone()
+	if windowsettings.ToggleInterface ~= nil and typeof(windowsettings.ToggleInterface) == "table" and windowsettings.ToggleInterface.Enabled ~= nil and windowsettings.ToggleInterface.Enabled == true then
+		if windowsettings.ToggleInterface.KeyboardCheck ~= nil and typeof(windowsettings.ToggleInterface.KeyboardCheck) ~= "boolean" then return warn("KeyboardCheck must be a boolean") end
+		if windowsettings.ToggleInterface.Title ~= nil and typeof(windowsettings.ToggleInterface.Title) ~= "string" then return warn("Title must be a string") end
+		if windowsettings.ToggleInterface.UseIcon ~= nil and typeof(windowsettings.ToggleInterface.UseIcon) ~= "boolean" then return warn("UseIcon must be a boolean") end
+		if windowsettings.ToggleInterface.UseIcon == true and typeof(windowsettings.ToggleInterface.Icon) ~= "number" then return warn("IconId must be a number") end
+		if windowsettings.ToggleInterface.BackgroundColor ~= nil and typeof(windowsettings.ToggleInterface.BackgroundColor) ~= "Color3" then return warn("BackgroundColor must be a Color3") end
+		if windowsettings.ToggleInterface.Position ~= nil and typeof(windowsettings.ToggleInterface.Position) ~= "UDim2" then return warn("Position must be a UDim2") end
+		if windowsettings.ToggleInterface.AnchorPoint ~= nil and typeof(windowsettings.ToggleInterface.AnchorPoint) ~= "Vector2" then return warn("AnchorPoint must be a Vector2") end
+		if windowsettings.ToggleInterface.Draggable ~= nil and typeof(windowsettings.ToggleInterface.Draggable) ~= "boolean" then return warn("Draggable must be a boolean") end
+		if windowsettings.ToggleInterface.ShowAfterKeySystem ~= nil and typeof(windowsettings.ToggleInterface.ShowAfterKeySystem) ~= "boolean" then return warn("ShowAfterKeySystem must be a boolean") end
+		local MenuToggleButton
+		if windowsettings.ToggleInterface.UseIcon == true then
+			MenuToggleButton = FPSLibraryAssets:WaitForChild("MenuToggleIcon"):Clone()
+			MenuToggleButton.Icon = "rbxassetid://"..tostring(windowsettings.ToggleInterface.Icon)
+		else
+			MenuToggleButton = FPSLibraryAssets:WaitForChild("MenuToggleButton"):Clone()
+			MenuToggleButton.Text = windowsettings.ToggleInterface.Title or "Toggle GUI"
+			MenuToggleButton.Size = UDim2.new(0,MenuToggleButton.TextBounds.X <= 83 and 112 or MenuToggleButton.TextBounds.X + 29,0,48)
+		end
+		MenuToggleButton.BackgroundColor3 = windowsettings.ToggleInterface.BackgroundColor or Color3.new(0,0,0)
 		MenuToggleButton.Parent = Interface
-		MenuToggleButton.Text = windowsettings.Name or "FPSLibrary"
-		MenuToggleButton.Size = UDim2.new(0,MenuToggleButton.TextBounds.X <= 83 and 112 or MenuToggleButton.TextBounds.X + 29,0,48)
-		MenuToggleButton.Position = UDim2.new(1,-19 - MenuToggleButton.Size.X.Offset,0,19)
-		MakeDraggable(true,MenuToggleButton)
+		MenuToggleButton.Position = windowsettings.ToggleInterface.UseIcon == false and (windowsettings.ToggleInterface.Position ~= nil and windowsettings.ToggleInterface.Position or UDim2.new(1,-18 - MenuToggleButton.Size.X.Offset,0,18)) or UDim2.new(1,-62,0,18)
+		MenuToggleButton.AnchorPoint = windowsettings.ToggleInterface.AnchorPoint ~= nil and windowsettings.ToggleInterface.AnchorPoint or Vector2.new(0,0)
+		MenuToggleButton.Visible = (windowsettings.ToggleInterface.KeyboardCheck == nil or windowsettings.ToggleInterface.KeyboardCheck == false) or UserInputService.KeyboardEnabled
+		MakeDraggable(windowsettings.ToggleInterface.Draggable == nil or windowsettings.ToggleInterface.Draggable,MenuToggleButton)
 		MenuToggleButton.MouseButton1Click:Connect(function()
-			WindowVisible = not WindowVisible
 			ToggleTabVisibility()
 		end)
+		if windowsettings.ToggleInterface.KeyboardCheck == true then
+			UserInputService:GetPropertyChangedSignal("KeyboardEnabled"):Connect(function()
+				MenuToggleButton.Visible = UserInputService.KeyboardEnabled
+			end)
+		end
+		if windowsettings.ToggleInterface.ShowAfterKeySystem == nil or windowsettings.ToggleInterface.ShowAfterKeySystem == true then
+			MenuToggleButton.Parent = nil
+			task.spawn(function()
+				repeat task.wait() until KeyVerified
+				MenuToggleButton.Parent = Interface
+			end)
+		end
 	end
-	if windowsettings.ToggleGUIKeybind and typeof(windowsettings.ToggleGUIKeybind) == "EnumItem" and windowsettings.ToggleGUIKeybind.EnumType == Enum.KeyCode then
+	if windowsettings.ToggleGUIKeybind ~= nil then
+		if typeof(windowsettings.ToggleGUIKeybind) ~= "EnumItem" or windowsettings.ToggleGUIKeybind.EnumType ~= Enum.KeyCode then return warn("ToggleGUIKeybind must be a Enum.KeyCode") end
 		ToggleGUIKeybind = windowsettings.ToggleGUIKeybind
 	end
 	UserInputService.InputBegan:Connect(function(input, processed)
-		if not processed and input.KeyCode == ToggleGUIKeybind then
-			WindowVisible = not WindowVisible
+		if processed == false and input.KeyCode == ToggleGUIKeybind then
 			ToggleTabVisibility()
 		end
 	end)
-	if windowsettings.KeySystem and typeof(windowsettings.KeySystem) == "table" and windowsettings.KeySystem.Enabled and typeof(windowsettings.KeySystem.Enabled) == "boolean" then
-		local keyverified = false
+	if windowsettings.KeySystem ~= nil and typeof(windowsettings.KeySystem) == "table" and windowsettings.KeySystem.Enabled ~= nil and windowsettings.KeySystem.Enabled == true then
+		if typeof(windowsettings.KeySystem.Title) ~= "string" then return warn("Title is required and must be a string") end
+		if typeof(windowsettings.KeySystem.Keys) ~= "table" then return warn("Keys is required and must be a table") end
+		if windowsettings.KeySystem.EncryptKey ~= nil and typeof(windowsettings.KeySystem.EncryptKey) ~= "boolean" then return warn("EncryptKey must be a boolean") end
+		if windowsettings.KeySystem.EncryptKey == true and typeof(windowsettings.KeySystem.CypherKey) ~= "string" then return warn("CypherKey is required and must be a string") end
+		if windowsettings.KeySystem.RememberKey ~= nil and typeof(windowsettings.KeySystem.RememberKey) ~= "boolean" then return warn("RememberKey must be a boolean") end
+		if windowsettings.KeySystem.RememberKey == true and typeof(windowsettings.KeySystem.FileName) ~= "string" then return warn("FileName is required and must be a string") end
+		if windowsettings.KeySystem.RememberKey == true and typeof(windowsettings.KeySystem.KeyTimeLimit) ~= "number" then return warn("KeyTimeLimit is required and must be a number") end
+		if windowsettings.KeySystem.GrabKeyFromSite ~= nil and typeof(windowsettings.KeySystem.GrabKeyFromSite) ~= "boolean" then return warn("GrabKeyFromSite must be a boolean") end
+		if windowsettings.KeySystem.GrabKeyFromSite == true and typeof(windowsettings.KeySystem.WebsiteURL) ~= "string" then return warn("WebsiteURL is required and must be a string") end
+		if windowsettings.KeySystem.GrabKeyFromSite == true and typeof(windowsettings.KeySystem.KeyRAWURL) ~= "string" then return warn("KeyRAWURL is required and must be a string") end
+		if windowsettings.KeySystem.GrabKeyFromSite == true and windowsettings.KeySystem.JSONDecode ~= nil and typeof(windowsettings.KeySystem.JSONDecode) ~= "boolean" then return warn("JSONDecode must be a boolean") end
 		KeySystemContainer = FPSLibraryAssets:WaitForChild("KeySystem"):Clone()
 		KeySystemContainer.Parent = Interface
 		KeySystemContainer.Size = UDim2.new(0,274,0,0)
@@ -647,7 +691,7 @@ function FPSLibrary:BootWindow(windowsettings)
 		MakeDraggable(true,KeySystemContainer)
 		local KeySystemInterface = KeySystemContainer:WaitForChild("Frame")
 		local KeySystemTitle = KeySystemInterface:WaitForChild("Title")
-		KeySystemTitle.Text = windowsettings.Name
+		KeySystemTitle.Text = windowsettings.KeySystem.Title
 		local CloseButton = KeySystemInterface:WaitForChild("ImageButton")
 		local TextBox = KeySystemInterface:WaitForChild("TextBox")
 		local CheckKeyButton = FPSLibraryAssets:WaitForChild("Button"):Clone()
@@ -661,7 +705,7 @@ function FPSLibrary:BootWindow(windowsettings)
 		CheckKeyName.Position = UDim2.new(0,0,0,0)
 		CheckKeyName.TextScaled = false
 		CheckKeyButton:WaitForChild("Icon"):Destroy()
-		if windowsettings.KeySystem.GrabKeyFromSite and windowsettings.KeySystem.WebsiteURL then
+		if windowsettings.KeySystem.GrabKeyFromSite == true then
 			local GetKeyButton = FPSLibraryAssets:WaitForChild("Button"):Clone()
 			local GetKeyName = GetKeyButton:WaitForChild("NameTextLabel")
 			local GetKeyButtonOutline = GetKeyButton:WaitForChild("UIStroke")
@@ -679,20 +723,20 @@ function FPSLibrary:BootWindow(windowsettings)
 			GetKeyButton:WaitForChild("Icon"):Destroy()
 			RippleEffects(GetKeyButton)
 			GetKeyButton.MouseButton1Click:Connect(function()
-				if setclipboard then
+				if setclipboard ~= nil then
 					setclipboard(windowsettings.KeySystem.WebsiteURL)
 					FPSLibrary:Notify({
 						Type = "success";
-						Title = "Success";
+						Title = windowsettings.KeySystem.Title;
 						Message = "Link copied to clipboard!";
 						Duration = 3;
 					})
 				else
 					FPSLibrary:Notify({
 						Type = "info";
-						Title = "Info";
+						Title = windowsettings.KeySystem.Title;
 						Message = 'URL: "'..windowsettings.KeySystem.WebsiteURL..'"';
-						Duration = 60;
+						Duration = math.huge;
 						Actions = {
 							Close = {
 								Name = "Close";
@@ -705,63 +749,84 @@ function FPSLibrary:BootWindow(windowsettings)
 				end
 			end)
 		end
-		local function VerifyKey(keyargument)
-			local key = windowsettings.KeySystem.GrabKeyFromSite and (windowsettings.KeySystem.JSONDecode and HttpService:JSONDecode(game:HttpGet(windowsettings.KeySystem.KeyRAWURL)) or {game:HttpGet(windowsettings.KeySystem.KeyRAWURL)}) or windowsettings.KeySystem.Keys
-			if key then
-				for _, v in key do
-					if v == keyargument then
+		local function VerifyKey(enteredkey)
+			local suc, keys = pcall(function()
+				return windowsettings.KeySystem.GrabKeyFromSite == true and (windowsettings.KeySystem.JSONDecode == true and HttpService:JSONDecode(game:HttpGet(windowsettings.KeySystem.KeyRAWURL)) or {game:HttpGet(windowsettings.KeySystem.KeyRAWURL)}) or windowsettings.KeySystem.Keys
+			end)
+			if suc == true and keys ~= nil then
+				for _, key in keys do
+					if key == enteredkey then
 						return true
 					end
 				end
+			else
+				FPSLibrary:Notify({
+					Type = "error";
+					Title = windowsettings.KeySystem.Title;
+					Message = "Failed To Obtain Key. Please check if the format is correct.";
+					Duration = 5;
+					Actions = {}
+				})
 			end
 			return false
 		end
 		RippleEffects(CheckKeyButton)
 		CheckKeyButton.MouseButton1Click:Connect(function()
 			local verified = VerifyKey(TextBox.Text)
-			if verified then
-				keyverified = true
+			if verified == true then
+				KeyVerified = true
 				FPSLibrary:Notify({
 					Type = "success";
-					Title = "Success";
+					Title = windowsettings.KeySystem.Title;
 					Message = "Correct Key!";
 					Duration = 3;
 				})
-				if windowsettings.KeySystem.RememberKey and windowsettings.KeySystem.FileName then
-					local key = TextBox.Text
-					local spawn = tostring(tick())
-					if windowsettings.KeySystem.Encrypt and windowsettings.KeySystem.CypherKey then
-						if #windowsettings.KeySystem.CypherKey < 16 then
-							return FPSLibrary:Notify({
-								Type = "info";
-								Title = "Info";
-								Message = "Cypher Key Length Must Be 16 Or More";
-								Duration = 3;
-							})
-						elseif not encrypt then
-							return FPSLibrary:Notify({
-								Type = "info";
-								Title = "Info";
-								Message = "Your executor is unsupported. Missing function 'encrypt'. Your key has not been saved.";
-								Duration = 3;
-							})
-						else
-							key = encrypt(key,windowsettings.KeySystem.CypherKey)
-							spawn = encrypt(spawn,windowsettings.KeySystem.CypherKey)
+				if windowsettings.KeySystem.RememberKey == true then
+					local suc = pcall(function()
+						local key = TextBox.Text
+						local spawn = tostring(tick())
+						local encrypted = windowsettings.KeySystem.EncryptKey
+						if windowsettings.KeySystem.Encrypt == true then
+							if #windowsettings.KeySystem.CypherKey < 16 then
+								return FPSLibrary:Notify({
+									Type = "error";
+									Title = windowsettings.KeySystem.Title;
+									Message = "Cypher Key Length Must Be 16 Or More";
+									Duration = 3;
+								})
+							elseif encrypt == nil then
+								return FPSLibrary:Notify({
+									Type = "error";
+									Title = windowsettings.KeySystem.Title;
+									Message = "Your executor is unsupported. Missing function 'encrypt'. Your key has not been saved.";
+									Duration = 3;
+								})
+							else
+								key = encrypt(key,windowsettings.KeySystem.CypherKey)
+								spawn = encrypt(spawn,windowsettings.KeySystem.CypherKey)
+							end
 						end
-					end
-					if key and spawn then
-						local contents = {
-							Key = key;
-							Spawn = spawn
-						}
-						writefile(KeyFolderName.."/"..windowsettings.KeySystem.FileName,HttpService:JSONEncode(contents))
+						if key ~= nil and spawn ~= nil then
+							local contents = {
+								Key = key;
+								Spawn = spawn
+							}
+							writefile(KeyFolderName.."/"..windowsettings.KeySystem.FileName,HttpService:JSONEncode(contents))
+						end
+					end)
+					if suc == false then
+						FPSLibrary:Notify({
+							Type = "error";
+							Title = windowsettings.KeySystem.Title;
+							Message = windowsettings.KeySystem.Title.." ran into an error. Your key has not been saved.";
+							Duration = 5;
+						})
 					end
 				end
 			else
 				FPSLibrary:Notify({
 					Type = "error";
-					Title = "Error";
+					Title = windowsettings.KeySystem.Title;
 					Message = "Invalid Key!";
 					Duration = 3;
 				})
@@ -772,39 +837,41 @@ function FPSLibrary:BootWindow(windowsettings)
 			task.wait(0.5)
 			KeySystemContainer:Destroy()
 		end)
-		if windowsettings.KeySystem.RememberKey and windowsettings.KeySystem.FileName and isfile(KeyFolderName.."/"..windowsettings.KeySystem.FileName) then
+		if windowsettings.KeySystem.RememberKey == true and isfile(KeyFolderName.."/"..windowsettings.KeySystem.FileName) == true then
 			local suc, err = pcall(function()
 				local contents = HttpService:JSONDecode(readfile(KeyFolderName.."/"..windowsettings.KeySystem.FileName))
-				if contents.Key and contents.Spawn then
-					if windowsettings.KeySystem.Encrypt then
+				if contents.Key ~= nil and contents.Spawn ~= nil and contents.Encrypted ~= nil then
+					local decryptedkey
+					local decryptedspawn
+					if contents.Encrypted == true then
 						if #windowsettings.KeySystem.CypherKey < 16 then
 							return FPSLibrary:Notify({
-								Type = "info";
-								Title = "Info";
+								Type = "error";
+								Title = windowsettings.KeySystem.Title;
 								Message = "Cypher Key Length Must Be 16 Or More";
-								Duration = 3;
+								Duration = 5;
 							})
-						elseif not decrypt then
+						elseif decrypt == nil then
 							return FPSLibrary:Notify({
-								Type = "info";
-								Title = "Info";
+								Type = "error";
+								Title = windowsettings.KeySystem.Title;
 								Message = "Your executor is unsupported. Missing function 'decrypt'. Please re-enter your key";
-								Duration = 3;
+								Duration = 5;
 							})
 						else
-							contents.Key = decrypt(contents.Key,windowsettings.KeySystem.CypherKey)
-							contents.Spawn = tonumber(decrypt(contents.Spawn,windowsettings.KeySystem.CypherKey))
+							decryptedkey = decrypt(contents.Key,windowsettings.KeySystem.CypherKey)
+							decryptedspawn = decrypt(contents.Spawn,windowsettings.KeySystem.CypherKey)
 						end
 					end
-					if contents.Key and contents.Spawn and tonumber(contents.Spawn) then
-						if tonumber(contents.Spawn) + windowsettings.KeySystem.KeyTimeLimit > tick() then
+					if decryptedkey ~= nil and decryptedspawn ~= nil and tonumber(decryptedspawn) ~= nil then
+						if tonumber(decryptedspawn) + windowsettings.KeySystem.KeyTimeLimit > tick() then
 							local verified = VerifyKey(contents.Key)
-							if verified then
-								keyverified = true
+							if verified == true then
+								KeyVerified = true
 							else
 								FPSLibrary:Notify({
 									Type = "error";
-									Title = "Error";
+									Title = windowsettings.KeySystem.Title;
 									Message = "Key not authenticated. Try again.";
 									Duration = 3;
 								})
@@ -812,7 +879,7 @@ function FPSLibrary:BootWindow(windowsettings)
 						else
 							FPSLibrary:Notify({
 								Type = "info";
-								Title = "Info";
+								Title = windowsettings.KeySystem.Title;
 								Message = "Your key has expired. Please re-enter your key.";
 								Duration = 3;
 							})
@@ -820,14 +887,14 @@ function FPSLibrary:BootWindow(windowsettings)
 					else
 						FPSLibrary:Notify({
 							Type = "error";
-							Title = "Error";
+							Title = windowsettings.KeySystem.Title;
 							Message = "Unable to verify key. Your key system file is corrupted.";
 							Duration = 3;
 						})
 					end
 				end
 			end)
-			if not suc then
+			if suc == false then
 				FPSLibrary:Notify({
 					Type = "error";
 					Title = "Error";
@@ -835,8 +902,10 @@ function FPSLibrary:BootWindow(windowsettings)
 				})
 			end
 		end
-		repeat task.wait() until keyverified
+		repeat task.wait() until KeyVerified == true
 		KeySystemContainer:Destroy()
+	else
+		KeyVerified = true
 	end
 	task.spawn(function()
 		local BootAnimation = FPSLibraryAssets:WaitForChild("LibraryBootAnimation"):Clone()
@@ -844,7 +913,7 @@ function FPSLibrary:BootWindow(windowsettings)
 		local Line1 = BootAnimation:WaitForChild("Line1")
 		local Line2 = BootAnimation:WaitForChild("Line2")
 		local TitleName = BootAnimation:WaitForChild("TitleName")
-		TitleName.Text = windowsettings.LoadingTitle or "FPSLibrary Interface Suite"
+		TitleName.Text = windowsettings.LoadingTitle ~= nil and windowsettings.LoadingTitle or "FPSLibrary Interface Suite"
 		TweenService:Create(Line1,TweenOut75Sine,{Position = UDim2.new(0.5,TitleName.TextBounds.X/2 + 8,0,0)}):Play()
 		TweenService:Create(Line2,TweenOut75Sine,{Position = UDim2.new(0.5,-TitleName.TextBounds.X/2 - 8,0,0)}):Play()
 		TweenService:Create(TitleName,TweenOut75Sine,{Size = UDim2.new(0,TitleName.TextBounds.X + 8,1,0)}):Play()
@@ -856,58 +925,59 @@ function FPSLibrary:BootWindow(windowsettings)
 		BootAnimation:Destroy()
 	end)
 	local suc = pcall(function()
-		if windowsettings.ConfigurationSaving and windowsettings.ConfigurationSaving.Enabled and windowsettings.ConfigurationSaving.FolderName then
+		if windowsettings.ConfigurationSaving ~= nil and typeof(windowsettings.ConfigurationSaving) == "table" and windowsettings.ConfigurationSaving.Enabled == true then
+			if typeof(windowsettings.ConfigurationSaving.FolderName) ~= "string" then return warn("FolderName is required and must be a string") end
 			local FolderName = windowsettings.ConfigurationSaving.FolderName
 			local SubFolderName = "Universal"
-			if windowsettings.ConfigurationSaving.PlaceId then
+			if windowsettings.ConfigurationSaving.PlaceId == true then
 				SubFolderName = tostring(game.PlaceId)
 			end
-			if not isfolder(ConfigurationFolderName.."/"..FolderName) then
+			if isfolder(ConfigurationFolderName.."/"..FolderName) == false then
 				makefolder(ConfigurationFolderName.."/"..FolderName)
 			end
-			if not isfolder(ConfigurationFolderName.."/"..FolderName.."/"..SubFolderName) then
+			if isfolder(ConfigurationFolderName.."/"..FolderName.."/"..SubFolderName) == false then
 				makefolder(ConfigurationFolderName.."/"..FolderName.."/"..SubFolderName)
 			end
 			LocalConfigurationFolderName = FolderName
 			LocalConfigurationSubFolderName = SubFolderName
 		end
 	end)
-	if not suc then
+	if suc == false then
 		FPSLibrary:Notify({
 			Type = "error";
-			Title = "Error";
+			Title = "Configuration";
 			Message = "An Unexpected Error Occurred While Loading Configurations";
 		})
 	end
 	if windowsettings.WindowVisible then WindowVisible = true end
 	function Window:CreateTab(tabsettings)
 		-- Tab Setttings
-		tabsettings.Title =  tabsettings.Title or "Title"
-		tabsettings.Subtitle = tabsettings.Subtitle or "Subtitle"
-		tabsettings.TitleRichText = tabsettings.TitleRichText ~= nil and tabsettings.TitleRichText or false
-		tabsettings.SubtitleRichText = tabsettings.SubtitleRichText ~= nil and tabsettings.SubtitleRichText or false
-		tabsettings.Image = tabsettings.Image or "rbxassetid://0"
+		tabsettings.Title = tabsettings.Title ~= nil and tabsettings.Title or "Title"
+		tabsettings.Subtitle = tabsettings.Subtitle ~= nil and tabsettings.Subtitle or "Subtitle"
+		tabsettings.TitleRichText = tabsettings.TitleRichText ~= nil and tabsettings.TitleRichText
+		tabsettings.SubtitleRichText = tabsettings.SubtitleRichText ~= nil and tabsettings.SubtitleRichText
+		tabsettings.Image = tabsettings.Image ~= nil and tabsettings.Image or 0
 		tabsettings.SizeY = tabsettings.SizeY ~= nil and tabsettings.SizeY or 300
 		tabsettings.MaxSizeY = tabsettings.MaxSizeY ~= nil and tabsettings.MaxSizeY or 300
-		tabsettings.Opened = tabsettings.Opened ~= nil and tabsettings.Opened or false
+		tabsettings.Opened = tabsettings.Opened ~= nil and tabsettings.Opened
 		tabsettings.CanvasSizeY = tabsettings.CanvasSizeY or 0
 		tabsettings.Visible = tabsettings.Visible == nil or tabsettings.Visible
 		tabsettings.Position = tabsettings.Position ~= nil and tabsettings.Position or UDim2.new(0,20,0,20)
 		tabsettings.Flag = tabsettings.Flag ~= "" and tabsettings.Flag or nil
-		tabsettings.IgnoreList = tabsettings.IgnoreList or {}
-		if typeof(tabsettings.Title) ~= "string" then return end
-		if typeof(tabsettings.Subtitle) ~= "string" then return end
-		if typeof(tabsettings.TitleRichText) ~= "boolean" then return end
-		if typeof(tabsettings.SubtitleRichText) ~= "boolean" then return end
-		if typeof(tabsettings.Image) ~= "string" then return end
-		if typeof(tabsettings.SizeY) ~= "number" then return end
-		if typeof(tabsettings.MaxSizeY) ~= "number" then return end
-		if typeof(tabsettings.Opened) ~= "boolean" then return end
-		if typeof(tabsettings.CanvasSizeY) ~= "number" then return end
-		if typeof(tabsettings.Visible) ~= "boolean" then return end
-		if typeof(tabsettings.Position) ~= "UDim2" then return end
-		if tabsettings.Flag ~= nil and typeof(tabsettings.Flag) ~= "string" then return end
-		if typeof(tabsettings.IgnoreList) ~= "table" then return end
+		tabsettings.IgnoreList = tabsettings.IgnoreList ~= nil and tabsettings.IgnoreList or {}
+		if typeof(tabsettings.Title) ~= "string" then return warn("Title must be a string") end
+		if typeof(tabsettings.Subtitle) ~= "string" then return warn("Subtitle must be a string") end
+		if typeof(tabsettings.TitleRichText) ~= "boolean" then return warn("TitleRichText must be a boolean") end
+		if typeof(tabsettings.SubtitleRichText) ~= "boolean" then return warn("SubtitleRichText must be a boolean") end
+		if typeof(tabsettings.Image) ~= "number" then return warn("Image must be a number") end
+		if typeof(tabsettings.SizeY) ~= "number" then return warn("SizeY must be a number") end
+		if typeof(tabsettings.MaxSizeY) ~= "number" then return warn("MaxSizeY must be a number") end
+		if typeof(tabsettings.Opened) ~= "boolean" then return warn("Opened must be a boolean") end
+		if typeof(tabsettings.CanvasSizeY) ~= "number" then return warn("CanvasSizeY must be a number") end
+		if typeof(tabsettings.Visible) ~= "boolean" then return warn("Visible must be a boolean") end
+		if typeof(tabsettings.Position) ~= "UDim2" then return warn("Position must be a UDim2") end
+		if tabsettings.Flag ~= nil and typeof(tabsettings.Flag) ~= "string" then return warn("Flag must be a string") end
+		if typeof(tabsettings.IgnoreList) ~= "table" then return warn("IgnoreList must be a table") end
 		-- Module
 		local TabModule = {}
 		local mt = {}
@@ -919,7 +989,7 @@ function FPSLibrary:BootWindow(windowsettings)
 		TabContainer.Parent = Interface
 		TabContainer.Size = UDim2.new(0,112,0,0)
 		TabContainer.Position = tabsettings.Position - UDim2.new(0,2,0,2)
-		TweenService:Create(TabContainer,TweenOut50Sine,{Size = UDim2.new(0,112,0,tabsettings.Opened and tabsettings.SizeY + 37 or 37)}):Play()
+		TweenService:Create(TabContainer,TweenOut50Sine,{Size = UDim2.new(0,112,0,tabsettings.Opened == true and tabsettings.SizeY + 37 or 37)}):Play()
 		local DropShadow = TabContainer:WaitForChild("DropShadow")
 		local Tab = TabContainer:WaitForChild("Frame")
 		local Title = Tab:WaitForChild("Title")
@@ -928,50 +998,50 @@ function FPSLibrary:BootWindow(windowsettings)
 		local MinimizeButton = Tab:WaitForChild("ArrowImageButton")
 		local ElementsFrame = Tab:WaitForChild("Elements")
 		local ElementsContainer = ElementsFrame:WaitForChild("Container")
-		ElementsFrame.Size = tabsettings.Opened and UDim2.new(1,0,0,tabsettings.SizeY + 10) or UDim2.new(1,0,0,10)
-		MinimizeButton.Rotation = tabsettings.Opened and 0 or 180
+		ElementsFrame.Size = tabsettings.Opened == true and UDim2.new(1,0,0,tabsettings.SizeY + 10) or UDim2.new(1,0,0,10)
+		MinimizeButton.Rotation = tabsettings.Opened == true and 0 or 180
 		-- Metatable Functions
 		function mt.__newindex(self, idx, value)
 			if idx == "Title" then
-				if typeof(value) ~= "string" then return end
-				tabsettings.Title = tostring(value)
+				if typeof(value) ~= "string" then return warn("Title must be a string") end
+				tabsettings.Title = value
 				Title.Text = tabsettings.Title
 			elseif idx == "Subtitle" then
-				if typeof(value) ~= "string" then return end
-				tabsettings.Subtitle = tostring(value)
+				if typeof(value) ~= "string" then return warn("Subtitle must be a string") end
+				tabsettings.Subtitle = value
 				Subtitle.Text = tabsettings.Subtitle
 			elseif idx == "TitleRichText" then
-				if typeof(value) ~= "boolean" then return end
+				if typeof(value) ~= "boolean" then return warn("TitleRichText must be a boolean") end
 				tabsettings.TitleRichText = value
 				Title.RichText = tabsettings.TitleRichText
 			elseif idx == "SubtitleRichText" then
-				if typeof(value) ~= "boolean" then return end
+				if typeof(value) ~= "boolean" then return warn("SubtitleRichText must be a boolean") end
 				tabsettings.SubtitleRichText = value
 				Subtitle.RichText = tabsettings.SubtitleRichText
-			elseif idx == "RichText" then
-				if typeof(tabsettings.Image) ~= "string" then return end
-				tabsettings.Image = value
+			elseif idx == "Image" then
+				if typeof(value) ~= "number" then return warn("Image must be a number") end
+				tabsettings.Image = "rbxassetid://"..tostring(value)
 				Icon.Image = tabsettings.Image
 			elseif idx == "SizeY" then
-				if typeof(value) ~= "number" then return end
+				if typeof(value) ~= "number" then return warn("SizeY must be a number") end
 				tabsettings.SizeY = math.clamp(value,100,tabsettings.MaxSizeY)
 				if tabsettings.Opened then
 					TweenService:Create(ElementsFrame,TweenOut75Sine,{Size = UDim2.new(1,0,0,tabsettings.SizeY + 10)}):Play()
 				end
 			elseif idx == "MaxSizeY" then
-				if typeof(value) ~= "number" then return end
+				if typeof(value) ~= "number" then return warn("MaxSizeY must be a number") end
 				tabsettings.MaxSizeY = value >= 100 and value or 100
 				if tabsettings.SizeY > tabsettings.MaxSizeY then
 					TabModule.SizeY = tabsettings.MaxSizeY
 				end
 			elseif idx == "Position" then
-				if typeof(value) ~= "UDim2" then return end
+				if typeof(value) ~= "UDim2" then return warn("Position must be a UDim2") end
 				tabsettings.Position = value
 				TweenService:Create(TabContainer,TweenInfo.new(0.5,Enum.EasingStyle.Sine,Enum.EasingDirection.Out),{Position = tabsettings.Position}):Play()
 				MakeDraggable(false,TabContainer)
 				MakeDraggable(true,TabContainer)
 			elseif idx == "Opened" then
-				if typeof(value) ~= "boolean" then return end
+				if typeof(value) ~= "boolean" then return warn("Opened must be a boolean") end
 				tabsettings.Opened = value
 				if tabsettings.Opened then
 					TweenService:Create(ElementsFrame,TweenOut75Sine,{Size = UDim2.new(1,0,0,tabsettings.SizeY + 10)}):Play()
@@ -985,11 +1055,11 @@ function FPSLibrary:BootWindow(windowsettings)
 					TweenService:Create(MinimizeButton,TweenOut32Sine,{Rotation = 180}):Play()
 				end
 			elseif idx == "CanvasSizeY" then
-				if typeof(value) ~= "number" then return end
+				if typeof(value) ~= "number" then return warn("CanvasSizeY must be a number") end
 				tabsettings.CanvasSizeY = value
 				ElementsContainer.CanvasSize = UDim2.new(0,0,0,tabsettings.CanvasSizeY)
 			elseif idx == "Visible" then
-				if typeof(value) ~= "boolean" then return end
+				if typeof(value) ~= "boolean" then return warn("Visible must be a boolean") end
 				tabsettings.Visible = value
 				local size
 				if tabsettings.Visible then
@@ -1003,12 +1073,12 @@ function FPSLibrary:BootWindow(windowsettings)
 				end
 				TweenService:Create(TabContainer,TweenOut75Sine,{Size = size}):Play()
 			elseif idx == "IgnoreList" then
-				if typeof(value) ~= "table" then return end
+				if typeof(value) ~= "table" then return warn("IgnoreList must be a table") end
 				tabsettings.IgnoreList = value
 			else
 				return
 			end
-			if tabsettings.Flag and canupdateflags then
+			if tabsettings.Flag ~= nil and canupdateflags == true then
 				UpdateFlags(tabsettings)
 			end
 		end
@@ -1052,22 +1122,22 @@ function FPSLibrary:BootWindow(windowsettings)
 		end)
 		function TabModule:CreateButton(buttonsettings)
 			-- Tab Settings
-			buttonsettings.Name = buttonsettings.Name or "Button"
-			buttonsettings.RichText = buttonsettings.RichText or false
-			buttonsettings.SectionParent = buttonsettings.SectionParent or nil
-			buttonsettings.Callback = buttonsettings.Callback or function() end
+			buttonsettings.Name = buttonsettings.Name ~= nil and buttonsettings.Name or "Button"
+			buttonsettings.RichText = buttonsettings.RichText ~= nil and buttonsettings.RichText or false
+			buttonsettings.SectionParent = buttonsettings.SectionParent ~= nil and buttonsettings.SectionParent or nil
+			buttonsettings.Callback = buttonsettings.Callback ~= nil and buttonsettings.Callback or function() end
 			buttonsettings.Active = buttonsettings.Active == nil or buttonsettings.Active
 			buttonsettings.Visible = buttonsettings.Visible == nil or buttonsettings.Visible
 			buttonsettings.Tip = buttonsettings.Tip ~= "" and buttonsettings.Tip or nil
-			buttonsettings.TipDuration = buttonsettings.TipDuration or 5
-			if typeof(buttonsettings.Name) ~= "string" then return end
-			if typeof(buttonsettings.RichText) ~= "boolean" then return end
-			if (typeof(buttonsettings.SectionParent) ~= "table" or buttonsettings.SectionParent.ClassName ~= "SectionParent") and buttonsettings.SectionParent ~= nil then return end
-			if typeof(buttonsettings.Callback) ~= "function" then return end
-			if typeof(buttonsettings.Active) ~= "boolean" then return end
-			if typeof(buttonsettings.Visible) ~= "boolean" then return end
-			if typeof(buttonsettings.Tip) ~= "string" and buttonsettings.Tip ~= nil then return end
-			if typeof(buttonsettings.TipDuration) ~= "number" then return end
+			buttonsettings.TipDuration = buttonsettings.TipDuration ~= nil and buttonsettings.TipDuration or 5
+			if typeof(buttonsettings.Name) ~= "string" then return warn("Name must be a string") end
+			if typeof(buttonsettings.RichText) ~= "boolean" then return warn("RichText must be a boolean") end
+			if (typeof(buttonsettings.SectionParent) ~= "table" or buttonsettings.SectionParent.ClassName ~= "SectionParent") and buttonsettings.SectionParent ~= nil then return warn("SectionParent must be a SectionParentIdentifier") end
+			if typeof(buttonsettings.Callback) ~= "function" then return warn("Callback must be a function") end
+			if typeof(buttonsettings.Active) ~= "boolean" then return warn("Active must be a boolean") end
+			if typeof(buttonsettings.Visible) ~= "boolean" then return warn("Visible must be a boolean") end
+			if typeof(buttonsettings.Tip) ~= "string" and buttonsettings.Tip ~= nil then return warn("Tip must be a string") end
+			if typeof(buttonsettings.TipDuration) ~= "number" then return warn("TipDuration must be a number") end
 			-- Button
 			local ButtonElement = FPSLibraryAssets:WaitForChild("Button"):Clone()
 			local ElementIcon = ButtonElement:WaitForChild("Icon")
@@ -1878,10 +1948,10 @@ function FPSLibrary:BootWindow(windowsettings)
 						local enabledoptions = CountEnabledOptions()
 						if dropdownsettings.MaxOptions ~= 1 and enabledoptions > dropdownsettings.MaxOptions then
 							value = false
-							PlaySound("rbxassetid://138090596")
+							PlaySound(138090596)
 						elseif enabledoptions < dropdownsettings.MinOptions then
 							value = true
-							PlaySound("rbxassetid://138090596")
+							PlaySound(138090596)
 						end
 						options[v] = {Option,value}
 						if dropdownsettings.MaxOptions == 1 then
@@ -2065,7 +2135,7 @@ function FPSLibrary:BootWindow(windowsettings)
 						ElementIcon.ImageTransparency = 1
 					else
 						TextBox.PlaceholderText = ""
-                        ElementIcon.ImageTransparency = 0
+						ElementIcon.ImageTransparency = 0
 						ElementIcon.ImageColor3 = Color3.fromRGB(32,32,32)
 						ElementIcon.Image = Icons.DisabledElementIcon
 					end
@@ -2178,6 +2248,7 @@ function FPSLibrary:BootWindow(windowsettings)
 			Glow.ImageTransparency = 0
 			local opened = false
 			local canupdateflags = false
+			local oldcolor
 			local ColorPickerModule = {}
 			local renderstepped
 			local mt = {}
@@ -2285,7 +2356,7 @@ function FPSLibrary:BootWindow(windowsettings)
 					if colorpickersettings.Active then
 						Fade.Transparency = 1
 						ElementIcon.ImageTransparency = 1
-						ElementIcon.ImageColor3 = Color3.fromRGB(84,84,84)
+						ElementIcon.ImageColor3 = Color3.fromRGB(11, 9, 9)
 					else
 						Fade.Transparency = 0.75
 						ElementIcon.ImageTransparency = 0
@@ -2388,9 +2459,9 @@ function FPSLibrary:BootWindow(windowsettings)
 					end
 				end)
 				RainbowToggle.MouseButton1Click:Connect(function()
-					oldcolor = colorpickersettings.CurrentColor
 					ColorPickerModule.Rainbow = not colorpickersettings.Rainbow
 					if colorpickersettings.Rainbow then
+						oldcolor = colorpickersettings.CurrentColor
 						TweenService:Create(SwitchCircle,TweenOut32Sine,{Position = UDim2.new(0,16,0.5,0)}):Play()
 						TweenService:Create(SwitchGlow,TweenOut32Sine,{ImageTransparency = 0}):Play()
 						TweenService:Create(SwitchBackground,TweenOut32Sine,{BackgroundColor3 = Color3.fromRGB(255, 107, 107)}):Play()
