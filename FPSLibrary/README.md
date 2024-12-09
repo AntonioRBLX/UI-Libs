@@ -25,6 +25,7 @@ ROBLOX User Interface Library Created By CITY512.
 - ### [v1.1.2] 12/7/2024
 - Bug Fixes (colorpicker issues, and key system not closing)
 - Notification Appearance Improvements
+- Added Icon Styled Tab Minimizer
 
 ## Interface Preview
 
