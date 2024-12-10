@@ -635,7 +635,7 @@ function FPSLibrary:BootWindow(windowsettings)
 		local MenuToggleButton
 		if windowsettings.ToggleInterface.UseIcon == true then
 			MenuToggleButton = FPSLibraryAssets:WaitForChild("MenuToggleIcon"):Clone()
-			MenuToggleButton.Icon = "rbxassetid://"..tostring(windowsettings.ToggleInterface.Icon)
+			MenuToggleButton.Image = "rbxassetid://"..tostring(windowsettings.ToggleInterface.Icon)
 		else
 			MenuToggleButton = FPSLibraryAssets:WaitForChild("MenuToggleButton"):Clone()
 			MenuToggleButton.Text = windowsettings.ToggleInterface.Title or "Toggle GUI"
