@@ -15,10 +15,9 @@
 > ## Library
 
 ### Protect Library Gui
-
+- WARNING: IF THE GAME YOU ARE RUNNING ON IS CRASHING OR DETECTING
+- NOTE: EXECUTORS THAT DON'T SUPPORT THIS FEATURE WILL ERROR
 ```lua
--- WARNING: IF THE GAME YOU ARE RUNNING ON IS CRASHING OR DETECTING
--- NOTE: EXECUTORS THAT DON'T SUPPORT THIS FEATURE WILL ERROR
 getgenv().LibraryProtectGui = true -- Place this above the loadstring
 ```
 
@@ -140,24 +139,35 @@ Window:Prompt({
 Window:PromptDiscordInvite() -- Will prompt the discord invite again regardless of RememberJoins. Discord invites must be enabled.
 ```
 
-### Configuration Folder Management
+> ## Configuration Management
+- NOTE: ConfigurationSaving must be Enabled
+
+### Save Configuration
 
 ```lua
--- NOTE: ConfigurationSaving must be Enabled
 Library:SaveConfiguration({FileName = "Configuration #1"})
+```
+### Delete Configuration
+```lua
 Library:DeleteConfiguration({FileName = "Configuration #1"})
+```
+### Load Configuration
+```lua
 Library:LoadConfiguration({ -- If config file is corrupted or not found, it will error.
 	FileName = "Configuration #1",
 	CallbackElements = true -- Callback Elements once all configs loaded
 })
+```
+### List Configuration Files
+```lua
 Library:ListConfigurationFiles({ShowDirectory = false}) -- returns a table of configurations from the local configuration folder
 ```
 
 ### Auto-Load Configuration File On Boot
-
+- To do this, you must copy the command 'AutoLoadFileOnBoot' with the filename as the argument, then paste the 'LoadConfiguration' command, at the very bottom of all of your Library elements.
+- NOTE: Only ONE file can be auto-loaded.
 ```lua
--- To do this, you must copy the command 'AutoLoadFileOnBoot' with the filename as the argument, then paste the 'LoadConfiguration' command, at the very bottom of all of your Library elements.
-Library:AutoLoadFileOnBoot({ -- This function will set a config file to autoload once script is executed again. NOTE: Only ONE file can be auto-loaded.
+Library:AutoLoadFileOnBoot({ -- This function will set a config file to autoload once script is executed again.
 	Toggle = true, -- (Required) To tell if you want to 'autoload' on boot or 'un-autoload' on boot. if false, you won't need to worry about the filename.
 	FileName = "Configuration #1"
 })
@@ -349,16 +359,18 @@ Window:HideElement(ElementIdentifierName) -- Hides the element. (ElementName)
 ```
 
 ### Indexing Tab Element Properties / Configurations
-
+- Indexing the properties of elements from identifier or via 'Library.Flags[FlagName]'
+- Errors if property is read-only or does not exist
+- NOTE: Changing properties from Flags will not take effect
+### Index Property
 ```lua
--- Indexing the properties of elements from identifier or via 'Library.Flags[FlagName]'
--- Errors if property is read-only or does not exist
--- [ Get CurrentValue ] --
 print(ElementIdentifierName.CurrentValue)
 print(Library.Flags[FlagName].CurrentValue)
 print(Library.Flags[FlagName].Configs["ConfigName"].CurrentValue)
+```
+### Change Property
+```lua
 -- [ Change CurrentValue ] --
--- NOTE: Changing properties from Flags will not take effect
 ElementIdentifierName.CurrentValue = 100
 ElementIdentifierName.Configs["ConfigName"].CurrentValue = 100
 ```
