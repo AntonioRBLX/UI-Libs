@@ -1,6 +1,4 @@
-# MM2MainLibrary
-
-A Version of FPSLibrary Made for the Soul Purpose of MM2 Main
+# Documentation
 
 ## Features
 
@@ -10,16 +8,18 @@ A Version of FPSLibrary Made for the Soul Purpose of MM2 Main
 - Key System
 - Auto Discord Invite
 - Customizable Themes
+- Create Customizable Window
 
-# How To Use FPSLibrary
+# How To Use Library
 
 > ## Library
 
 ### Protect Library Gui
 
 ```lua
--- WARNING: IF THE GAME YOU ARE RUNNING FPSLIBRARY ON IS CRASHING OR DETECTING
-getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
+-- WARNING: IF THE GAME YOU ARE RUNNING ON IS CRASHING OR DETECTING
+-- NOTE: EXECUTORS THAT DON'T SUPPORT THIS FEATURE WILL ERROR
+getgenv().LibraryProtectGui = true -- Place this above the loadstring
 ```
 
 ### Load Library
@@ -32,22 +32,23 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY5
 
 ```lua
 Library:Notify({
-	Type = "info"; -- (Optional) types: error, info, success, (case-sensitive) delete this line or set to nil for normal notification
-	Title = "This is a title" -- (Required)
-	Message = "This is an example message."; -- (Required)
-	Icon = nil; -- (Optional) delete this line or set to nil for no icon
+	Type = "info"; -- (Optional) types: warning, info, success, (case-sensitive) delete this line or set to nil for normal notification
+	Title = "This is a title"
+	Message = "This is an example message.";
 	Image = 97207553955899; -- (Optional) Shows a giant image at the center of the notification. Delete this line or set to nil for no image
 	Sound = 3398620867; -- (Optional) delete this line or set to nil for no sound / custom notification type sound.
-	Duration = 10; -- (Required)
+	Duration = 5;
 	Actions = { -- (Optional) Delete this line or set to nil for no action buttons
 		Action1 = {
 			Name = "Action1";
+			CloseOnClick = false; -- Will Close Once Callback Has Finished
 			Callback = function()
 				print("Action #1 pressed")
 			end
 		};
 		Action2 = {
 			Name = "Action2";
+			CloseOnClick = false;
 			Callback = function()
 				print("Action #2 pressed")
 			end
@@ -71,9 +72,9 @@ Library:ChangeTheme({
 ### Create Window
 
 ```lua
-local Window = Library:BootWindow({
-	Name = "FPSLibrary Interface Suite";
-	YieldUntilMenuLoaded = true; -- Yields the thread until the tabs and elements load in.
+local Window = Library:CreateWindow({
+	Name = "Interface Suite";
+	YieldUntilAnimationFinished = true; -- Yields until the window boot animation is finished
 	ConfigurationSaving = {
 		Enabled = false;
 		FolderName = "configs"; -- Folder for all script configuration files. Keep it unique to prevent other scripts from overwriting this file.
@@ -83,7 +84,7 @@ local Window = Library:BootWindow({
 		ShowTabsOnBoot = true;
 		ToggleGUIKeybind = Enum.KeyCode.RightShift;
 		MenuButton = {
-			Title = "FPSLibrary";
+			Title = "Library";
 			UseIcons = false; -- (Optional) Uses Icon on the menu button instead of title
 			IconId = 0; -- IconId shown on the button
 			HoverIconId = 0; -- IconId shown when user hovers over the button. Set to nil for no HoverIcon.
@@ -95,7 +96,7 @@ local Window = Library:BootWindow({
 			Enabled = false; -- The thread will yield until key is validated
 			Keys = {"key1","key2","key3"};
 			RememberKey = false; -- (Optional)
-			FileName = "Key"; -- The file the key the user entered will be saved to.
+			FileName = "Key"; -- The file the key the user entered will be saved to. Keep it unique to prevent other scripts from overwriting this file.
 			KeyTimeLimit = 86400; -- Set to 'math.huge' to remember forever
 			GrabKeyFromSite = false; -- (Optional)
 			RedirectURL = nil; -- The website the user will be redirected to for the key (eg. https://linkvertise.com)
@@ -142,9 +143,11 @@ Window:PromptDiscordInvite() -- Will prompt the discord invite again regardless 
 ### Configuration Folder Management
 
 ```lua
-Library:SaveConfiguration({Name = "Configuration #1"})
+-- NOTE: ConfigurationSaving must be Enabled
+Library:SaveConfiguration({FileName = "Configuration #1"})
+Library:DeleteConfiguration({FileName = "Configuration #1"})
 Library:LoadConfiguration({ -- If config file is corrupted or not found, it will error.
-	Name = "Configuration #1",
+	FileName = "Configuration #1",
 	CallbackElements = true -- Callback Elements once all configs loaded
 })
 Library:ListConfigurationFiles({ShowDirectory = false}) -- returns a table of configurations from the local configuration folder
@@ -153,15 +156,12 @@ Library:ListConfigurationFiles({ShowDirectory = false}) -- returns a table of co
 ### Auto-Load Configuration File On Boot
 
 ```lua
--- To do this, you must copy the command 'AutoLoadFileOnBoot' with the filename as the argument, then paste the 'LoadConfiguration' command, where 1st argument is nil, at the very bottom of all of your FPSLibrary elements.
+-- To do this, you must copy the command 'AutoLoadFileOnBoot' with the filename as the argument, then paste the 'LoadConfiguration' command, at the very bottom of all of your Library elements.
 Library:AutoLoadFileOnBoot({ -- This function will set a config file to autoload once script is executed again. NOTE: Only ONE file can be auto-loaded.
-	Toggle = true, -- To tell if you want to 'autoload' on boot or 'un-autoload' on boot. if false, you won't need to worry about the filename.
-	Name = "Configuration #1"
+	Toggle = true, -- (Required) To tell if you want to 'autoload' on boot or 'un-autoload' on boot. if false, you won't need to worry about the filename.
+	FileName = "Configuration #1"
 })
-Library:LoadConfiguration({
-	FileName = nil, -- You must leave first argument nil to identify the config file you want to 'autoload' from the meta.
-	CallbackElements = true -- Callback Elements once all configs loaded
-}) --
+Library:LoadConfiguration({CallbackElements = true}) -- You would not need 'FileName' for this
 ```
 
 > ## Elements
@@ -170,36 +170,55 @@ Library:LoadConfiguration({
 
 ```lua
 local PopupGUI = Window:CreateCustomPopupGUI({
-	Title = "This is an example title"
+	Title = "Title";
+	Icon = nil;
+	ShowMinimizeButton = true;
+	ShowCloseButton = true;
+	Resizable = false;
+	FloatingSize = Vector2.new(100,100);
+	MinSize = Vector2.new(100,100);
+	MaxSize = Vector2.new(100,100);
 })
+PopupGUI:Minimize()
+PopupGUI:Close()
 -- [ Elements ] --
 PopupGUI:CreateTitle({
-	Type = 1, -- 1 = Title, 2 = Subtitle, 3 = Heading, 4 = Subheading
-	Title = "Example Title",
-	RichText = true,
-	Underlined = true,
+	Type = 1;
+	Title = "Example Title";
+	RichText = true;
+	Underlined = true;
+	TextWrapped = false;
+	TextSize = 20;
+	Size = UDim2.new(1,0,0,0);
+	Position = UDim2.new(0,0,0,0);
 })
 PopupGUI:CreateContent({
-	Content = "Some content under the title",
-	RichText = true
+	Content = "Content";
+	RichText = true;
+	Size = UDim2.new(1,0,0,0);
+	Position = UDim2.new(0,0,0,0);
 }) -- (Text, RichText)
-PopupGUI:CreateList({
-	Style = 1, -- 1 = Numbered, 2 = Bulleted, 3 = Dashed
-	List = { -- NOTE: INDEXES MUST BE NUMBERED OR IT WILL ERROR
-		[1] = {
-			Text = "Get Ingredients",
-			RichText = true,
-			List = { -- (Text, RichText, List)
-				[1] = {Text = "Cinnamon Powder",RichText = true}; -- (Text, RichText)
-				[2] = {Text = "Sugar",RichText = true}; -- (Text, RichText)
-				[3] = {Text = "Vanilla Extract",RichText = true} -- (Text, RichText)
-			}
-		}
-	}
-})
 PopupGUI:CreateImage({
-	Image = "rbxassetid://97207553955899",
-	Size = UDim2.new(0,100,0,100)
+	Image = "rbxassetid://97207553955899";
+	Size = UDim2.new(0,100,0,100);
+	Position = UDim2.new(0,0,0,0);
+})
+local GridLayout = PopupGUI:CreateSection({
+	Name = "Button"; -- Name of the Button
+	RichText = false; -- (Optional) Enables RichText for the Name
+	CanScroll = true;
+	CanvasSize = UDim2.new(0,0,2,0);
+	Callback = function() -- The function that is called after button is activated (this will not be saved to the flags)
+		print("Button Clicked!")
+	end;
+})
+PopupGUI:CreateButton({
+	Name = "Button"; -- Name of the Button
+	RichText = false; -- (Optional) Enables RichText for the Name
+	SectionParent = nil; -- The
+	Callback = function() -- The function that is called after button is activated (this will not be saved to the flags)
+		print("Button Clicked!")
+	end;
 })
 ```
 
@@ -217,13 +236,13 @@ local Tab = Window:CreateTab({
 	SizeY = 250; -- Length of the tab dropdown
 	MaxSizeY = 250;
 	ElementDependent = false; -- (Optional) Automatically adjusts the SizeY by the amount of elements, still limited to "MaxSizeY"
-	Position = UDim2.new(0,20,0,20);
+	Position = Vector2.new(20,20);
 	Flag = ""; -- Identifier for the configuration file (read-only)
 	IgnoreList = {} -- (Optional) The properties the flag will blacklist/not save
 })
 ```
 
-### Create Section
+### Create Tab Section
 
 ```lua
 local Section = Tab:CreateTabSection({
@@ -234,11 +253,9 @@ local Section = Tab:CreateTabSection({
 	IgnoreList = {} -- (Optional) The properties the flag will blacklist/not save
 })
 ```
-
-### Create Button Section
-
+### Create Tab Button
 ```lua
-local ButtonSection = Tab:CreateTabButton({
+local TabButton = Tab:CreateTabButton({
 	Name = "Button"; -- Name of the Button
 	RichText = false; -- (Optional) Enables RichText for the Name
 	EnableKeybinds = false; -- (Optional) Enables keybinds for this element
@@ -250,17 +267,15 @@ local ButtonSection = Tab:CreateTabButton({
 	IgnoreList = {} -- (Optional) The properties the flag will blacklist/not save
 })
 ```
-
-### Create Toggle Section
-
+### Create Tab Toggle
 ```lua
-local ToggleSection = Tab:CreateTabToggle({
+local TabToggle = Tab:CreateTabToggle({
 	Name = "Toggle"; -- Name of the Toggle
 	RichText = false; -- (Optional) Enables RichText for the Name
 	EnableKeybinds = false; -- (Optional) Enables keybinds for this element
 	CurrentKeybind = Enum.KeyCode.E; -- Multiple elements with the same keybind will cause all of them to be triggered.
 	CurrentValue = false; -- Changes value when Toggle is clicked.
-	ActivatedColor = nil; -- Changes color when CurrentValue is set to true. Set to nil for user preferences.
+	ActivatedColor = Color3.fromRGB(255, 223, 96); -- Changes color when CurrentValue is set to true. Set to nil for user preferences.
 	Callback = function(value) -- The function that is called after button is activated (this will not be saved to the flags)
 		print("Toggle has been set to "..tostring(value))
 	end;
@@ -275,7 +290,7 @@ local ToggleSection = Tab:CreateTabToggle({
 
 ```lua
 Section:CreateButton({
-	ConfigName = "SectionButton1" -- (Required) if there are multiple configs with the same name, it errors.
+	ConfigName = "SectionButton1"; -- (Required) if there are multiple configs with the same name, it errors.
 	Name = "Button"; -- Name of the Button
 	RichText = false; -- (Optional) Enables RichText for the Name
 	Callback = function(value) -- The function that is called after button is activated (this will not be saved to the flags)
@@ -302,7 +317,7 @@ Window:HideElement(ElementIdentifierName) -- Hides the element. (ElementName)
 ### Indexing Tab Element Properties / Configurations
 
 ```lua
--- Indexing the properties of elements from identifier or via 'FPSLibrary.Flags[FlagName]'
+-- Indexing the properties of elements from identifier or via 'Library.Flags[FlagName]'
 -- Errors if property is read-only or does not exist
 -- [ Get CurrentValue ] --
 print(ElementIdentifierName.CurrentValue)
