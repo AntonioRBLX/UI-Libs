@@ -32,7 +32,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY5
 
 ```lua
 Library:Notify({
-	Type = "info"; -- (Optional) types: warning, info, success, (case-sensitive) delete this line or set to nil for normal notification
+	Type = "Info"; -- (Optional) Warning, Info, Success, (case-sensitive) delete this line or set to nil for normal notification
 	Title = "This is a title"
 	Message = "This is an example message.";
 	Image = 97207553955899; -- (Optional) Shows a giant image at the center of the notification. Delete this line or set to nil for no image
@@ -164,14 +164,16 @@ Library:AutoLoadFileOnBoot({ -- This function will set a config file to autoload
 Library:LoadConfiguration({CallbackElements = true}) -- You would not need 'FileName' for this
 ```
 
-> ## Elements
+> ## Customized Popup GUI
 
-### Create Customized Popup GUI
+### Create PopupGUI
 
 ```lua
 local PopupGUI = Window:CreateCustomPopupGUI({
 	Title = "Title";
+	Visible = false;
 	Icon = nil;
+	Style = "Indented" -- Normal / Indented, (case-sensitive)
 	ShowMinimizeButton = true;
 	ShowCloseButton = true;
 	Resizable = false;
@@ -179,11 +181,19 @@ local PopupGUI = Window:CreateCustomPopupGUI({
 	MinSize = Vector2.new(100,100);
 	MaxSize = Vector2.new(100,100);
 })
+```
+
+### Close & Minimize GUI
+
+```lua
 PopupGUI:Minimize()
 PopupGUI:Close()
--- [ Elements ] --
+```
+
+### Create Title
+
+```lua
 PopupGUI:CreateTitle({
-	Type = 1;
 	Title = "Example Title";
 	RichText = true;
 	Underlined = true;
@@ -192,17 +202,32 @@ PopupGUI:CreateTitle({
 	Size = UDim2.new(1,0,0,0);
 	Position = UDim2.new(0,0,0,0);
 })
+```
+
+### Create Content
+
+```lua
 PopupGUI:CreateContent({
 	Content = "Content";
 	RichText = true;
 	Size = UDim2.new(1,0,0,0);
 	Position = UDim2.new(0,0,0,0);
 }) -- (Text, RichText)
+```
+
+### Create Image
+
+```lua
 PopupGUI:CreateImage({
 	Image = "rbxassetid://97207553955899";
 	Size = UDim2.new(0,100,0,100);
 	Position = UDim2.new(0,0,0,0);
 })
+```
+
+### Create Grid Layout
+
+```lua
 local GridLayout = PopupGUI:CreateSection({
 	Name = "Button"; -- Name of the Button
 	RichText = false; -- (Optional) Enables RichText for the Name
@@ -212,6 +237,11 @@ local GridLayout = PopupGUI:CreateSection({
 		print("Button Clicked!")
 	end;
 })
+```
+
+### Create Button
+
+```lua
 PopupGUI:CreateButton({
 	Name = "Button"; -- Name of the Button
 	RichText = false; -- (Optional) Enables RichText for the Name
@@ -221,6 +251,8 @@ PopupGUI:CreateButton({
 	end;
 })
 ```
+
+> ## Tab
 
 ### Create Tab
 
@@ -241,6 +273,8 @@ local Tab = Window:CreateTab({
 	IgnoreList = {} -- (Optional) The properties the flag will blacklist/not save
 })
 ```
+
+> ## Elements
 
 ### Create Tab Section
 
@@ -284,7 +318,7 @@ local TabToggle = Tab:CreateTabToggle({
 })
 ```
 
-> ## Tab Element Configuration Elements
+> ## Section Configuration Management
 
 ### Create Button
 
