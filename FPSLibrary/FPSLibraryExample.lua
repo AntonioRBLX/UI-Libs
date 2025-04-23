@@ -2,7 +2,7 @@ local cloneref = cloneref or function(o) return o end
 local ConfigsDropdown
 local AutoLoadFile
 getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
-local Library = loadstring(game:HttpGet("https://pastebin.com/raw/Qk4SFr7i"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/AntonioRBLX/UI-Libs/refs/heads/main/FPSLibrary/FPSLibrary.lua"))()
 ------------------------------------------------------------------------------------------
 function UpdateConfigsDropdown()
 	ConfigsDropdown.Options = Library:ListConfigurationFiles()
@@ -25,7 +25,7 @@ local Window = Library:BootWindow({
 	};
 	KeySystem = {
 		Enabled = true; -- The thread will yield until key is validated
-		Keys = {"CITYSSCRIPTZAREDABEST"}; -- An array of valid keys. Will not apply if GrabKeyFromSite is true
+		Keys = {"ANTONIOSSCRIPTZAREDABEST"}; -- An array of valid keys. Will not apply if GrabKeyFromSite is true
 		Encrypt = false; -- Applies AES-256 encryption to key file
 		CypherKey = ""; -- cypher key length must be 16 or more. https://catonmat.net/tools/generate-random-ascii
 		FileName = "Key"; -- Must keep it unique, otherwise other scripts using FPSLibrary may overwrite your file
