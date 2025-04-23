@@ -8,6 +8,7 @@ local decrypt = syn and syn.crypt and syn.crypt.decrypt or crypt and crypt.decry
 -- Services
 local CoreGui = cloneref(game:GetService("CoreGui"))
 local RunService = cloneref(game:GetService("RunService"))
+local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
 local UserInputService = cloneref(game:GetService("UserInputService"))
 local HttpService = cloneref(game:GetService("HttpService"))
 local TweenService = cloneref(game:GetService("TweenService"))
@@ -65,7 +66,7 @@ local DiscordInvitesFileName = FPSLibraryFolder.."/Discord"
 local LocalConfigurationFolderName = nil
 local LocalConfigurationSubFolderName = nil
 -- Library Interface
-local FPSLibraryAssets = game:GetObjects("rbxassetid://85069246672248")[1]
+local FPSLibraryAssets = IsStudio and _G.LibraryTesting and ReplicatedStorage:WaitForChild("Main") or game:GetObjects("rbxassetid://85069246672248")[1]
 local Interface = FPSLibraryAssets:WaitForChild("Interface"):Clone()
 if protectgui and FPSLibraryProtectGui == true then
 	protectgui(Interface)
