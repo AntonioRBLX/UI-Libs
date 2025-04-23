@@ -1,6 +1,6 @@
 # FPSLibrary v1.1
 
-ROBLOX User Interface Library Created By inkvy.
+ROBLOX User Interface Library Created By AntonioRBLX.
 
 ## Features
 
