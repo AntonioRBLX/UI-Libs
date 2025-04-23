@@ -46,7 +46,7 @@ getgenv().FPSLibraryProtectGui = true -- Place this above the loadstring
 ### Boot Library
 
 ```lua
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/CITY512/UI-Libs/refs/heads/main/FPSLibrary/FPSLibrary.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/AntonioRBLX/UI-Libs/refs/heads/main/FPSLibrary/FPSLibrary.lua"))()
 ```
 
 ### Prompt Notification
